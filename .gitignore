@@ -219,13 +219,14 @@ __marimo__/
 
 # --- Project-specific ---
 
-# Data
-generate/data/fraud_transactions.json
-generate/data/good_transactions.json
+# Data (generated at runtime; generate/data/.gitkeep keeps the dir)
+generate/data/*.json
 detect/models/*.pkl
 
-# Secrets
-sign/tokens/authority_private_key.json
+# Secrets / signed artifacts (regenerated per environment; sign/tokens/.gitkeep keeps the dir)
+sign/tokens/*.pem
+sign/tokens/*.json
+sign/tokens/keys/
 .env.local
 
 # IDE
