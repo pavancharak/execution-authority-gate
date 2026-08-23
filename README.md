@@ -1,5 +1,7 @@
 # Execution Authority Gate: Hybrid Fraud Defense
 
+**Live dashboard: [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev)**
+
 A dual-layer payment fraud defense system combining:
 - **Detection Layer** (RandomForest, pattern recognition)
 - **Mandate Layer** (deterministic authorization rules)
@@ -89,9 +91,14 @@ ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
 - **web/** — Interactive dashboard
 - **tests/** — Comprehensive test suite
 
-## Live Demo
+## Deployment
 
-Coming soon: Deployed to Fly.io with live metrics.
+Live at [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev), deployed via `flyctl deploy` from this repo. The deployed container runs `web/server.py` (a small Flask static server with a `/api/status` health check) and serves the committed `web/data/dashboard.json` as-is — the pipeline doesn't run inside the container, so the live numbers stay fixed to whatever was last committed until someone regenerates and recommits that file.
+
+To redeploy after code changes:
+```bash
+flyctl deploy
+```
 
 ## The Pitch
 
