@@ -216,3 +216,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Project-specific ---
+
+# Data
+generate/data/fraud_transactions.json
+generate/data/good_transactions.json
+detect/models/*.pkl
+
+# Secrets
+sign/tokens/authority_private_key.json
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deployment
+.fly/
