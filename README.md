@@ -1,7 +1,7 @@
 # Execution Authority Gate: Hybrid Fraud Defense
 
 A dual-layer payment fraud defense system combining:
-- **Detection Layer** (XGBoost, pattern recognition)
+- **Detection Layer** (RandomForest, pattern recognition)
 - **Mandate Layer** (deterministic authorization rules)
 - **Signing Layer** (Ed25519 cryptographic proof)
 - **Authority Layer** (external enforcement gate)
@@ -11,7 +11,7 @@ A dual-layer payment fraud defense system combining:
 ```
 Real Fraud Generation (OpenAI temperature=0.9)
     ↓
-Detection (XGBoost, 96%+ recall)
+Detection (RandomForest, 96%+ recall)
     ↓
 Mandate (Rule-based authorization)
     ↓
@@ -68,7 +68,7 @@ Metrics vary between runs (not deterministic) because fraud agents use real Open
 
 - **identify/** — Attack taxonomy
 - **generate/** — Fraud data generation (real OpenAI)
-- **detect/** — XGBoost fraud detector
+- **detect/** — RandomForest fraud detector
 - **mandate/** — Authorization rule checker
 - **sign/** — Ed25519 signing + verification
 - **pipeline/** — Orchestration of all layers

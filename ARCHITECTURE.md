@@ -6,7 +6,7 @@ Real OpenAI API calls (temperature=0.9) produce genuine fraud variation.
 
 ## Layer 2: Detect
 
-XGBoost classifier scores transaction fraud probability.
+RandomForest classifier scores transaction fraud probability.
 
 **Metrics:**
 - Recall: 95%+
