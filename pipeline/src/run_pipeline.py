@@ -26,7 +26,7 @@ SRC_DIR = Path(__file__).resolve().parent
 PIPELINE_ROOT = SRC_DIR.parent
 REPO_ROOT = PIPELINE_ROOT.parent
 
-for _layer in ("detect", "mandate", "sign"):
+for _layer in ("detect", "mandate", "sign", "generate"):
     _layer_src = REPO_ROOT / _layer / "src"
     if str(_layer_src) not in sys.path:
         sys.path.insert(0, str(_layer_src))
@@ -35,7 +35,9 @@ import detector as det  # noqa: E402
 import mandate_checker as mc  # noqa: E402
 import authority_signer as auth  # noqa: E402
 import signature_verifier as verify  # noqa: E402
+import llm_client  # noqa: E402
 import decision_log  # noqa: E402
+import dashboard_builder  # noqa: E402
 
 DATA_DIR = REPO_ROOT / "generate" / "data"
 
@@ -144,8 +146,26 @@ def main():
     path = decision_log.write_log(entries)
     print(f"      wrote {path}")
 
-    verified = sum(1 for e in entries if verify.verify_record(dict(e["decision"]), "authority"))
-    print(f"\nVerification: {verified}/{len(entries)} signatures verify independently (public-key check only)")
+    verified_count = sum(1 for e in entries if verify.verify_record(dict(e["decision"]), "authority"))
+    print(f"\nVerification: {verified_count}/{len(entries)} signatures verify independently (public-key check only)")
+
+    print("\nBuilding web dashboard...")
+    verification = {
+        "total": len(entries),
+        "verified": verified_count,
+        "all_verified": verified_count == len(entries),
+    }
+    dashboard_path = dashboard_builder.build(
+        good_transactions=good,
+        fraud_transactions=fraud,
+        detect_metrics=metrics,
+        mandates=mandates,
+        entries=entries,
+        verification=verification,
+        api_activity=llm_client.load_log_summary(),
+    )
+    print(f"      wrote {dashboard_path}")
+    print("\nOpen web/index.html (via a local server, e.g. `python -m http.server` from web/) to view it.")
 
 
 if __name__ == "__main__":

@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["python", "pipeline/src/run_pipeline.py"]
+CMD ["python", "web/server.py"]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "fake_identity",
+    "name": "AI Fabricated Identity",
+    "stage": "Account creation / onboarding",
+    "what_attacker_needs": "A generative model, a handful of real customer profiles to imitate, and a way to submit new accounts (open API or web form).",
+    "why_hard_to_catch": "Each individual transaction looks statistically normal because the AI copies real spending shape. There is no prior history to compare against, so rules based on velocity don't fire on transaction #1.",
+    "damage": "New account fraud, promo abuse, mule accounts used to launder stolen funds.",
+    "simulated_by": "agent1_fake_identity, real OpenAI GPT-4o-mini calls generating each identity",
+    "real_llm_calls": true
+  },
+  {
+    "id": "pattern_copy",
+    "name": "Spending Pattern Replication (Card Testing & Draining)",
+    "stage": "Authorization / payment processing",
+    "what_attacker_needs": "A stolen card number or token, and a generator that mimics the cardholder's usual amount/merchant/timing shape while executing at machine speed.",
+    "why_hard_to_catch": "Amounts and merchants resemble genuine history; the anomaly is velocity and cumulative volume, which only shows up in aggregate, not per transaction.",
+    "damage": "Direct monetary loss, chargebacks, card network penalties.",
+    "simulated_by": "agent5_pattern_replicator, local/statistical by design",
+    "real_llm_calls": false
+  },
+  {
+    "id": "form_break",
+    "name": "Payment Form / API Fuzzing",
+    "stage": "Client side input into backend processing",
+    "what_attacker_needs": "Knowledge of the form/API schema and an automated fuzzer that throws malformed, oversized, or injection style payloads at each field.",
+    "why_hard_to_catch": "Individually loud and easy to flag, but attackers use it as reconnaissance: the one field that doesn't reject cleanly becomes the entry point for a quieter attack later.",
+    "damage": "Backend crashes, injection vulnerabilities, data exposure, or a discovered bypass used in a later attack.",
+    "simulated_by": "agent6_injection_generator, known public payloads, no LLM needed",
+    "real_llm_calls": false
+  },
+  {
+    "id": "social_engineering",
+    "name": "AI Voice/Chat Social Engineering",
+    "stage": "Customer authentication (call center, chat support)",
+    "what_attacker_needs": "A voice cloning or conversational model, some public/leaked personal data about the victim, and a target support channel.",
+    "why_hard_to_catch": "Convincingly mimics a real customer's voice or writing style well enough to pass authentication questions based on personal knowledge.",
+    "damage": "Account takeover, unauthorized card issuance, disabled fraud alerts.",
+    "simulated_by": "agent2_social_engineer, real OpenAI calls generating text call transcripts only. No voice cloning, no audio, no real support line contacted",
+    "real_llm_calls": true
+  },
+  {
+    "id": "limit_probing",
+    "name": "Authorization Limit Probing",
+    "stage": "Authorization",
+    "what_attacker_needs": "A stolen card and a script that submits many small transactions across merchants to map out fraud detection thresholds before making one large charge.",
+    "why_hard_to_catch": "Each probe is small enough to sit under thresholds set per transaction; the pattern only becomes visible when probes are correlated across merchants.",
+    "damage": "Reveals the exact threshold defenders use, which is then exploited in a larger, precisely sized fraudulent charge.",
+    "simulated_by": "agent3_limit_prober, real: submits amounts $10 to $10,000 through our own trained detector and reads back its real decision boundary",
+    "real_llm_calls": false
+  },
+  {
+    "id": "kyc_synthetic",
+    "name": "AI Generated KYC Document Forgery",
+    "stage": "Identity verification (KYC)",
+    "what_attacker_needs": "An image generation model capable of producing plausible ID documents or selfies that pass automated liveness/document checks.",
+    "why_hard_to_catch": "Generated documents can be tuned specifically to defeat the exact verification model in use if the attacker has query access to it.",
+    "damage": "Bypasses KYC entirely, enabling fully synthetic identities to open accounts that pass verification.",
+    "simulated_by": "agent4_kyc_forger, real OpenAI calls generating identity metadata bundles only, no document images, then scored by our own detector",
+    "real_llm_calls": true
+  },
+  {
+    "id": "model_poisoning",
+    "name": "Feedback Loop Poisoning of the Fraud Model",
+    "stage": "Post decision (dispute / feedback ingestion)",
+    "what_attacker_needs": "Repeated small transactions plus false dispute/chargeback signals designed to teach the detector's retraining pipeline to treat fraud patterns as normal.",
+    "why_hard_to_catch": "Attacks the training data, not the transaction. By the time it's visible, the model itself has drifted toward tolerating the fraud pattern.",
+    "damage": "Long term degradation of detection accuracy; hardest to detect because the model's own confidence goes up, not down.",
+    "simulated_by": "not simulated in this lab (known gap). agent7_feedback_loop is related but distinct: it generates real-time evasion variants against the trained model, it does not poison a retraining pipeline",
+    "real_llm_calls": false
+  }
+]
