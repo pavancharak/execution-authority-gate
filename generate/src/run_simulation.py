@@ -16,10 +16,11 @@ Produces:
 Agents 1, 2, and 4 call the real OpenAI API (see llm_client.py). Set
 OPENAI_API_KEY in a repo-root .env file before running (copy .env.example).
 
-Kept deliberately small for agents 1/2/4 (a handful of identities/
-conversations/bundles each) — this is a real-cost proof run, not a
-full-scale reproduction. Agents 5 and 6 are free (local/statistical) and
-run at a larger scale so the dataset still has enough rows to train on.
+Agents 1, 2, and 4 stay modest (20/20/15) since every call is real
+money, even though GPT-4o-mini keeps the actual cost trivial (well under
+a cent per call). Agents 5 and 6 are free (local/statistical) and run at
+a larger scale (350 each) so the full dataset has enough rows to train
+and evaluate on.
 """
 
 import json
@@ -94,19 +95,19 @@ def main():
     histories = make_stolen_card_histories(good_transactions, n=25)
 
     print("\n[2/6] Agent 1 (Fake Identity Generator, REAL OpenAI call) requesting token...")
-    agent1 = FakeIdentityAgent(max_identities=8)
+    agent1 = FakeIdentityAgent(max_identities=20)
     print(f"      -> token granted: max_operations={agent1.token['max_operations']}, signed record_id={agent1.token['record_id']}")
     fraud_identity = agent1.run(seeds)
     print(f"      -> executed {agent1.executed}/{agent1.token['max_operations']} authorized identities, producing {len(fraud_identity)} transactions")
 
     print("\n[3/6] Agent 2 (Social Engineer, REAL OpenAI call) requesting token...")
-    agent2 = SocialEngineerAgent(max_conversations=8)
+    agent2 = SocialEngineerAgent(max_conversations=20)
     print(f"      -> token granted: max_operations={agent2.token['max_operations']}, signed record_id={agent2.token['record_id']}")
     fraud_social = agent2.run(seeds)
     print(f"      -> executed {agent2.executed}/{agent2.token['max_operations']} authorized transcripts, {len(fraud_social)} led to a follow-up transaction")
 
     print("\n[4/6] Agent 4 (KYC Forger, REAL OpenAI call) requesting token...")
-    agent4 = KYCForgerAgent(max_kyc=8)
+    agent4 = KYCForgerAgent(max_kyc=15)
     print(f"      -> token granted: max_operations={agent4.token['max_operations']}, signed record_id={agent4.token['record_id']}")
     fraud_kyc = agent4.run()
     print(f"      -> executed {agent4.executed}/{agent4.token['max_operations']} authorized bundles, producing {len(fraud_kyc)} transactions")
@@ -114,13 +115,13 @@ def main():
     print("\n[5/6] Agent 5 (Pattern Replicator, local/statistical) requesting token...")
     agent5 = PatternReplicatorAgent(max_transactions=1000)
     print(f"      -> token granted: max_operations={agent5.token['max_operations']}, signed record_id={agent5.token['record_id']}")
-    fraud_pattern = agent5.run(histories, target_count=150)
+    fraud_pattern = agent5.run(histories, target_count=350)
     print(f"      -> executed {agent5.executed}/{agent5.token['max_operations']} authorized transactions, producing {len(fraud_pattern)}")
 
     print("\n[6/6] Agent 6 (Injection Attack Generator, known public payloads) requesting token...")
     agent6 = InjectionGeneratorAgent(max_attempts=1000)
     print(f"      -> token granted: max_operations={agent6.token['max_operations']}, signed record_id={agent6.token['record_id']}")
-    fraud_form = agent6.run(FORM_FIELDS, target_count=150)
+    fraud_form = agent6.run(FORM_FIELDS, target_count=350)
     print(f"      -> executed {agent6.executed}/{agent6.token['max_operations']} authorized attempts, producing {len(fraud_form)}")
 
     fraud_transactions = fraud_identity + fraud_social + fraud_kyc + fraud_pattern + fraud_form

@@ -107,11 +107,11 @@ def main():
     print(f"      -> detector starts blocking at ${threshold}" if threshold else "      -> no amount alone triggered BLOCK")
 
     print("\n[2/2] Agent 7 (Feedback Loop Exploit, real: GPT + OUR trained detector) requesting token...")
-    blocked_sample = build_blocked_sample(good, fraud, model, n=3)
-    agent7 = FeedbackLoopAgent(max_variants=10)
+    blocked_sample = build_blocked_sample(good, fraud, model, n=6)
+    agent7 = FeedbackLoopAgent(max_variants=20)
     print(f"      -> token granted: max_operations={agent7.token['max_operations']}, signed record_id={agent7.token['record_id']}")
     print(f"      -> sampling {len(blocked_sample)} real blocked transactions, asking GPT for evasion variants...")
-    evasion_results = agent7.run(blocked_sample, model, det.decision_for_score, variants_per_tx=2)
+    evasion_results = agent7.run(blocked_sample, model, det.decision_for_score, variants_per_tx=3)
     evaded_count = sum(1 for r in evasion_results if r["evaded"])
     print(f"      -> tested {len(evasion_results)} variants, {evaded_count} evaded detection")
 
