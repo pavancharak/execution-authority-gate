@@ -52,17 +52,31 @@ Both must pass. Every decision is cryptographically signed and enforced by an ex
 
 ## Metrics
 
-Current run:
-- **797 attacks** (175 per agent type × 7 types)
-- **Detection catch:** 91-94% (varies per run, real OpenAI randomness)
-- **Mandate additional blocks:** +2-5 (catches what detection misses)
-- **Total caught:** 92-95%
-- **False positive rate:** 8-9%
-- **All decisions signed:** 797/797
+From the run behind the committed `web/data/dashboard.json`:
+- **1,936 transactions** (1,143 legitimate + 793 fraudulent)
+- **581 decisions** on the held-out test split: 220 BLOCK / 38 FLAG / 323 ALLOW
+- **Detection catch:** 92.4% fraud caught, 7.9% false positive rate
+- **Mandate-only blocks:** 26 — real fraud the detector scored as low-risk that the mandate layer caught anyway
+- **All decisions signed:** 581/581 verify independently
 
 ## Robustness
 
-Metrics vary between runs (not deterministic) because fraud agents use real OpenAI API at temperature=0.9. This proves the detector works across different fraud patterns, not just one scenario.
+Numbers will vary run to run once the generate layer's agents 1, 2, 4, and 7 are run against a real `OPENAI_API_KEY` (temperature=0.9, non-deterministic by design) — that's deliberate: it proves the detector holds up across different fraud patterns, not just one fixed dataset.
+
+## Testing
+
+```bash
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+54 hermetic tests run in a few seconds — no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), and an end-to-end scenario proving the mandate layer catches fraud the detector alone would miss.
+
+3 more tests cover agents 1, 2, 4, and 7 (the ones that call the real OpenAI API) and are skipped by default:
+
+```bash
+ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
+```
 
 ## Structure
 
