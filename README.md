@@ -47,15 +47,20 @@ cd ../../generate/src && python probe_agents.py # agents 3,7 (agent 7 is real Op
 cd ../../pipeline/src && python run_pipeline.py # detect + mandate + sign -> dashboard
 ```
 
-## Why This Works
+## In Plain Language
 
-Traditional fraud detection asks: "Does this look suspicious?"
+Before a transaction is allowed through, two independent checks have to agree — neither one trusts the other's reasoning:
 
-This system asks two questions:
-1. **Detection:** "Does this pattern match known fraud?"
-2. **Mandate:** "Is this actually authorized?"
+1. **Does this look like fraud?** A model trained on real transaction patterns scores every transaction for risk.
+2. **Is this actually authorized?** A separate, rule-based check compares the transaction against that specific customer's own history — spending limits, merchants, hours, frequency — regardless of what the fraud model thinks.
 
-Both must pass. Every decision is cryptographically signed and enforced by an external authority.
+Either one objecting is enough to block it. Then, whatever the outcome, a third step signs the final decision with a private key nobody else holds, producing a tamper-evident record anyone can verify independently. Signing isn't a vote — every decision gets signed, ALLOW or BLOCK — it's what makes the first two layers' decision provable and unforgeable after the fact, not a third check that can veto anything.
+
+**Real results, from a live, self-generated run — not a cherry-picked demo:**
+- Catches 89.1% of fraud
+- 6.8% false-alarm rate on legitimate activity
+- Every one of 6,869 decisions is signed and independently verifiable — 6,869/6,869 checked out
+- A separate adversarial test asked GPT to disguise already-blocked fraud so it would slip past the model; 17 of 18 attempts still failed. (That's a narrow robustness result on a small sample, not a claim about stopping "94% of attacks" in general.)
 
 ## Metrics
 
