@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Execution Authority Gate",
-    "generated_at": "2026-08-23T14:21:02.804998+00:00"
+    "generated_at": "2026-08-23T15:38:45.484345+00:00"
   },
   "attacks": [
     {
@@ -77,48 +77,121 @@
   ],
   "simulation": {
     "good_transaction_count": 1143,
-    "fraud_transaction_count": 793,
+    "fraud_transaction_count": 369,
     "attack_type_breakdown": {
-      "fake_identity": 204,
-      "social_engineering": 64,
-      "kyc_synthetic": 175,
-      "pattern_copy": 175,
-      "form_break": 175
+      "fake_identity": 55,
+      "social_engineering": 6,
+      "kyc_synthetic": 8,
+      "pattern_copy": 150,
+      "form_break": 150
     }
   },
   "api_activity": {
-    "calls": [],
+    "calls": [
+      {
+        "timestamp": "2026-08-23T15:37:39.676837+00:00",
+        "purpose": "Agent 1: Fake Identity Generation",
+        "model": "gpt-4o-mini",
+        "prompt_tokens": 131,
+        "completion_tokens": 375,
+        "total_tokens": 506,
+        "cost_usd": 0.000245,
+        "latency_ms": 6242,
+        "prompt_preview": "Generate 8 coherent synthetic customer identities. Real customers at this merchant spend around $155 per transaction on average. For each identity include: \"full_name\", \"typical_monthly_spend_usd\" (a plausible number near that average), \"typical_hour_of_day\" (0-23), and \"currency\" (one of USD, EUR, ",
+        "response_preview": "{\n  \"identities\": [\n    {\n      \"full_name\": \"Emily Johnson\",\n      \"typical_monthly_spend_usd\": 160,\n      \"typical_hour_of_day\": 14,\n      \"currency\": \"USD\"\n    },\n    {\n      \"full_name\": \"Michael Smith\",\n      \"typical_monthly_spend_usd\": 145,\n      \"typical_hour_of_day\": 19,\n      \"currency\": \""
+      },
+      {
+        "timestamp": "2026-08-23T15:37:53.865304+00:00",
+        "purpose": "Agent 2: Social Engineering Transcripts",
+        "model": "gpt-4o-mini",
+        "prompt_tokens": 246,
+        "completion_tokens": 1564,
+        "total_tokens": 1810,
+        "cost_usd": 0.000975,
+        "latency_ms": 14184,
+        "prompt_preview": "Generate 8 short call-center transcripts where a caller (the attacker) tries a social engineering tactic on a support agent to get an account recovery code, a security-question reset, or a card reissue authorized. For each include: \"tactic\" (short label, e.g. \"urgency\", \"impersonating IT\", \"fake cha",
+        "response_preview": "{\n  \"conversations\": [\n    {\n      \"tactic\": \"urgency\",\n      \"transcript\": [\n        \"AGENT: Thank you for calling customer support, how can I help you today?\",\n        \"CALLER: Hi, I need immediate help! My account was compromised and I think someone is trying to charge things to it!\",\n        \"AG"
+      },
+      {
+        "timestamp": "2026-08-23T15:38:00.958425+00:00",
+        "purpose": "Agent 4: KYC Bundle Generation",
+        "model": "gpt-4o-mini",
+        "prompt_tokens": 143,
+        "completion_tokens": 794,
+        "total_tokens": 937,
+        "cost_usd": 0.000498,
+        "latency_ms": 7053,
+        "prompt_preview": "Generate 8 synthetic identity bundles. For each include: \"full_name\", \"date_of_birth\" (ISO date), \"city\", \"country\", \"stated_occupation\", \"stated_annual_income_usd\", and a one-sentence \"coherence_notes\" explaining why the fields are internally consistent (age fits occupation, income fits the city's ",
+        "response_preview": "{\n  \"bundles\": [\n    {\n      \"full_name\": \"Emily Carter\",\n      \"date_of_birth\": \"1990-05-12\",\n      \"city\": \"Denver\",\n      \"country\": \"USA\",\n      \"stated_occupation\": \"Software Engineer\",\n      \"stated_annual_income_usd\": 95000,\n      \"coherence_notes\": \"At 33 years old, Emily's income as a Softw"
+      },
+      {
+        "timestamp": "2026-08-23T15:38:24.690275+00:00",
+        "purpose": "Agent 7: Evasion Variant Suggestion",
+        "model": "gpt-4o-mini",
+        "prompt_tokens": 202,
+        "completion_tokens": 147,
+        "total_tokens": 349,
+        "cost_usd": 0.000119,
+        "latency_ms": 3125,
+        "prompt_preview": "A fraud model blocked this transaction with fraud score 0.802. Its features: amount=97.5, hour_of_day=16, seconds_since_prev_tx=17413.2, location_mismatch_km=985.2, pattern_similarity=0.746, ai_generated_signal=0.317. Propose 2 variants: small, plausible adjustments to these six numeric fields (don'",
+        "response_preview": "{\n  \"variants\": [\n    {\n      \"amount\": 80.0,\n      \"hour_of_day\": 15,\n      \"seconds_since_prev_tx\": 16000.0,\n      \"location_mismatch_km\": 900.0,\n      \"pattern_similarity\": 0.800,\n      \"ai_generated_signal\": 0.350\n    },\n    {\n      \"amount\": 85.0,\n      \"hour_of_day\": 17,\n      \"seconds_since_p"
+      },
+      {
+        "timestamp": "2026-08-23T15:38:26.726485+00:00",
+        "purpose": "Agent 7: Evasion Variant Suggestion",
+        "model": "gpt-4o-mini",
+        "prompt_tokens": 202,
+        "completion_tokens": 145,
+        "total_tokens": 347,
+        "cost_usd": 0.000117,
+        "latency_ms": 1980,
+        "prompt_preview": "A fraud model blocked this transaction with fraud score 0.802. Its features: amount=404.73, hour_of_day=5, seconds_since_prev_tx=2.72, location_mismatch_km=1029.3, pattern_similarity=0.238, ai_generated_signal=0.887. Propose 2 variants: small, plausible adjustments to these six numeric fields (don't",
+        "response_preview": "{\n  \"variants\": [\n    {\n      \"amount\": 398.56,\n      \"hour_of_day\": 6,\n      \"seconds_since_prev_tx\": 3.0,\n      \"location_mismatch_km\": 950.5,\n      \"pattern_similarity\": 0.250,\n      \"ai_generated_signal\": 0.870\n    },\n    {\n      \"amount\": 482.25,\n      \"hour_of_day\": 4,\n      \"seconds_since_pre"
+      },
+      {
+        "timestamp": "2026-08-23T15:38:29.514426+00:00",
+        "purpose": "Agent 7: Evasion Variant Suggestion",
+        "model": "gpt-4o-mini",
+        "prompt_tokens": 202,
+        "completion_tokens": 146,
+        "total_tokens": 348,
+        "cost_usd": 0.000118,
+        "latency_ms": 2731,
+        "prompt_preview": "A fraud model blocked this transaction with fraud score 0.802. Its features: amount=404.73, hour_of_day=5, seconds_since_prev_tx=2.72, location_mismatch_km=1029.3, pattern_similarity=0.238, ai_generated_signal=0.887. Propose 2 variants: small, plausible adjustments to these six numeric fields (don't",
+        "response_preview": "{\n  \"variants\": [\n    {\n      \"amount\": 384.73,\n      \"hour_of_day\": 6,\n      \"seconds_since_prev_tx\": 3.0,\n      \"location_mismatch_km\": 999.3,\n      \"pattern_similarity\": 0.278,\n      \"ai_generated_signal\": 0.857\n    },\n    {\n      \"amount\": 399.73,\n      \"hour_of_day\": 5,\n      \"seconds_since_pre"
+      }
+    ],
     "summary": {
-      "total_calls": 0,
-      "total_tokens": 0,
-      "total_cost_usd": 0,
-      "avg_latency_ms": 0
+      "total_calls": 6,
+      "total_tokens": 4297,
+      "total_cost_usd": 0.00207,
+      "avg_latency_ms": 5886
     }
   },
   "detect": {
     "metrics": {
       "confusion_matrix": {
-        "true_negative": 316,
-        "false_positive": 27,
-        "false_negative": 18,
-        "true_positive": 220
+        "true_negative": 318,
+        "false_positive": 25,
+        "false_negative": 16,
+        "true_positive": 95
       },
-      "fraud_caught_rate": 0.9244,
-      "fraud_missed_rate": 0.0756,
-      "precision": 0.8907,
-      "false_positive_rate": 0.0787,
+      "fraud_caught_rate": 0.8559,
+      "fraud_missed_rate": 0.1441,
+      "precision": 0.7917,
+      "false_positive_rate": 0.0729,
       "top_signals": [
         {
-          "feature": "pattern_similarity",
-          "importance": 0.2956
-        },
-        {
           "feature": "log_seconds_since_prev_tx",
-          "importance": 0.2888
+          "importance": 0.3898
         },
         {
-          "feature": "ai_generated_signal",
-          "importance": 0.1943
+          "feature": "location_mismatch_km",
+          "importance": 0.2424
+        },
+        {
+          "feature": "pattern_similarity",
+          "importance": 0.2271
         }
       ]
     }
@@ -126,73 +199,22 @@
   "mandate": {
     "mandates_derived": 250,
     "block_attribution": {
-      "detect_only": 140,
-      "mandate_only": 26,
-      "both": 54
+      "detect_only": 46,
+      "mandate_only": 33,
+      "both": 18
     },
     "rule_violation_counts": {
-      "spending_limit": 8,
-      "merchant_whitelist": 44,
-      "time_restriction": 69,
+      "spending_limit": 2,
+      "merchant_whitelist": 25,
+      "time_restriction": 39,
       "velocity": 0
     },
     "sample_mandate_only_blocks": [
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_0724909456",
-          "fraud_score": 0.1682,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": false,
-          "violated_mandate_rules": [
-            "spending_limit"
-          ],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount",
-            "mandate: spending_limit"
-          ],
-          "record_id": "9ff6e0c0-1980-4b9b-bbd7-2b3928cfd33c",
-          "signed_at": 1787494861.6050382,
-          "signer": "authority",
-          "signature": "dfd4a7752b10601ca06e6a71600f2592d3c8df01cf57b76769fefff68f7056004e6d6959a5e907e1690341139e263b927366c951f52584427debcfc2cebc8e0f"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": false,
-            "reason": "would exceed monthly limit ($64.80): $0.00 so far + $382.92 = $382.92"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "FreshGrocer is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 9 is within the allowed window (3-10)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "pattern_copy",
-          "amount": 382.92,
-          "merchant": "FreshGrocer",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_3ec77dc156",
-          "fraud_score": 0.0341,
+          "transaction_id": "tx_59bedfca19",
+          "fraud_score": 0.0306,
           "detect_decision": "ALLOW",
           "mandate_allowed": false,
           "violated_mandate_rules": [
@@ -201,80 +223,81 @@
           ],
           "final_decision": "BLOCK",
           "reasons": [
-            "detect: ai_generated_signal",
+            "detect: no single dominant signal",
             "mandate: merchant_whitelist",
             "mandate: time_restriction"
           ],
-          "record_id": "22442215-a6a2-4694-84c1-f1f48ac148bb",
-          "signed_at": 1787494861.0947404,
+          "record_id": "872885c2-3c35-4917-b22a-571a2714169e",
+          "signed_at": 1787499524.773618,
           "signer": "authority",
-          "signature": "87d8fbb6a32b8f09bf8333520cc53e4d34b10c91abb8828343b3252aff9859fe5b6a6165bbc64e0b619f11b3e0c72b5ffbbd3cd554b986b7a99e5b0ac3ac7705"
+          "signature": "0a9e4639da7cc76f752d4a428a7434e7f8f4531e08c6048154621714842916eb4daf022f6f88298eef714ee7e10417122fe5092d3dbf3da242bad7720c95eb0a"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($212.60 of $2863.56)"
+            "reason": "within monthly limit ($870.57 of $1571.82)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": false,
-            "reason": "CloudHost is not in the customer's allowed merchant list"
+            "reason": "TravelEasy is not in the customer's allowed merchant list"
           },
           {
             "rule": "time_restriction",
             "passed": false,
-            "reason": "hour 17 is outside the allowed window (4-12)"
+            "reason": "hour 13 is outside the allowed window (15-23)"
           },
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
+            "reason": "within the daily transaction count limit (4 of 8)"
           }
         ],
         "ground_truth": {
           "is_fraud": 1,
           "attack_type": "pattern_copy",
-          "amount": 212.6,
-          "merchant": "CloudHost",
-          "currency": "GBP"
+          "amount": 255.52,
+          "merchant": "TravelEasy",
+          "currency": "INR"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_e415341e75",
-          "fraud_score": 0.0391,
-          "detect_decision": "ALLOW",
+          "transaction_id": "tx_f45fc0603b",
+          "fraud_score": 0.7973,
+          "detect_decision": "FLAG",
           "mandate_allowed": false,
           "violated_mandate_rules": [
             "time_restriction"
           ],
           "final_decision": "BLOCK",
           "reasons": [
+            "detect: location_mismatch_km",
             "detect: ai_generated_signal",
             "mandate: time_restriction"
           ],
-          "record_id": "560f1390-2a57-4426-8161-1bdef1e65c5a",
-          "signed_at": 1787494861.8028436,
+          "record_id": "958ab48e-13b4-405f-854f-dd2948c88ad2",
+          "signed_at": 1787499524.2804296,
           "signer": "authority",
-          "signature": "67de1de0bd8d541c3d1a9236e3dd1ac9128454757009fb295301b7c5a6d79ae51d190afd48dedc7e0eae19e3e0f0b3f69d7bf82f2c91c98be578e08e38e7520e"
+          "signature": "b6a3d14fa6998c609934bddaa7b3048068203070894726a633f6ceb6f61a15b05f2b731aafbfe55fffe008a5a184ef9aa401365f1a298b9d1663f670813c3109"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($218.54 of $1000.00)"
+            "reason": "within monthly limit ($472.81 of $1765.93)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": true,
-            "reason": "no merchant restriction on this mandate"
+            "reason": "StreamFlix is an allowed merchant"
           },
           {
             "rule": "time_restriction",
             "passed": false,
-            "reason": "hour 5 is outside the allowed window (6-23)"
+            "reason": "hour 3 is outside the allowed window (16-23)"
           },
           {
             "rule": "velocity",
@@ -284,17 +307,17 @@
         ],
         "ground_truth": {
           "is_fraud": 1,
-          "attack_type": "fake_identity",
-          "amount": 172.12,
-          "merchant": "GameVault",
-          "currency": "USD"
+          "attack_type": "pattern_copy",
+          "amount": 262.2,
+          "merchant": "StreamFlix",
+          "currency": "JPY"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_33c8a6c7a8",
-          "fraud_score": 0.7782,
+          "transaction_id": "tx_d422a09dde",
+          "fraud_score": 0.6876,
           "detect_decision": "FLAG",
           "mandate_allowed": false,
           "violated_mandate_rules": [
@@ -302,19 +325,20 @@
           ],
           "final_decision": "BLOCK",
           "reasons": [
-            "detect: ai_generated_signal",
+            "detect: location_mismatch_km",
+            "detect: log_seconds_since_prev_tx",
             "mandate: time_restriction"
           ],
-          "record_id": "c13316ef-a8da-4a02-b611-eba372356dab",
-          "signed_at": 1787494862.2628288,
+          "record_id": "537ed96e-94d9-4a99-b241-646643543a8c",
+          "signed_at": 1787499525.0574937,
           "signer": "authority",
-          "signature": "f21073b06ae4e65f2096c07ccfdc5b55c152a8b45e7d38318ba7674d68140fd69aeedd24b81a04a7e9e1b25ab39e6ae8045b3a9c11d00151662a44fc8797f10c"
+          "signature": "c7fcd1ac059ad1c6a2989f9792e314f055eaea1be01dde5fb049052adf8c9368a9c412b9aff3d80f7754193809ccb54c3d66cbf04c394de82c21ee6523e74e0e"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($196.59 of $702.51)"
+            "reason": "within monthly limit ($689.44 of $2863.56)"
           },
           {
             "rule": "merchant_whitelist",
@@ -324,57 +348,58 @@
           {
             "rule": "time_restriction",
             "passed": false,
-            "reason": "hour 1 is outside the allowed window (8-20)"
+            "reason": "hour 19 is outside the allowed window (4-12)"
           },
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
+            "reason": "within the daily transaction count limit (2 of 8)"
           }
         ],
         "ground_truth": {
           "is_fraud": 1,
           "attack_type": "pattern_copy",
-          "amount": 196.59,
+          "amount": 410.66,
           "merchant": "UrbanCafe",
-          "currency": "JPY"
+          "currency": "GBP"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_5bf0396f9c",
-          "fraud_score": 0.051,
-          "detect_decision": "ALLOW",
+          "transaction_id": "tx_ec06d66706",
+          "fraud_score": 0.6946,
+          "detect_decision": "FLAG",
           "mandate_allowed": false,
           "violated_mandate_rules": [
             "merchant_whitelist"
           ],
           "final_decision": "BLOCK",
           "reasons": [
-            "detect: ai_generated_signal",
+            "detect: log_seconds_since_prev_tx",
+            "detect: pattern_similarity",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "797e7899-82c8-4d37-859c-d6e9c2838f43",
-          "signed_at": 1787494860.6670249,
+          "record_id": "59908847-32e4-4aa1-9010-227f6999afa6",
+          "signed_at": 1787499523.9343007,
           "signer": "authority",
-          "signature": "1fc4033da10f8dd4b3bbd92de1707388d6e1593c9dbbba8bd6ab960b9a41f798243223a23d10b60e2be7517f8fefcca091ea07990cc07a38b510160c6506d705"
+          "signature": "0fa4e5a9305d7b7ceffd49192d533a92b1d09b5690fc7edadd559ab4338985ccb60948f09b67db755d102afc4e34c4f4463f268c8ccfa5ddeebecf3cf885dd01"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($116.57 of $263.02)"
+            "reason": "within monthly limit ($118.51 of $665.36)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": false,
-            "reason": "GameVault is not in the customer's allowed merchant list"
+            "reason": "StreamFlix is not in the customer's allowed merchant list"
           },
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 19 is within the allowed window (17-22)"
+            "reason": "hour 22 is within the allowed window (16-22)"
           },
           {
             "rule": "velocity",
@@ -385,218 +410,17 @@
         "ground_truth": {
           "is_fraud": 1,
           "attack_type": "pattern_copy",
-          "amount": 116.57,
-          "merchant": "GameVault",
-          "currency": "GBP"
-        }
-      }
-    ]
-  },
-  "pipeline": {
-    "total": 581,
-    "decision_counts": {
-      "BLOCK": 220,
-      "FLAG": 38,
-      "ALLOW": 323
-    },
-    "sample_decisions": [
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_6cc492cfac",
-          "fraud_score": 0.2109,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: no single dominant signal"
-          ],
-          "record_id": "1f1b1203-ae63-4f93-a902-63398e832104",
-          "signed_at": 1787494860.8853855,
-          "signer": "authority",
-          "signature": "a91da1a83258776b65ff0d5b77073b5e982364342a1863d6c0ca579d30adfcd08b17e1e59aef5718115f7f7817d912e80b5a381621cb4292cb8a53fa87fec504"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($344.80 of $1753.86)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "TechBazaar is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 19 is within the allowed window (17-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 174.13,
-          "merchant": "TechBazaar",
+          "amount": 118.51,
+          "merchant": "StreamFlix",
           "currency": "JPY"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_f5797e349f",
-          "fraud_score": 0.0419,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount"
-          ],
-          "record_id": "cea34932-b188-402f-9ee5-c2644168493e",
-          "signed_at": 1787494862.563501,
-          "signer": "authority",
-          "signature": "c01085079abdd0e6e324edf1a6bfcde6a1c541690edfaad139281ff76c5dbe380032c6cf79fed6ad1c68bc1212d4c910ef48ea0e3a30dd24c4606e4cb1428709"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($278.78 of $2863.56)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "GameVault is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 8 is within the allowed window (4-12)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 278.78,
-          "merchant": "GameVault",
-          "currency": "GBP"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_98abc34eaa",
-          "fraud_score": 0.9108,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount"
-          ],
-          "record_id": "63f87582-8175-4174-a632-b70004b13f0b",
-          "signed_at": 1787494860.956129,
-          "signer": "authority",
-          "signature": "7ce3d4212537201f7787827b9918e403e501071a22ed24b41012505122dc7cabea6008f3cf3e64dc95acb75ba123dd926756bf4f3801fa155457dcf2457d2502"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($284.34 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 14 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "kyc_synthetic",
-          "amount": 284.34,
-          "merchant": "FreshGrocer",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_f37b1a19e6",
-          "fraud_score": 0.7995,
+          "transaction_id": "tx_1dbc79c6a9",
+          "fraud_score": 0.7552,
           "detect_decision": "FLAG",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "FLAG",
-          "reasons": [
-            "detect: log_seconds_since_prev_tx",
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "2ee33160-7259-45c6-aa02-2c5f13493408",
-          "signed_at": 1787494861.9675002,
-          "signer": "authority",
-          "signature": "63b20f784dfd7ffe32f9e8437b74ed8676ba5094f7ecc9661e50d997ba6df078db76caf63f879284074c3305a8db98b540219dfe2767455b17629d80313b7906"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($52.26 of $94.09)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "CloudHost is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 11 is within the allowed window (9-18)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 44.96,
-          "merchant": "CloudHost",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_59c3c20c59",
-          "fraud_score": 0.826,
-          "detect_decision": "BLOCK",
           "mandate_allowed": false,
           "violated_mandate_rules": [
             "time_restriction"
@@ -606,26 +430,26 @@
             "detect: ai_generated_signal",
             "mandate: time_restriction"
           ],
-          "record_id": "bccc841a-0897-4237-8fb7-83ad7ea5be8f",
-          "signed_at": 1787494860.828119,
+          "record_id": "9b5ae8b5-061c-4997-84e4-894af47d342d",
+          "signed_at": 1787499523.94629,
           "signer": "authority",
-          "signature": "e0e3e51776fb8c69a5cbfec511ee2c2304b3520364d0ef9431e7ebd064d838eee9ce1b41c33636b4a7b5c200512baf3f927a843088ddac92b9806ac3d773060d"
+          "signature": "5744c5262d32dc95d2f83d2aae835b85eaa74aebaf859e7e5e087f3991fce3faff9901ae354a455196f157f01fb90a08488164189c710ec76c7282affbfe3b04"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($10.82 of $64.80)"
+            "reason": "within monthly limit ($38.65 of $263.02)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": true,
-            "reason": "TechBazaar is an allowed merchant"
+            "reason": "QuickMart is an allowed merchant"
           },
           {
             "rule": "time_restriction",
             "passed": false,
-            "reason": "hour 18 is outside the allowed window (3-10)"
+            "reason": "hour 4 is outside the allowed window (17-22)"
           },
           {
             "rule": "velocity",
@@ -636,81 +460,43 @@
         "ground_truth": {
           "is_fraud": 1,
           "attack_type": "pattern_copy",
-          "amount": 10.82,
-          "merchant": "TechBazaar",
-          "currency": "USD"
+          "amount": 38.65,
+          "merchant": "QuickMart",
+          "currency": "GBP"
         }
-      },
+      }
+    ]
+  },
+  "pipeline": {
+    "total": 454,
+    "decision_counts": {
+      "BLOCK": 97,
+      "FLAG": 28,
+      "ALLOW": 329
+    },
+    "sample_decisions": [
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_04839e07fd",
-          "fraud_score": 0.8784,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "3174be28-308e-424e-955a-ff1ae7e777d1",
-          "signed_at": 1787494862.46747,
-          "signer": "authority",
-          "signature": "0df58e70cfdf7ad5a2a05c803cf6aad7151dd7ae1155d1edc236ccd51d9a9b6fc2407a151a788e1dd1bdcb5bf2f7309662a259160bc0f73a72cf678a4ba16001"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($42.27 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 15 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "fake_identity",
-          "amount": 42.27,
-          "merchant": "TravelEasy",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_83a62be53b",
-          "fraud_score": 0.1383,
+          "transaction_id": "tx_05f7b92325",
+          "fraud_score": 0.0431,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: pattern_similarity",
             "detect: ai_generated_signal"
           ],
-          "record_id": "1e704e3a-5beb-4b7f-a386-fb37254bfd49",
-          "signed_at": 1787494861.3733737,
+          "record_id": "7062d8b6-a855-4091-a19c-234b8a1b615c",
+          "signed_at": 1787499525.2088835,
           "signer": "authority",
-          "signature": "f47be6937fbdcc3afb804a1f5c2f5f88716be0a6b11c69d82c42a7a0d97edea59c48af2b75c90b22035a9c0555faddecbeaad7009814eda713171c4d722a4702"
+          "signature": "b2028064bba113d5c63dc7e78ce5feab2e918419754561cf43e113d96cc6e186ce7f733cf5af3e910c093e6e296fcd02c7784fc1d3534594a9429c4ba6618e02"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($174.09 of $1160.91)"
+            "reason": "within monthly limit ($43.03 of $744.94)"
           },
           {
             "rule": "merchant_whitelist",
@@ -720,7 +506,7 @@
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 20 is within the allowed window (17-22)"
+            "reason": "hour 20 is within the allowed window (15-22)"
           },
           {
             "rule": "velocity",
@@ -731,16 +517,163 @@
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 174.09,
+          "amount": 43.03,
           "merchant": "FreshGrocer",
-          "currency": "INR"
+          "currency": "JPY"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_65f69dd5e2",
-          "fraud_score": 0.1372,
+          "transaction_id": "tx_12112a111a",
+          "fraud_score": 0.7901,
+          "detect_decision": "FLAG",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "FLAG",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "bf7bf1f5-8f29-419d-8bf2-f6335e2fab58",
+          "signed_at": 1787499524.7317185,
+          "signer": "authority",
+          "signature": "d6cf653eceb9cb633570102b11d0c7dc0dae7042675777132e634135ed009a2142305d7bcde34d2dfa795421fe112f38d0326b9421522f25b87d842e9302ec0f"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($30.20 of $1438.74)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "TechBazaar is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 15 is within the allowed window (6-17)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 30.2,
+          "merchant": "TechBazaar",
+          "currency": "GBP"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_baa055c48b",
+          "fraud_score": 0.9032,
+          "detect_decision": "BLOCK",
+          "mandate_allowed": false,
+          "violated_mandate_rules": [
+            "spending_limit"
+          ],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: location_mismatch_km",
+            "mandate: spending_limit"
+          ],
+          "record_id": "85b7a0b1-6801-43cc-8704-3a5f47bbba8d",
+          "signed_at": 1787499523.969406,
+          "signer": "authority",
+          "signature": "db32d8060d4e6a926b3077f7c780b57cd548f0f339fc65a939605c5f17b4638262f18453e268aed00f21d70abc70b6addcd033a49239533305d040315c91cb0e"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": false,
+            "reason": "would exceed monthly limit ($1000.00): $0.00 so far + $999999.99 = $999999.99"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "no merchant restriction on this mandate"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 13 is within the allowed window (6-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 1,
+          "attack_type": "form_break",
+          "amount": 999999.99,
+          "merchant": "FreshGrocer",
+          "currency": "???"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_11e851d4a9",
+          "fraud_score": 0.8618,
+          "detect_decision": "BLOCK",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: location_mismatch_km"
+          ],
+          "record_id": "a5e2c251-2acc-4942-b8cd-82fdc6b13c8e",
+          "signed_at": 1787499524.4094253,
+          "signer": "authority",
+          "signature": "bff73db384f358520523dbb8ed91773dd8ef96aae95d437965a4abd65a6f59429c0d3a2f7f5163b59a4aa9a077d545861d0f77eb25cc6cb1ef9a7176313ff10d"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($469.36 of $853.71)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "FreshGrocer is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 2 is within the allowed window (0-18)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (2 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 417.8,
+          "merchant": "FreshGrocer",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_19c010f680",
+          "fraud_score": 0.3517,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
@@ -749,10 +682,626 @@
             "detect: ai_generated_signal",
             "detect: location_mismatch_km"
           ],
-          "record_id": "d6b34573-785c-4216-9c82-de42e3c25bbc",
-          "signed_at": 1787494860.7579963,
+          "record_id": "45e9000b-f443-4af8-874e-129d500d2f3c",
+          "signed_at": 1787499524.8128827,
           "signer": "authority",
-          "signature": "2077f14eb5461691d8783a36c4624d30a42cb0c943e0c499bebf2861304c711d0c292afbc41d83ccc91a232f601784e6368410e5bcc11a9aca96297941c61104"
+          "signature": "ea5cc8226cc3d6a830e8e0c38640facfa10d3a6a7af33351fe52330c4c9b0879d2e0fff045f34ee5b8ef74681ef558fb77922b77f62a855813339c748002a909"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($21.62 of $537.48)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "QuickMart is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 19 is within the allowed window (17-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 21.62,
+          "merchant": "QuickMart",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_4b0eda830f",
+          "fraud_score": 0.8838,
+          "detect_decision": "BLOCK",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: location_mismatch_km"
+          ],
+          "record_id": "7d9693b8-afc8-467f-9620-63f2391e168d",
+          "signed_at": 1787499523.914005,
+          "signer": "authority",
+          "signature": "4805c7b4ef47a3b138509da0c51d000228e650c61e4a2a4967a752013071be06a0afe4ffe1527c3d8aa317ee5f39de45b2ee71cd61d15c59c3b021f316540e01"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($221.14 of $2333.02)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "TravelEasy is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 21 is within the allowed window (7-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 221.14,
+          "merchant": "TravelEasy",
+          "currency": "GBP"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_972957b90f",
+          "fraud_score": 0.0182,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "04762b1a-a481-4e6a-a45b-5cd942b6cf84",
+          "signed_at": 1787499524.6858258,
+          "signer": "authority",
+          "signature": "80d9db2612f6d8bbd2e4da020f3fdc2c222414e6e9a8f0f542f4eaa972cdf83810265824ad3acd709374dfab78af862b98aeaf96208044ecad0b772a45e56e0a"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($309.38 of $680.72)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "UrbanCafe is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 22 is within the allowed window (14-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (4 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 88.94,
+          "merchant": "UrbanCafe",
+          "currency": "USD"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_e8814a16d6",
+          "fraud_score": 0.0294,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "5e89f0b1-2e80-429d-8225-966e09415a1b",
+          "signed_at": 1787499524.160497,
+          "signer": "authority",
+          "signature": "dd12e982226f54162fb38fe537be1d3c94d667dec2f8bb4d3a2053db3b2b1bc4fa896b1485e5856b0b3bf45985642bc303c2faee2395301c5667de67a1990804"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($277.77 of $1257.53)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "CloudHost is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 22 is within the allowed window (18-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (3 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 68.53,
+          "merchant": "CloudHost",
+          "currency": "INR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_be3251e589",
+          "fraud_score": 0.8307,
+          "detect_decision": "BLOCK",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: location_mismatch_km"
+          ],
+          "record_id": "4dec220e-40af-4c47-9190-e8a810149ceb",
+          "signed_at": 1787499523.879369,
+          "signer": "authority",
+          "signature": "2f7a547ce0aafb19e0357cd74350af961f5e228b5e893cf30f7977027ba455a5fb3696ac12fce5b0b3fe59898350480efa72865b86cdba918ffaa7cecb557c09"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($150.99 of $1757.94)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "FreshGrocer is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 19 is within the allowed window (5-21)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 150.99,
+          "merchant": "FreshGrocer",
+          "currency": "INR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_f649867a1d",
+          "fraud_score": 0.0184,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: no single dominant signal"
+          ],
+          "record_id": "8adf5ad2-0b0e-496a-8759-0f1cbaea3d7a",
+          "signed_at": 1787499523.957404,
+          "signer": "authority",
+          "signature": "d3da07960246a7a33b509936ac05187fb5f919481b4b50bd5989e4283f8cf37b034551864d35726c237f32728a2fd68d6e933b162f49034043fe914e850d8600"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($164.24 of $1277.67)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "UrbanCafe is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 6 is within the allowed window (3-10)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 164.24,
+          "merchant": "UrbanCafe",
+          "currency": "GBP"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_32b9aa47e4",
+          "fraud_score": 0.0159,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: no single dominant signal"
+          ],
+          "record_id": "61b0602b-55e7-4c51-b920-89c27f28d2a7",
+          "signed_at": 1787499524.5237408,
+          "signer": "authority",
+          "signature": "7ba0904574fc5a0e1a00343677ea6e441112167a689364e66e5187660cad82e202f6613c92432299ebecb36c1b59c40f476ca45e6a47a7a9dbcefc2299321a07"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($209.15 of $2033.52)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "TravelEasy is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 11 is within the allowed window (6-15)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 209.15,
+          "merchant": "TravelEasy",
+          "currency": "GBP"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_474894a756",
+          "fraud_score": 0.0134,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "1eb7d400-ce3a-4a14-a6a4-25a4850f4364",
+          "signed_at": 1787499524.4995549,
+          "signer": "authority",
+          "signature": "3145ad38ab78b9642635ec07cc1c20c0e9d7dd1891251c8c171368ae4a9732df217ad87593488bf6ddbfea2f8a776e5dba06a51e761d5eaf89926cdd8f8e8b0a"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($182.35 of $2514.42)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "StreamFlix is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 23 is within the allowed window (18-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 182.35,
+          "merchant": "StreamFlix",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_b746abfb8e",
+          "fraud_score": 0.0247,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "62b9473e-d360-437a-8d51-a4f1b4dba242",
+          "signed_at": 1787499523.9315672,
+          "signer": "authority",
+          "signature": "d729ce46cfa6ef2ab52f466d1dd9cd5e5a58eaa362f77807f9da9a893e2e139170d497edcb1300ca0c97bac2322eaa0eb93d7f6302db28f496814865827e5c0e"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($98.40 of $1753.86)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "QuickMart is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 21 is within the allowed window (17-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 98.4,
+          "merchant": "QuickMart",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_a49597c725",
+          "fraud_score": 0.2165,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "87fc4901-f0e5-4abf-b98f-ae2d514801c5",
+          "signed_at": 1787499524.207208,
+          "signer": "authority",
+          "signature": "8ba020dd04f8a96fb228a344a21ad4ab3c7521dcf61cad28c8dd5b731c5c92e9b8bf843c65a71d6bee50982d0ef36f33eba5688a9eb23850ba8ac6be9217b801"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($72.72 of $480.12)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "FreshGrocer is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 16 is within the allowed window (9-21)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 72.72,
+          "merchant": "FreshGrocer",
+          "currency": "GBP"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_a821a15fe2",
+          "fraud_score": 0.027,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "f1592727-6e36-408d-81b1-7451d1e0c5c7",
+          "signed_at": 1787499523.9631226,
+          "signer": "authority",
+          "signature": "4881042904fe4304d16a6336bdaf71cfc25bc2985d0f5cf5a396f0a056367fdb2538c9ef8816cb4cda3d7a9f0d3088c3b1d80e02ac35293a6372d5c19ab7340c"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($47.82 of $128.32)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "TravelEasy is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 16 is within the allowed window (13-18)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 47.82,
+          "merchant": "TravelEasy",
+          "currency": "INR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_26f7ee648a",
+          "fraud_score": 0.646,
+          "detect_decision": "FLAG",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "FLAG",
+          "reasons": [
+            "detect: ai_generated_signal",
+            "detect: location_mismatch_km"
+          ],
+          "record_id": "da3fdee0-b35c-44d4-8749-5c8fd6a740ad",
+          "signed_at": 1787499524.7554784,
+          "signer": "authority",
+          "signature": "4f35261b0b1cd0cb0ab98e1e45da4792e47c55db970b1c0edcd5bf992a3e68f6d4ef323a5197f3dc48c7126cf9d8cff151998ec9aacfb981ae26cacf4ca75c0a"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($308.38 of $663.59)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "QuickMart is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 13 is within the allowed window (11-17)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 308.38,
+          "merchant": "QuickMart",
+          "currency": "USD"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_46a064b100",
+          "fraud_score": 0.9087,
+          "detect_decision": "BLOCK",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: pattern_similarity"
+          ],
+          "record_id": "286ce299-a334-4129-9abb-9194a53f2d16",
+          "signed_at": 1787499524.5083246,
+          "signer": "authority",
+          "signature": "45b88a4f41531fe2186043677eada3194191294c4ce567b7693d5fe3dc68eade84fb51c16475395285336364e2bd4864e9c82816c6979118b9f2970cebd55f0e"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($93.10 of $1000.00)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "no merchant restriction on this mandate"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 9 is within the allowed window (6-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 1,
+          "attack_type": "form_break",
+          "amount": 93.1,
+          "merchant": "FreshGrocer",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_52a50c9c7b",
+          "fraud_score": 0.0552,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal",
+            "detect: location_mismatch_km"
+          ],
+          "record_id": "7c0d8691-2489-4e45-b3e9-27f9dc8ffb34",
+          "signed_at": 1787499523.9172037,
+          "signer": "authority",
+          "signature": "98883af9e465bb9ef15406fa436ef6a7039cd13df34b42cca395d0bfcbd3c3ebe56593171461659e0df07073cc45a79a59efc2c1400000169466c8749a298e0f"
         },
         "mandate_checks": [
           {
@@ -787,56 +1336,8 @@
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_16c3100c3c",
-          "fraud_score": 0.8973,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: log_seconds_since_prev_tx",
-            "detect: pattern_similarity"
-          ],
-          "record_id": "f8db4427-9cb6-446a-9be0-0432c0fd91d0",
-          "signed_at": 1787494860.9303596,
-          "signer": "authority",
-          "signature": "a2abcb9b457bc3563eac10072c696a0326ce37c8888789c5cdca81182b48d3969bf45d0b9e84833894b618f5860e83dea607808ed1e3c8681351b505ac164c01"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($495.66 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 17 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "form_break",
-          "amount": 495.66,
-          "merchant": "TravelEasy",
-          "currency": "XXX"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_e6c4bd4cf8",
-          "fraud_score": 0.0388,
+          "transaction_id": "tx_330a3ca392",
+          "fraud_score": 0.0163,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
@@ -844,16 +1345,16 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "f5168d83-2aa4-4e23-9c7a-427a6919865f",
-          "signed_at": 1787494862.225093,
+          "record_id": "5684e79c-fab0-4185-98c8-bc4444221f3f",
+          "signed_at": 1787499525.2225132,
           "signer": "authority",
-          "signature": "4cf499a34cfeb4e3533df709d3d2286238a04d87fb9915a54b0c407a7e99e4c2fc6d12d8c959065a3b88062fdda0b77c923c68c4e32a02fe3d5c6672cdbc3c0a"
+          "signature": "cf8220a8cf3abba5f3a2b4476f0455a61a56ac733eb707f45d5baaa2f047103cbfb37c3e68e3816c620c9c807b688d1cefd184bd70415443340bfe0d0a161b07"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($163.92 of $1023.27)"
+            "reason": "within monthly limit ($279.07 of $1088.93)"
           },
           {
             "rule": "merchant_whitelist",
@@ -863,222 +1364,74 @@
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 17 is within the allowed window (13-20)"
+            "reason": "hour 21 is within the allowed window (13-23)"
           },
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
+            "reason": "within the daily transaction count limit (2 of 8)"
           }
         ],
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 163.92,
+          "amount": 130.36,
           "merchant": "GameVault",
-          "currency": "INR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_8d5bdf4e58",
-          "fraud_score": 0.8303,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": false,
-          "violated_mandate_rules": [
-            "merchant_whitelist",
-            "time_restriction"
-          ],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: location_mismatch_km",
-            "detect: pattern_similarity",
-            "mandate: merchant_whitelist",
-            "mandate: time_restriction"
-          ],
-          "record_id": "973b4987-7dd8-41fa-b3df-7d2f195876da",
-          "signed_at": 1787494862.1703224,
-          "signer": "authority",
-          "signature": "a2fba930b4d154e4e6f2b67ecea67b2ffa797872334439f2e31ee9c503464b5fa0f0168bbb58d354f75e3b245decce0d043ceb0c827e96e9b99c06d746e5ff03"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($50.92 of $121.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": false,
-            "reason": "TechBazaar is not in the customer's allowed merchant list"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": false,
-            "reason": "hour 18 is outside the allowed window (4-12)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "pattern_copy",
-          "amount": 19.95,
-          "merchant": "TechBazaar",
-          "currency": "INR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_c6f609bfdc",
-          "fraud_score": 0.0507,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "48981b6d-bc64-4a80-a534-5ad332ad8f26",
-          "signed_at": 1787494860.875903,
-          "signer": "authority",
-          "signature": "faa8c68c7b3480064df4a0bc96dacdcc3b201cb404999a21af7af6a900ab575d8e77e82d700c6749cd069eae43220a7153a7e70eee11e004ad1e719177ec3003"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($235.09 of $1565.80)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "StreamFlix is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 9 is within the allowed window (7-16)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 85.34,
-          "merchant": "StreamFlix",
           "currency": "EUR"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_d537a9c098",
-          "fraud_score": 0.0501,
+          "transaction_id": "tx_e8370c7887",
+          "fraud_score": 0.1046,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: no single dominant signal"
+            "detect: ai_generated_signal"
           ],
-          "record_id": "13add395-c55f-46f3-90c9-3b44e4a879b0",
-          "signed_at": 1787494861.527851,
+          "record_id": "5addae21-f22d-4f08-b5a4-31e8e49f6dce",
+          "signed_at": 1787499524.786739,
           "signer": "authority",
-          "signature": "6fe1c7dac522c7f4aeb2041ae3e91d152c023fa1e5eeacaada4d2c997916a04eadec3d042dde8e2b59a4726d8b467a6f8d09ad998135e2e3112935c9e0852b05"
+          "signature": "7cfde495b0c9b94a86059244558840ab8c12a3027e2c6c47c6373d3dd10d6ea2181e8d49376cd9eec1a2a9f6153172bc846cbd822027b66815f15d9eba508d03"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($390.02 of $1810.05)"
+            "reason": "within monthly limit ($573.49 of $1573.57)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": true,
-            "reason": "TechBazaar is an allowed merchant"
+            "reason": "FreshGrocer is an allowed merchant"
           },
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 14 is within the allowed window (8-23)"
+            "reason": "hour 10 is within the allowed window (3-14)"
           },
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
+            "reason": "within the daily transaction count limit (3 of 8)"
           }
         ],
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 201.99,
-          "merchant": "TechBazaar",
-          "currency": "INR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_1a8de4f9c3",
-          "fraud_score": 0.8175,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount"
-          ],
-          "record_id": "92941ae2-409e-4b92-9e08-911d78ae3719",
-          "signed_at": 1787494860.943284,
-          "signer": "authority",
-          "signature": "4c6ee5f93d22297c7c8ea2ad74ddcd45e84917e29ff6d82da15bdc65a874296f07254462b08ee8a31b4380caf7e8d9b34113ad4a353600771b1817a3ea6ad904"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($534.98 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 14 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "kyc_synthetic",
-          "amount": 534.98,
-          "merchant": "TechBazaar",
+          "amount": 147.24,
+          "merchant": "FreshGrocer",
           "currency": "USD"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_bef61be401",
-          "fraud_score": 0.2992,
+          "transaction_id": "tx_513c3726d3",
+          "fraud_score": 0.2054,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
@@ -1086,489 +1439,16 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "0c6a2990-15f7-4cd9-b2af-e205132593ec",
-          "signed_at": 1787494862.6158934,
+          "record_id": "8fe06f03-1979-4e5b-92ea-16bc59a3be5b",
+          "signed_at": 1787499524.0172343,
           "signer": "authority",
-          "signature": "61b5525f05aa5b916558fa8b4dfcca5f03bd2e01535013946b5995c7f1f4a2dbeb08e8a1960718738c39d8e59c87809fca1327769df168c04830ad95a75e930f"
+          "signature": "cd7e29750fb026fb8441d8117e38405954e4321d185c6eaded252601773806cbb5b02e14927576e42f51fcb001f553555cd16825f5beab338040a2378463eb0c"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($165.42 of $413.36)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "TechBazaar is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 16 is within the allowed window (0-18)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 165.42,
-          "merchant": "TechBazaar",
-          "currency": "EUR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_e0e3590d8e",
-          "fraud_score": 0.9162,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount"
-          ],
-          "record_id": "50665541-2f0a-4d0d-a386-cf8209c70596",
-          "signed_at": 1787494862.189333,
-          "signer": "authority",
-          "signature": "8f437f4b7fb2a9f916c16eee143e777e8fab9d042029042df0be46b9af628d767cdcc70b3b5ebf58fff525f4b113980e99df4e3efdbe0953e8d5f8ed5468e006"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($387.11 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 19 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "kyc_synthetic",
-          "amount": 387.11,
-          "merchant": "StreamFlix",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_2b07bc5e4c",
-          "fraud_score": 0.0634,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "2472d74a-afd9-433a-b4f9-39f256a6878a",
-          "signed_at": 1787494860.8342538,
-          "signer": "authority",
-          "signature": "99b3035f9f1407f9676bf5c1f70f4e89caedde981f3d2ddd3c155f5e4ba203ed030d74e051167a2af7c5044837db4a11ed89cebd27d7f6ce8af10a9aaa6d1c00"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($132.73 of $2365.92)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "TravelEasy is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 11 is within the allowed window (9-17)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 132.73,
-          "merchant": "TravelEasy",
-          "currency": "GBP"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_904a928245",
-          "fraud_score": 0.0413,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "77c46d95-f7f4-4aea-adb5-c8e6c9afce04",
-          "signed_at": 1787494862.6726627,
-          "signer": "authority",
-          "signature": "ade45beb5aebc0eac5a893084ecce9b838b0cd2940e04cda4f91e4e9f2f714c69d991d1ce83eed136a147719f35e8048f14e442c645deb50e83719525a4e4d02"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($237.16 of $702.51)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "StreamFlix is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 18 is within the allowed window (8-20)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 97.44,
-          "merchant": "StreamFlix",
-          "currency": "JPY"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_8c5a262069",
-          "fraud_score": 0.0795,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "0ceea672-0821-484c-95cd-766d1fba066d",
-          "signed_at": 1787494861.0565248,
-          "signer": "authority",
-          "signature": "9141f779634912a1410fc38089774b7efa23c77181d63ed12885068a6ae721bcb82ca40a858f957c742e94b61c5e1df8509709f7fd707473b928bc7bacd3e40c"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($199.54 of $1816.55)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "GameVault is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 10 is within the allowed window (3-12)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 199.54,
-          "merchant": "GameVault",
-          "currency": "GBP"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_558b677984",
-          "fraud_score": 0.829,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount"
-          ],
-          "record_id": "efda2147-13d8-43cc-a7e3-d8aa49bf2b82",
-          "signed_at": 1787494861.4001877,
-          "signer": "authority",
-          "signature": "5c4ba79e5557691b5817b12d5edcd6bb03cbdbbe8b1399699f03ac52ae3689c333d0f044cedcf50d2b50f192a05ec193cc151dddb5f2d26dbd3974b5a114c60f"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($373.21 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 18 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "kyc_synthetic",
-          "amount": 373.21,
-          "merchant": "QuickMart",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_c37a70efa6",
-          "fraud_score": 0.0322,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "9e1b827d-9e3c-401f-9c6f-ef817117acf0",
-          "signed_at": 1787494860.8441112,
-          "signer": "authority",
-          "signature": "f267c65ac95aa9f8b69c9db89a44fc66e70cc5c5616c64822a0e6a85f51219fae4d4cdfafed26bf23ee7f38d212e2bd46b2013a11dcff1ce573151946076c109"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($214.15 of $1968.32)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "TechBazaar is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 17 is within the allowed window (13-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 214.15,
-          "merchant": "TechBazaar",
-          "currency": "JPY"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_b24ac73025",
-          "fraud_score": 0.3716,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "08b58b06-7af0-4e41-824c-eab94de997be",
-          "signed_at": 1787494862.0970917,
-          "signer": "authority",
-          "signature": "0f428a811301e97c46cdbe8c4a38ef00c19acba47caea4781d3aa226c59cc04cccc094abd0b88b1d2e195d22b581d973f0858b1da5c51cd9226e1b9d3dad3400"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($123.67 of $350.36)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "GameVault is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 19 is within the allowed window (11-21)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (4 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 27.13,
-          "merchant": "GameVault",
-          "currency": "JPY"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_5d7845e78a",
-          "fraud_score": 0.2212,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "7153b163-d6f6-4d59-a7bd-4fca57d9dcf4",
-          "signed_at": 1787494860.7965376,
-          "signer": "authority",
-          "signature": "b39a0323a159ae5c7ab91940954f774f495870165d228ad90dfb16274a64f71f12da8f4a72865445c5250a8478e0c1585f3905fc73683f41c6d0c4e8e69abc00"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($42.41 of $221.70)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "QuickMart is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 9 is within the allowed window (7-12)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 42.41,
-          "merchant": "QuickMart",
-          "currency": "INR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_1d17cfbd34",
-          "fraud_score": 0.0354,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "detect: amount"
-          ],
-          "record_id": "260837ee-767b-4414-80cd-7010681125fc",
-          "signed_at": 1787494861.3942559,
-          "signer": "authority",
-          "signature": "f9114ae49ef27276a03d1d1d0fe546e6800ae13b1489f36660daa3dc96e4d177e50e04c335574fb26fb683b2a3de8ae3e93b89af0228a2b1f42a0bea93bb8702"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($459.92 of $2706.28)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "UrbanCafe is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 19 is within the allowed window (7-21)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 269.6,
-          "merchant": "UrbanCafe",
-          "currency": "GBP"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_6818e8a656",
-          "fraud_score": 0.1875,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "060f15f0-9f91-47fd-85d9-983ee5f416ae",
-          "signed_at": 1787494860.7859137,
-          "signer": "authority",
-          "signature": "655e6eb4d92283dae3b21c2f998a46e3062fddc28628ea79f63965d023c5907749eb74a818b943236f082190756e329c262f17d031a3629d1a3f9d18f9b57501"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($217.98 of $1246.05)"
+            "reason": "within monthly limit ($221.30 of $1246.05)"
           },
           {
             "rule": "merchant_whitelist",
@@ -1597,219 +1477,72 @@
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_2e17a0e4d2",
-          "fraud_score": 0.8426,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "e9742adb-060b-4d85-9cce-c3a88c3507a0",
-          "signed_at": 1787494862.6400568,
-          "signer": "authority",
-          "signature": "fdf199af55ee1e8deeafd639bb14946dd06803f1625a1e9551922e5c723537473c2b695994ce123f97e36e1542ccbcf36e195c89e2766f25b8a610af2eca2703"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($41.47 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 17 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "fake_identity",
-          "amount": 41.47,
-          "merchant": "FreshGrocer",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_bb4d7f807b",
-          "fraud_score": 0.7621,
-          "detect_decision": "FLAG",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "FLAG",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "8765b22c-ae42-4cdf-a09e-5f3c387e72c2",
-          "signed_at": 1787494861.0978925,
-          "signer": "authority",
-          "signature": "624da27b0be2b9ff2ad5d181771a7415c23f2cba3358b086b15eecf5211e0049a72aa8a75138e093d8bc68e3e1d34be85b21183a9ad44d54ef272a34d9d2d60b"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($51.03 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 17 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "fake_identity",
-          "amount": 51.03,
-          "merchant": "GameVault",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_e92502291f",
-          "fraud_score": 0.9303,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "83c9f6ce-4137-45c1-ae6e-9b8c00cc8a58",
-          "signed_at": 1787494861.6963649,
-          "signer": "authority",
-          "signature": "abd57385557aea2e17dc9ab73785add17aab91a324c6c77b8c30ca6a99b14db89572cd82c6142cb029faf2fabacf59a343c30726fdfd48cf86961f134cda880c"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($218.77 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 11 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "kyc_synthetic",
-          "amount": 218.77,
-          "merchant": "QuickMart",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_a10b4b33b1",
-          "fraud_score": 0.7426,
-          "detect_decision": "FLAG",
-          "mandate_allowed": false,
-          "violated_mandate_rules": [
-            "merchant_whitelist",
-            "time_restriction"
-          ],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal",
-            "mandate: merchant_whitelist",
-            "mandate: time_restriction"
-          ],
-          "record_id": "0616e827-83fd-445b-bda1-adea1f0f7f7a",
-          "signed_at": 1787494862.173382,
-          "signer": "authority",
-          "signature": "0b28d90383bc335569c788a702885d87410e3bf5ede761e6c3d57d169909b5314efae37db870b15bea8eca4b3d43f0a573f6171d5fc02aecd42ff021cbbe6408"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($199.84 of $300.19)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": false,
-            "reason": "TechBazaar is not in the customer's allowed merchant list"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": false,
-            "reason": "hour 9 is outside the allowed window (12-16)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "pattern_copy",
-          "amount": 199.84,
-          "merchant": "TechBazaar",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_06a70745c4",
-          "fraud_score": 0.1825,
+          "transaction_id": "tx_17ca056438",
+          "fraud_score": 0.4755,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: pattern_similarity",
             "detect: ai_generated_signal"
           ],
-          "record_id": "2e3b88fb-32ca-4d98-a94b-04ae25069437",
-          "signed_at": 1787494861.1316898,
+          "record_id": "2b4c7d7c-88e2-4788-acdf-e4c9f45e12ce",
+          "signed_at": 1787499524.179245,
           "signer": "authority",
-          "signature": "7fcacdb9fc730ea74c824c13ce81a0637c44b4171c8dcfa1b717a6c37f7bea6a596f060f00d6cd792887c9576fbf4359c22df17ad1d4e6bf1b71b541a4e49803"
+          "signature": "82784c8860910f5abd1c17d113d657d55f854c77242b32173842c9eb116a18238504186ffd48f9a216d4e21d7d5d6f45f37bdfaef86c13872e20862fc07ea30c"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($343.43 of $1698.30)"
+            "reason": "within monthly limit ($39.37 of $1068.07)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "UrbanCafe is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 10 is within the allowed window (8-19)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 39.37,
+          "merchant": "UrbanCafe",
+          "currency": "USD"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_d78481563a",
+          "fraud_score": 0.1803,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: no single dominant signal"
+          ],
+          "record_id": "22a0cd3a-c084-4526-b10b-39172b11053c",
+          "signed_at": 1787499524.8950338,
+          "signer": "authority",
+          "signature": "a87d7e7db85c2955c7cc50c1d0bfcf75dcef68a503ce2b5ca3413ceb15e145ad5f9d612920119bb65d4b49f20bdca893afc15f7032d178d5d18ff4c4a947570f"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($231.61 of $1771.31)"
           },
           {
             "rule": "merchant_whitelist",
@@ -1819,7 +1552,7 @@
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 16 is within the allowed window (10-21)"
+            "reason": "hour 11 is within the allowed window (9-16)"
           },
           {
             "rule": "velocity",
@@ -1830,33 +1563,33 @@
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 343.43,
+          "amount": 231.61,
           "merchant": "TechBazaar",
-          "currency": "JPY"
+          "currency": "INR"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_f45d57f9b5",
-          "fraud_score": 0.0427,
+          "transaction_id": "tx_61f709d62b",
+          "fraud_score": 0.0165,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: ai_generated_signal"
+            "detect: no single dominant signal"
           ],
-          "record_id": "1bb4533a-6c38-4ecd-ad1d-7aa1e0104aa6",
-          "signed_at": 1787494862.5807598,
+          "record_id": "14391f10-d87a-4b21-90f9-92c0cb0e013b",
+          "signed_at": 1787499524.8922536,
           "signer": "authority",
-          "signature": "679d2b630c9f574a2cb238802a4147a4c5f33527d749d7a72e5cf0c7820f205eb9bed0c00bf13c6341cd8bbeec9df68ad082fc2d9bc8fc1ea4e0b7b2d8f78407"
+          "signature": "f480969a782b319246d98b3352324707aab6b4d40225634e4efcdfc43e0fa6ca0d9af36de2ca3222ba041eb4a3959bd21e29f55e158cc04ffe47a8a8b7a20c0e"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($481.41 of $1058.46)"
+            "reason": "within monthly limit ($107.06 of $1238.40)"
           },
           {
             "rule": "merchant_whitelist",
@@ -1866,54 +1599,7 @@
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 12 is within the allowed window (6-15)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (4 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 128.35,
-          "merchant": "CloudHost",
-          "currency": "EUR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_3f66cc8c9c",
-          "fraud_score": 0.0867,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "7317c318-f3c5-4b1f-bd5d-dbb8f5307961",
-          "signed_at": 1787494861.038774,
-          "signer": "authority",
-          "signature": "b403272667bbff7b4ac58cb3e5957c9b95ec3377823fca5a6ce58a1434a1c5d6ff237ab51d64a2500195bec7acd7df1177702baa7313a9fecfb9c2147a748601"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($40.28 of $281.22)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "StreamFlix is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 8 is within the allowed window (6-16)"
+            "reason": "hour 13 is within the allowed window (5-15)"
           },
           {
             "rule": "velocity",
@@ -1924,43 +1610,90 @@
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 40.28,
-          "merchant": "StreamFlix",
-          "currency": "JPY"
+          "amount": 107.06,
+          "merchant": "CloudHost",
+          "currency": "USD"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_81b8f0e966",
-          "fraud_score": 0.1272,
+          "transaction_id": "tx_842d47b33f",
+          "fraud_score": 0.0511,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: ai_generated_signal"
+            "detect: no single dominant signal"
           ],
-          "record_id": "169a8044-f539-474b-8d20-4dbe01f05767",
-          "signed_at": 1787494861.7623224,
+          "record_id": "3ca5f71d-4f6c-4f13-939f-535cc8c18d18",
+          "signed_at": 1787499523.9202826,
           "signer": "authority",
-          "signature": "3ac54300b8fff0c0d7935427cf323ec535753c9c58cd11caab6f0087e220dfe5a95cc382ddbcf09d65c33533bbf2f2376b82e9e3d9a9280227693da244096c05"
+          "signature": "5c01f4cd0a5241c955d466bdace5af61a0228b0e16fadc5cf1f04e46d1b8882fbc841b9ef0f41bfae0317d6c37faeae052fea09d67fcc3e9fdf40106dd45d209"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($299.38 of $1584.03)"
+            "reason": "within monthly limit ($7.30 of $45.90)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": true,
-            "reason": "StreamFlix is an allowed merchant"
+            "reason": "UrbanCafe is an allowed merchant"
           },
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 12 is within the allowed window (3-15)"
+            "reason": "hour 15 is within the allowed window (10-18)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 7.3,
+          "merchant": "UrbanCafe",
+          "currency": "USD"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_d70fa2a139",
+          "fraud_score": 0.1152,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: no single dominant signal"
+          ],
+          "record_id": "87b4bbb6-ce9c-43a3-9ecd-e4041dd3262e",
+          "signed_at": 1787499524.8043358,
+          "signer": "authority",
+          "signature": "b75af7218615a75be428d99327d711881712f5c8f6f1f06c6d8e3e7db0b2eb307f91912dd8fcde41072a35f078400b363529f39e7be7ff92806e1178e296d904"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($525.23 of $1894.66)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "FreshGrocer is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 19 is within the allowed window (17-23)"
           },
           {
             "rule": "velocity",
@@ -1971,33 +1704,80 @@
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 112.56,
-          "merchant": "StreamFlix",
+          "amount": 291.78,
+          "merchant": "FreshGrocer",
           "currency": "USD"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_78e9aded76",
-          "fraud_score": 0.2168,
+          "transaction_id": "tx_afca94d1ac",
+          "fraud_score": 0.0267,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: no single dominant signal"
+            "detect: ai_generated_signal"
           ],
-          "record_id": "0119971c-0d0d-4f23-805f-6bb5d3b3811a",
-          "signed_at": 1787494862.6526072,
+          "record_id": "cfb6cc45-e68a-49de-aaeb-46aa09149caa",
+          "signed_at": 1787499524.8160172,
           "signer": "authority",
-          "signature": "a175483b712e2fc04cfab357b7d1afaafc49309fd45153778c2c707f9f8d782bea1e625ada641d254f3ea4d228286803ede578a2b94c2178f3a3dd4d476b700c"
+          "signature": "f857c0309de67d15eac755566b86898175396c1abb421a122dd8e1615ddf2ab0584ca1c182782d15320644ec07e4f6252700d85a55118e7d311184ac91848304"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($572.51 of $1700.09)"
+            "reason": "within monthly limit ($226.69 of $447.54)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "StreamFlix is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 12 is within the allowed window (10-19)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (2 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 99.2,
+          "merchant": "StreamFlix",
+          "currency": "EUR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_c2836523c1",
+          "fraud_score": 0.0129,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "5166e0f0-d450-42b6-bd9a-d4b856523760",
+          "signed_at": 1787499524.4634995,
+          "signer": "authority",
+          "signature": "6bab019f7ccae2fbce5e23aad4b5e4988884c76c3647085dc8368163797ab7bed5042d79650c05dcb9c71aec72aaf68a4b1bc09d3c2428339e36ca49c8f2d702"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($136.42 of $839.00)"
           },
           {
             "rule": "merchant_whitelist",
@@ -2007,27 +1787,27 @@
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 12 is within the allowed window (5-14)"
+            "reason": "hour 19 is within the allowed window (12-23)"
           },
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (4 of 8)"
+            "reason": "within the daily transaction count limit (2 of 8)"
           }
         ],
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 112.42,
+          "amount": 64.84,
           "merchant": "FreshGrocer",
-          "currency": "INR"
+          "currency": "JPY"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_ebff2900fd",
-          "fraud_score": 0.0906,
+          "transaction_id": "tx_734f3cb97f",
+          "fraud_score": 0.0175,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
@@ -2035,16 +1815,16 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "13dad7e6-0132-4108-a5d6-b1218876d2a4",
-          "signed_at": 1787494861.2548897,
+          "record_id": "73954be8-1c49-4646-a729-cd67d090a827",
+          "signed_at": 1787499523.9031208,
           "signer": "authority",
-          "signature": "020fae882b46f1911cda457e40b3f87f5055b56a9cf32423cd4f2658232e9d78a9fcab24325c7e31c07c2888ec0e36a44dcd0ff15c1a98b65295dc1d3a78100f"
+          "signature": "ff70b06cd66ee2ef7e08f21702ebaaa802501a743d274aa8c092d138d2887a61415b704a61f98b38bb6626d203851616f7796047bf23a071e2176ea9bc193a04"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($200.38 of $869.73)"
+            "reason": "within monthly limit ($112.01 of $869.73)"
           },
           {
             "rule": "merchant_whitelist",
@@ -2059,7 +1839,7 @@
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (2 of 8)"
+            "reason": "within the daily transaction count limit (1 of 8)"
           }
         ],
         "ground_truth": {
@@ -2073,26 +1853,364 @@
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_73a434679b",
-          "fraud_score": 0.1173,
+          "transaction_id": "tx_7d26781701",
+          "fraud_score": 0.0147,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
           "final_decision": "ALLOW",
           "reasons": [
-            "detect: amount",
             "detect: ai_generated_signal"
           ],
-          "record_id": "3731a37a-365b-454d-a77f-6721e69442d9",
-          "signed_at": 1787494860.9874082,
+          "record_id": "23d750d3-dc7d-4ef2-9fda-073038b62169",
+          "signed_at": 1787499524.1761591,
           "signer": "authority",
-          "signature": "eb73a86e890c51c65b3d14b774fdfa2e77827fbf04d58ccdbca28725d01e6245661dfd1f837bedbfe73583ff34b661950ac3c6ecdd9e6ab2721186bdb00e2b08"
+          "signature": "ee7cdb756df3655c2ddc2bad8933d05ff9d018595b8da53d06da0eef50a15c108fa88de45f521c6422fea5125b97aa8c3b390d50dab45ae094e6f85d80c5fc0a"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($403.80 of $2618.27)"
+            "reason": "within monthly limit ($139.72 of $702.51)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "StreamFlix is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 13 is within the allowed window (8-20)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 139.72,
+          "merchant": "StreamFlix",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_31a9c8061a",
+          "fraud_score": 0.7428,
+          "detect_decision": "FLAG",
+          "mandate_allowed": false,
+          "violated_mandate_rules": [
+            "merchant_whitelist",
+            "time_restriction"
+          ],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: log_seconds_since_prev_tx",
+            "detect: ai_generated_signal",
+            "mandate: merchant_whitelist",
+            "mandate: time_restriction"
+          ],
+          "record_id": "9997f6af-6704-4315-86e9-4a52f44c871a",
+          "signed_at": 1787499523.896321,
+          "signer": "authority",
+          "signature": "3aa12ff3f12fa4ec679b4544ffd27d134ed0008d591662eadf185cc185a5b0bd4df41dcc52981da8aee9d447e34cf4363b648c88375bb208003f622519fbcd0f"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($59.22 of $81.36)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": false,
+            "reason": "FreshGrocer is not in the customer's allowed merchant list"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": false,
+            "reason": "hour 3 is outside the allowed window (18-22)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 1,
+          "attack_type": "pattern_copy",
+          "amount": 59.22,
+          "merchant": "FreshGrocer",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_b12fc9fa7e",
+          "fraud_score": 0.3788,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "7baad8ba-4e2f-4a46-8bfd-d1b55bd520cc",
+          "signed_at": 1787499524.7707746,
+          "signer": "authority",
+          "signature": "b0fbbcd396ad5252b4a291e2d02b17a7c1cc79fa8b8f14d5bbe8765b9ae4cc5af8c5850c4a61e86979293f36885fede0172de5b457ede2155f948e7527525f07"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($262.54 of $1000.00)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "no merchant restriction on this mandate"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 9 is within the allowed window (6-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 1,
+          "attack_type": "kyc_synthetic",
+          "amount": 262.54,
+          "merchant": "UrbanCafe",
+          "currency": "USD"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_2b591500b7",
+          "fraud_score": 0.0398,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": false,
+          "violated_mandate_rules": [
+            "time_restriction"
+          ],
+          "final_decision": "BLOCK",
+          "reasons": [
+            "detect: ai_generated_signal",
+            "mandate: time_restriction"
+          ],
+          "record_id": "a397882d-2070-4096-9bc7-f727f8d91a23",
+          "signed_at": 1787499525.2724245,
+          "signer": "authority",
+          "signature": "d7f089067cae7a0cbaeccff406792aabc664b05537b31500d574fa999a83d34a20569a4dec4757f9ca57b13541e548f3d70e55183de7fab0056f34f3e2c7ba07"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($303.37 of $489.70)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "QuickMart is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": false,
+            "reason": "hour 18 is outside the allowed window (3-13)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (2 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 1,
+          "attack_type": "pattern_copy",
+          "amount": 217.34,
+          "merchant": "QuickMart",
+          "currency": "EUR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_f88ecf2af7",
+          "fraud_score": 0.026,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "44002c8f-25b4-4a36-96f7-c465564b0f18",
+          "signed_at": 1787499524.031384,
+          "signer": "authority",
+          "signature": "98d71b743c043c7eed4858f327760ab2f6ba4195070e17054b8db86849a1210e0055fbf0f9ed06640e42594cfeba8468e3065c38565f1728ea5ad883e0574a01"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($86.12 of $1058.46)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "StreamFlix is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 9 is within the allowed window (6-15)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 86.12,
+          "merchant": "StreamFlix",
+          "currency": "EUR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_93deaa1977",
+          "fraud_score": 0.413,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal",
+            "detect: location_mismatch_km"
+          ],
+          "record_id": "7f78393d-e0d2-480d-ba49-5339800ff099",
+          "signed_at": 1787499524.2860937,
+          "signer": "authority",
+          "signature": "e801b4ddf15029ed1c4f1f0c5f502d7d0be2a5d0d7ed0405438347df87285624ced3ca6cde3f1eb39594acf9ab7c8845ec1bb26c8aa96e0f2f4aab58055c530a"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($69.11 of $297.24)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "StreamFlix is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 22 is within the allowed window (16-23)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (2 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 43.88,
+          "merchant": "StreamFlix",
+          "currency": "EUR"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_97a6c27c30",
+          "fraud_score": 0.046,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "be568fac-82a5-4558-b607-76011dd17276",
+          "signed_at": 1787499524.0460136,
+          "signer": "authority",
+          "signature": "caa66b6ab25ecfb376893dbe30e0c232ca61d573331e5f3cf639cc09d3b689e42f5fe4b03d79a54abab1f8f6752dec65da2c6ac8d46f16eac45201b591d6d206"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($271.16 of $1344.33)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "TechBazaar is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 14 is within the allowed window (11-18)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 271.16,
+          "merchant": "TechBazaar",
+          "currency": "JPY"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_0189b8f38c",
+          "fraud_score": 0.0158,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "958d732a-e1d6-40fc-b179-6715bddb139b",
+          "signed_at": 1787499524.737259,
+          "signer": "authority",
+          "signature": "eb2fd2b812c1130c849b7c56ed864cb71170f426a561ef7108e7e9d79cd8ef8d884c9d22bd582dec7ad7d0ae199605c0e3d4401bd7a703407c6637f848c7bf03"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($440.96 of $1968.32)"
           },
           {
             "rule": "merchant_whitelist",
@@ -2102,170 +2220,27 @@
           {
             "rule": "time_restriction",
             "passed": true,
-            "reason": "hour 20 is within the allowed window (17-23)"
+            "reason": "hour 15 is within the allowed window (13-23)"
           },
           {
             "rule": "velocity",
             "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
+            "reason": "within the daily transaction count limit (2 of 8)"
           }
         ],
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 403.8,
+          "amount": 226.81,
           "merchant": "TravelEasy",
-          "currency": "EUR"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_1e275bf831",
-          "fraud_score": 0.8888,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "472bdb18-9034-48f5-a0a5-67a98f509b30",
-          "signed_at": 1787494861.2769206,
-          "signer": "authority",
-          "signature": "0c3c2a89381dc33f34134d22e6d6891233d3b54571cb07db1e72bd91b09248cbc7cee2894ee1835a36df8a15d188cb4990974a0b82200ba2a9e377088ceda804"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($28.82 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 10 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "fake_identity",
-          "amount": 28.82,
-          "merchant": "GameVault",
-          "currency": "USD"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_a7fec028ac",
-          "fraud_score": 0.9365,
-          "detect_decision": "BLOCK",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "BLOCK",
-          "reasons": [
-            "detect: pattern_similarity",
-            "detect: log_seconds_since_prev_tx"
-          ],
-          "record_id": "502310f9-0664-45d2-85c2-e57af1eae50a",
-          "signed_at": 1787494862.0005789,
-          "signer": "authority",
-          "signature": "5c5dba5c1057ee091a7d8e0edbb8891af775e85f1467df271e9b6c507e82a07a04c39ca73c8b03f964f5334203214f0a563f163fabd581f6dedc11342ee6a30c"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($241.21 of $1000.00)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "no merchant restriction on this mandate"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 15 is within the allowed window (6-23)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 1,
-          "attack_type": "form_break",
-          "amount": 241.21,
-          "merchant": "CloudHost",
           "currency": "JPY"
         }
       },
       {
         "decision": {
           "record_type": "pipeline_decision",
-          "transaction_id": "tx_5e75bf4df6",
-          "fraud_score": 0.1281,
-          "detect_decision": "ALLOW",
-          "mandate_allowed": true,
-          "violated_mandate_rules": [],
-          "final_decision": "ALLOW",
-          "reasons": [
-            "detect: pattern_similarity",
-            "detect: ai_generated_signal"
-          ],
-          "record_id": "184a9ebd-4e3f-4050-9b0d-8e1d5ec96a5c",
-          "signed_at": 1787494860.9652724,
-          "signer": "authority",
-          "signature": "215ae7c19884487f6017102ea5506479a991827b1b8ac4b5d8b1b370d9e6d7799f6621c62e99878a1b151e2ddba11f24b83d45a9cea49b9a37c07f09ca803706"
-        },
-        "mandate_checks": [
-          {
-            "rule": "spending_limit",
-            "passed": true,
-            "reason": "within monthly limit ($149.95 of $1407.18)"
-          },
-          {
-            "rule": "merchant_whitelist",
-            "passed": true,
-            "reason": "GameVault is an allowed merchant"
-          },
-          {
-            "rule": "time_restriction",
-            "passed": true,
-            "reason": "hour 19 is within the allowed window (14-22)"
-          },
-          {
-            "rule": "velocity",
-            "passed": true,
-            "reason": "within the daily transaction count limit (1 of 8)"
-          }
-        ],
-        "ground_truth": {
-          "is_fraud": 0,
-          "attack_type": "none",
-          "amount": 149.95,
-          "merchant": "GameVault",
-          "currency": "JPY"
-        }
-      },
-      {
-        "decision": {
-          "record_type": "pipeline_decision",
-          "transaction_id": "tx_2cccca0b8c",
-          "fraud_score": 0.1488,
+          "transaction_id": "tx_f6d2b18db1",
+          "fraud_score": 0.0445,
           "detect_decision": "ALLOW",
           "mandate_allowed": true,
           "violated_mandate_rules": [],
@@ -2273,21 +2248,21 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "728d1d62-bfd7-4198-852a-409e8ba1f65f",
-          "signed_at": 1787494862.6036367,
+          "record_id": "0bea931f-ce1b-431c-b6c4-745b7ea0456f",
+          "signed_at": 1787499524.008668,
           "signer": "authority",
-          "signature": "3df3bb14bdc09f589148e9b3b161d6f33e1c5f2d23ff4952d9aa2e66c67a14d506f775d3799c17f106ae9740e5ef1fba973f0bc69396d7feccc9da7710618503"
+          "signature": "6968945cf83eb451310b42607f47922d29e9d8a6bed23889fc70addc1b10cc6bee8f1916811dc57d739423c232a471c97f0515e15086d2f97e189273f6886804"
         },
         "mandate_checks": [
           {
             "rule": "spending_limit",
             "passed": true,
-            "reason": "within monthly limit ($126.78 of $550.86)"
+            "reason": "within monthly limit ($191.26 of $858.53)"
           },
           {
             "rule": "merchant_whitelist",
             "passed": true,
-            "reason": "FreshGrocer is an allowed merchant"
+            "reason": "StreamFlix is an allowed merchant"
           },
           {
             "rule": "time_restriction",
@@ -2303,7 +2278,101 @@
         "ground_truth": {
           "is_fraud": 0,
           "attack_type": "none",
-          "amount": 126.78,
+          "amount": 191.26,
+          "merchant": "StreamFlix",
+          "currency": "USD"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_0d592e0d15",
+          "fraud_score": 0.0325,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: ai_generated_signal"
+          ],
+          "record_id": "7a6b4e07-4e70-4053-b990-09cb00f04c8e",
+          "signed_at": 1787499524.7953827,
+          "signer": "authority",
+          "signature": "1d3969e446674ca416ce0ac07f214fc0ce5958f1a3e5729be33a35cbb330a23d69f2fdf8211e7f6b707c0f80b306e5e96e5695a25c25c936bdc278b06336c100"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($458.54 of $1816.55)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "GameVault is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 9 is within the allowed window (3-12)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (2 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 259.0,
+          "merchant": "GameVault",
+          "currency": "GBP"
+        }
+      },
+      {
+        "decision": {
+          "record_type": "pipeline_decision",
+          "transaction_id": "tx_866af3b85d",
+          "fraud_score": 0.0132,
+          "detect_decision": "ALLOW",
+          "mandate_allowed": true,
+          "violated_mandate_rules": [],
+          "final_decision": "ALLOW",
+          "reasons": [
+            "detect: no single dominant signal"
+          ],
+          "record_id": "16bfb884-3c84-4a2c-a438-c4dee49157e4",
+          "signed_at": 1787499524.3173678,
+          "signer": "authority",
+          "signature": "9e4b5d87693cde4e078de87b400350d7b7bd7deedfef983ec50d90bbb82debec8d6e7dde5c8b0b2331f4d21056793983bc8e8d8a0049450f4acc63ba75d15700"
+        },
+        "mandate_checks": [
+          {
+            "rule": "spending_limit",
+            "passed": true,
+            "reason": "within monthly limit ($210.04 of $675.75)"
+          },
+          {
+            "rule": "merchant_whitelist",
+            "passed": true,
+            "reason": "FreshGrocer is an allowed merchant"
+          },
+          {
+            "rule": "time_restriction",
+            "passed": true,
+            "reason": "hour 19 is within the allowed window (12-21)"
+          },
+          {
+            "rule": "velocity",
+            "passed": true,
+            "reason": "within the daily transaction count limit (1 of 8)"
+          }
+        ],
+        "ground_truth": {
+          "is_fraud": 0,
+          "attack_type": "none",
+          "amount": 210.04,
           "merchant": "FreshGrocer",
           "currency": "INR"
         }
@@ -2311,8 +2380,8 @@
     ]
   },
   "verification": {
-    "total": 581,
-    "verified": 581,
+    "total": 454,
+    "verified": 454,
     "all_verified": true
   }
 }

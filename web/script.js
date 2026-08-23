@@ -13,6 +13,11 @@ function fmtMoney(x) {
   return `$${Number(x).toFixed(2)}`;
 }
 
+function fmtCost(x) {
+  const n = Number(x);
+  return n > 0 && n < 0.01 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`;
+}
+
 function esc(s) {
   const div = document.createElement("div");
   div.textContent = String(s);
@@ -107,7 +112,7 @@ function renderOverview(data) {
             ? `<div class="stat-row">
                 ${statTile("Calls", api.total_calls.toLocaleString())}
                 ${statTile("Tokens", api.total_tokens.toLocaleString())}
-                ${statTile("Cost", fmtMoney(api.total_cost_usd))}
+                ${statTile("Cost", fmtCost(api.total_cost_usd))}
                 ${statTile("Avg latency", `${api.avg_latency_ms}ms`)}
               </div>`
             : `<p>No API calls recorded yet. Agents 1, 2, 4, and 7 call the real OpenAI API — set <code>OPENAI_API_KEY</code> in a repo-root <code>.env</code> and run the generate layer to populate this.</p>`
