@@ -222,6 +222,7 @@ __marimo__/
 # Data (generated at runtime; generate/data/.gitkeep keeps the dir)
 generate/data/*.json
 detect/models/*.pkl
+pipeline/decisions/
 
 # Secrets / signed artifacts (regenerated per environment; sign/tokens/.gitkeep keeps the dir)
 sign/tokens/*.pem

@@ -146,3 +146,30 @@ def sign_override(transaction_id: str, original_decision: str, new_decision: str
             "justification": justification,
         }
     )
+
+
+def sign_pipeline_decision(
+    transaction_id: str,
+    fraud_score: float,
+    detect_decision: str,
+    mandate_allowed: bool,
+    violated_mandate_rules: list,
+    final_decision: str,
+    reasons: list,
+) -> dict:
+    """AUTHORITY signs the pipeline's combined decision — detect layer
+    score/decision AND mandate layer result, folded into one final
+    decision. Neither the detector nor the mandate checker can make a
+    decision final on their own; only this signature does."""
+    return AUTHORITY.sign_record(
+        {
+            "record_type": "pipeline_decision",
+            "transaction_id": transaction_id,
+            "fraud_score": round(float(fraud_score), 4),
+            "detect_decision": detect_decision,
+            "mandate_allowed": mandate_allowed,
+            "violated_mandate_rules": violated_mandate_rules,
+            "final_decision": final_decision,
+            "reasons": reasons,
+        }
+    )
