@@ -11,7 +11,7 @@ from fraud_agents import FIRST_NAMES, LAST_NAMES, MERCHANTS, CURRENCIES
 random.seed(7)
 
 
-def generate_good_transactions(n_customers=200, avg_tx_per_customer=5):
+def generate_good_transactions(n_customers=200, avg_tx_per_customer=5, max_transactions=2500):
     transactions = []
     for _ in range(n_customers):
         cust_id = f"cust_{uuid.uuid4().hex[:8]}"
@@ -44,4 +44,4 @@ def generate_good_transactions(n_customers=200, avg_tx_per_customer=5):
                 "token_record_id": None,
             }
             transactions.append(tx)
-    return transactions[:2500] if len(transactions) > 2500 else transactions
+    return transactions[:max_transactions] if len(transactions) > max_transactions else transactions

@@ -52,7 +52,8 @@ def train(transactions, test_size=0.3, random_state=13):
         X, y, transactions, test_size=test_size, random_state=random_state, stratify=y
     )
     model = RandomForestClassifier(
-        n_estimators=80, max_depth=5, min_samples_leaf=12, random_state=random_state
+        n_estimators=80, max_depth=5, min_samples_leaf=12, random_state=random_state,
+        class_weight="balanced",
     )
     model.fit(X_train, y_train)
     return model, X_test, y_test, tx_test
