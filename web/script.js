@@ -77,7 +77,7 @@ function renderOverview(data) {
 
   return `
     <div class="section">
-      <h1>Execution Authority Gate</h1>
+      <h1>Parmana Authority Gate</h1>
       <p>Dual-layer fraud defense: a transaction is only allowed through when the <strong>detect</strong> layer scores it as low risk <em>and</em> the <strong>mandate</strong> layer confirms it's actually authorized against the customer's own history. Every final decision is signed by an external authority before it counts.</p>
     </div>
 
