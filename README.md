@@ -1,4 +1,4 @@
-# Execution Authority Gate: Hybrid Fraud Defense
+# AI Defense Lab: Execution Authority Gate for Payment Security
 
 **Live dashboard: [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev)**
 
