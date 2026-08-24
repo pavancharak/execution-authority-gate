@@ -98,6 +98,23 @@ Re-running the generation step calls the real OpenAI API at `temperature=0.9`, s
 
 ---
 
+## Try It Yourself: The Live Test Harness
+
+The live dashboard opens on the Live Test tab. This is the fastest way to see that the numbers above are not just claims.
+
+Pick a sample customer, enter an amount, a merchant, an hour of day, and an AI generated signal value, then press "Run transaction." The result is not looked up from a table. It is computed right then: the real trained model scores it, the real mandate rules check it against that customer's own history, and the result is signed and verified with a real key, live, in that request.
+
+A few things worth trying:
+
+* A small amount at a normal hour at a merchant the customer already uses. This usually comes back ALLOW.
+* The same transaction, but at a merchant not on that customer's list. Watch the mandate step object even though the detection score has not changed at all.
+* A high AI generated signal value on an otherwise ordinary transaction. Watch the detection score rise even when every mandate rule passes.
+* A few similar transactions in a row. FLAG will show up on transactions that are not obviously fraud. That is the precision tradeoff described above, happening in front of you instead of sitting in a table.
+
+There is also an Attack Walkthrough tab: five real, already signed decisions pulled straight from an actual pipeline run, one for each attack type this project simulates, with the same four step breakdown (detection, mandate, signing, final decision).
+
+---
+
 ## FAQ
 
 **Q: Why is precision only 21.1%?**
