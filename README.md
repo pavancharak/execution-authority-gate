@@ -38,7 +38,7 @@ python -m http.server 8000
 # Open http://localhost:8000
 ```
 
-To regenerate the dashboard from a fresh, self-generated dataset (copy `.env.example` to `.env` and set a real `OPENAI_API_KEY` first — agents 1, 2, and 4 make real, cheap GPT-4o-mini calls):
+To regenerate the dashboard from a fresh, self-generated dataset (copy `.env.example` to `.env` and set a real `OPENAI_API_KEY` first agents 1, 2, and 4 make real, cheap GPT-4o-mini calls):
 
 ```bash
 cd generate/src && python run_simulation.py   # agents 1,2,4 (real OpenAI) + 5,6 (local)
@@ -52,9 +52,9 @@ cd ../../pipeline/src && python run_pipeline.py # detect + mandate + sign -> das
 Before a transaction is allowed through, two independent checks have to agree neither one trusts the other's reasoning:
 
 1. **Does this look like fraud?** A model trained on real transaction patterns scores every transaction for risk.
-2. **Is this actually authorized?** A separate, rule-based check compares the transaction against that specific customer's own history — spending limits, merchants, hours, frequency regardless of what the fraud model thinks.
+2. **Is this actually authorized?** A separate, rule-based check compares the transaction against that specific customer's own history spending limits, merchants, hours, frequency regardless of what the fraud model thinks.
 
-Either one objecting is enough to block it. Then, whatever the outcome, a third step signs the final decision with a private key nobody else holds, producing a tamper-evident record anyone can verify independently. Signing isn't a vote every decision gets signed, ALLOW or BLOCK — it's what makes the first two layers' decision provable and unforgeable after the fact, not a third check that can veto anything.
+Either one objecting is enough to block it. Then, whatever the outcome, a third step signs the final decision with a private key nobody else holds, producing a tamper-evident record anyone can verify independently. Signing isn't a vote every decision gets signed, ALLOW or BLOCK .it's what makes the first two layers' decision provable and unforgeable after the fact, not a third check that can veto anything.
 
 **Real results, from a live, self-generated run — not a cherry-picked demo:**
 - Catches 89.1% of fraud
