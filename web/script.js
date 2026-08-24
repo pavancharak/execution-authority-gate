@@ -647,12 +647,73 @@ function wireLiveTest() {
   });
 }
 
+const FAQ_ITEMS = [
+  {
+    q: "Why is precision only 21.1%?",
+    a: "Fraud is rare, about 2% of transactions in this dataset. Catching 89.1% of a rare event requires flagging aggressively, and that lowers precision. See the Detection tab for the full breakdown.",
+  },
+  {
+    q: "Does a low precision flag mean legitimate transactions get blocked?",
+    a: "No. A detect layer flag alone does not block anything. The mandate layer also has to object before a transaction is BLOCKed. Try it yourself on the Live Test tab: a low risk transaction at an unfamiliar merchant still gets BLOCKed by the mandate layer alone.",
+  },
+  {
+    q: "Are the numbers on this dashboard real?",
+    a: "Yes. The transactions, the fraud rate, the detection metrics, and the signatures all come from this repo's own generation and pipeline code, including real OpenAI calls for several agents. Nothing here is hand authored sample data.",
+  },
+  {
+    q: "What is the difference between Attack Walkthrough and Live Test?",
+    a: "Attack Walkthrough shows five real, already signed decisions pulled from an actual past pipeline run, one per attack type. Live Test runs a brand new transaction through the real model and rule engine right now, using whatever you type in.",
+  },
+  {
+    q: "Is the Live Test result actually computed live, or just looked up?",
+    a: "Computed live. The trained model scores it, the mandate rules check it against that customer's real history, and the result gets a fresh Ed25519 signature that is verified in the same request.",
+  },
+  {
+    q: "Does this system actually stop a transaction from going through?",
+    a: "No, and this project is upfront about that. It produces a signed decision, ALLOW, FLAG, or BLOCK. It does not call a payment processor or move money. Wiring a signed decision to real enforcement is a separate integration this repo does not include yet.",
+  },
+  {
+    q: "Are signed decisions stored permanently?",
+    a: "Not yet, in a durable way. Right now decisions are written to a single local file that gets overwritten on the next pipeline run. Turning that into an append only or externally stored log is a known gap, not a finished feature.",
+  },
+  {
+    q: "Who is allowed to trigger a decision or call the API?",
+    a: "There is currently no caller authentication on the pipeline or its API. Every decision is signed by the same authority identity regardless of who asked for it. This is a working prototype, not a production access control system.",
+  },
+  {
+    q: "Why does the mandate layer use a customer's own history instead of one fixed rule for everyone?",
+    a: "One fixed spending limit would be too loose for small spenders and too tight for big ones. Deriving each customer's limit, merchants, hours, and daily count from their own past good transactions makes the check specific to them.",
+  },
+  {
+    q: "What happens if I try a merchant or hour outside a customer's normal pattern on Live Test?",
+    a: "The mandate layer objects on that rule even when the detection score is low. That is the point: the two layers check different things, and either one objecting is enough to block the transaction.",
+  },
+];
+
+function renderFAQ(data) {
+  const items = FAQ_ITEMS.map(
+    (item) => `<div class="card faq-item">
+      <h3>${esc(item.q)}</h3>
+      <p>${esc(item.a)}</p>
+    </div>`
+  ).join("");
+
+  return `
+    <div class="section">
+      <h1>FAQ</h1>
+      <p>The questions judges and users ask most often about this project.</p>
+    </div>
+    <div class="section">${items}</div>
+  `;
+}
+
 const RENDERERS = {
   overview: renderOverview,
   attacks: renderAttacks,
   detect: renderDetect,
   mandate: renderMandate,
   proof: renderProof,
+  faq: renderFAQ,
 };
 
 async function main() {
@@ -679,7 +740,7 @@ async function main() {
   panels.walkthrough = renderWalkthrough(data, scenarios);
   panels["live-test"] = renderLiveTest(data, customersData);
 
-  const order = ["overview", "attacks", "walkthrough", "detect", "mandate", "live-test", "proof"];
+  const order = ["overview", "attacks", "walkthrough", "detect", "mandate", "live-test", "proof", "faq"];
   const DEFAULT_TAB = "live-test";
   app.innerHTML = order
     .map((name) => `<div class="panel${name === DEFAULT_TAB ? " active" : ""}" data-panel="${name}">${panels[name]}</div>`)
