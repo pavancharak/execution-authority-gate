@@ -1,5 +1,5 @@
 """
-Seven fraud-simulation agents, each bounded by a signed authorization
+Seven fraud simulation agents, each bounded by a signed authorization
 token from an external authority (see ../../sign/src/authority_signer.py).
 
 The key property demonstrated here: an agent cannot exceed the operation
@@ -64,7 +64,7 @@ class BoundedAgent:
         # The agent ASKS for `requested_operations`; the authority decides
         # what to actually grant. Here the authority grants exactly what's
         # asked (a real deployment might grant less), but the point is the
-        # grant is external and signed, not self-declared.
+        # grant is external and signed, not self declared.
         self.token = auth.issue_agent_token(agent_id, action, requested_operations)
         self.executed = 0
         self.log = []
@@ -189,7 +189,7 @@ class FakeIdentityAgent(BoundedAgent):
 # Agent 2: Social Engineer (REAL, GPT-4o-mini)
 # ---------------------------------------------------------------------------
 class SocialEngineerAgent(BoundedAgent):
-    """Calls the OpenAI API to generate fictional customer-support call
+    """Calls the OpenAI API to generate fictional customer support call
     transcripts where a caller attempts social engineering tactics
     (urgency, impersonation, fabricated emergencies) to get a support
     agent to reveal a recovery code or authorize a card reissue. Text
@@ -363,8 +363,8 @@ class KYCForgerAgent(BoundedAgent):
 class PatternReplicatorAgent(BoundedAgent):
     """Given a real (stolen) transaction history, replays the same
     amount/timing/merchant *shape* at high velocity, the classic
-    card-testing-then-draining pattern. Deliberately statistical rather
-    than LLM-generated: transaction amounts should follow the real
+    card testing then draining pattern. Deliberately statistical rather
+    than LLM generated: transaction amounts should follow the real
     distribution being copied, not creative text generation."""
 
     def __init__(self, max_transactions: int = 1000):
@@ -411,7 +411,7 @@ class PatternReplicatorAgent(BoundedAgent):
 class InjectionGeneratorAgent(BoundedAgent):
     """Throws malformed / adversarial input at a payment form using known,
     publicly documented payload techniques (SQL injection, script tags,
-    boundary values), not GPT output, these are standard security-testing
+    boundary values), not GPT output, these are standard security testing
     strings. Loud and easy to catch individually, but used to find the one
     gap that lets later attacks through quietly."""
 
@@ -468,7 +468,7 @@ class FeedbackLoopAgent(BoundedAgent):
     """Runs after the detect layer's model is trained. Takes a sample of
     transactions our own detector actually blocked, asks GPT to propose
     small, realistic feature adjustments an adversary might try, then
-    re-scores each variant through our real detector to see whether it
+    rescores each variant through our real detector to see whether it
     actually evades. Genuine adversarial robustness testing against our
     own local model, no external system involved."""
 

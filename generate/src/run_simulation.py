@@ -3,7 +3,7 @@ Entry point: python run_simulation.py
 
 Runs five bounded fraud agents (1, 2, 4, 5, 6) against a pool of
 legitimate transaction data. Agents 3 (Limit Prober) and 7 (Feedback Loop
-Exploit) need a trained detector to exist first — see probe_agents.py,
+Exploit) need a trained detector to exist first. See probe_agents.py,
 run after this.
 
 Produces:
@@ -14,12 +14,12 @@ Produces:
   - ../../sign/tokens/*_execution_log.json  (proof each agent stayed in bounds)
 
 Agents 1, 2, and 4 call the real OpenAI API (see llm_client.py). Set
-OPENAI_API_KEY in a repo-root .env file before running (copy .env.example).
+OPENAI_API_KEY in a repo root .env file before running (copy .env.example).
 
 Targets are chosen so the 5 attack types that actually produce labeled
-fraud transactions (agents 1, 2, 4, 5, 6 — agents 3 and 7 probe the
+fraud transactions (agents 1, 2, 4, 5, 6; agents 3 and 7 probe the
 trained model instead of generating transactions) land close to even at
-~100 each, and the legitimate pool is scaled up (free, local — no
+~100 each, and the legitimate pool is scaled up (free, local, no
 OpenAI cost) to bring the overall fraud rate down to a realistic ~2%,
 rather than shrinking the fraud count down to statistically meaningless
 levels to hit that rate.
@@ -55,13 +55,14 @@ RAW_FEATURE_FIELDS = [
 def inject_realistic_confusion(good, fraud, fraud_camouflage_rate=0.15, legit_anomaly_rate=0.05, seed=17):
     """No feature set catches everything. To keep the detector's reported
     accuracy honest rather than an artifact of clean synthetic separation,
-    some fraud (fake-identity and pattern-copy only, not the loud
-    form-breaker) is given feature values copied from a real legitimate
-    transaction — genuinely indistinguishable behavior, same as a
-    well-disguised attacker in production. Symmetrically, some legitimate
-    transactions get feature values copied from fraud — genuinely
-    anomalous-but-legitimate behavior, the real source of false positives.
-    Labels (is_fraud) never change; only the observable features do."""
+    some fraud (fake identity and pattern copy only, not the loud
+    form breaker) is given feature values copied from a real legitimate
+    transaction. That is genuinely indistinguishable behavior, the same
+    as a well disguised attacker in production. Symmetrically, some
+    legitimate transactions get feature values copied from fraud, which
+    is genuinely anomalous but legitimate behavior, the real source of
+    false positives. Labels (is_fraud) never change, only the observable
+    features do."""
     rnd = random.Random(seed)
     good = [dict(t) for t in good]
     fraud = [dict(t) for t in fraud]
@@ -103,13 +104,14 @@ def main():
 
     # The 5 attack types below are the only ones that produce labeled
     # fraud transactions (agent 3 probes the trained model's decision
-    # boundary, agent 7 tests evasion — neither generates a labeled
+    # boundary, agent 7 tests evasion, neither generates a labeled
     # transaction; see identify/attack-taxonomy.md). Targets are chosen
-    # per type's real yield so the ~100-target lands close to even:
-    # FakeIdentityAgent produces ~4-8 tx per identity, SocialEngineerAgent
-    # only ~40-60% of conversations succeed into a transaction, KYCForger
-    # is 1:1. Agents 1/2/4 batch up to 25 items per real OpenAI call, so
-    # even these larger targets are only a handful of calls.
+    # per type's real yield so the target of about 100 lands close to
+    # even. FakeIdentityAgent produces about 4 to 8 tx per identity,
+    # SocialEngineerAgent only sees about 40 to 60% of conversations
+    # succeed into a transaction, KYCForger is 1 to 1. Agents 1/2/4
+    # batch up to 25 items per real OpenAI call, so even these larger
+    # targets are only a handful of calls.
     print("\n[2/6] Agent 1 (Fake Identity Generator, REAL OpenAI call) requesting token...")
     agent1 = FakeIdentityAgent(max_identities=17)
     print(f"      -> token granted: max_operations={agent1.token['max_operations']}, signed record_id={agent1.token['record_id']}")
@@ -120,7 +122,7 @@ def main():
     agent2 = SocialEngineerAgent(max_conversations=200)
     print(f"      -> token granted: max_operations={agent2.token['max_operations']}, signed record_id={agent2.token['record_id']}")
     fraud_social = agent2.run(seeds)
-    print(f"      -> executed {agent2.executed}/{agent2.token['max_operations']} authorized transcripts, {len(fraud_social)} led to a follow-up transaction")
+    print(f"      -> executed {agent2.executed}/{agent2.token['max_operations']} authorized transcripts, {len(fraud_social)} led to a follow up transaction")
 
     print("\n[4/6] Agent 4 (KYC Forger, REAL OpenAI call) requesting token...")
     agent4 = KYCForgerAgent(max_kyc=100)
@@ -142,7 +144,7 @@ def main():
 
     fraud_transactions = fraud_identity + fraud_social + fraud_kyc + fraud_pattern + fraud_form
 
-    print("\n[confusion] Injecting realistic feature overlap (camouflaged fraud + anomalous-but-legit)...")
+    print("\n[confusion] Injecting realistic feature overlap (camouflaged fraud plus anomalous but legit)...")
     good_transactions, fraud_transactions = inject_realistic_confusion(good_transactions, fraud_transactions)
     (DATA_DIR / "good_transactions.json").write_text(json.dumps(good_transactions, indent=2))
     (DATA_DIR / "fraud_transactions.json").write_text(json.dumps(fraud_transactions, indent=2))

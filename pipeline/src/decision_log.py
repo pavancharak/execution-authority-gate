@@ -1,6 +1,6 @@
 """
 Writes the pipeline's signed decisions to disk and summarizes them: final
-decision counts, and — for blocked transactions — whether the block came
+decision counts, and, for blocked transactions, whether the block came
 from the detect layer, the mandate layer, or both. That attribution is
 the whole point of running two independent layers: a block from the
 mandate layer is a transaction the detect layer alone would have missed.

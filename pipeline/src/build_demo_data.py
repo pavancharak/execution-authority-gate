@@ -3,13 +3,13 @@ Entry point: python build_demo_data.py
 
 Builds two small, static JSON files for the web dashboard's interactive
 demo (Attack Walkthrough + Live Test Harness), from real artifacts this
-repo's own pipeline already produced — nothing here is hand-authored:
+repo's own pipeline already produced. Nothing here is hand authored:
 
-  web/data/attack_scenarios.json — one real, already-signed decision per
+  web/data/attack_scenarios.json: one real, already signed decision per
     attack type, pulled straight from pipeline/decisions/pipeline_decisions.json,
     merged with the attack's narrative from identify/attacks.json.
 
-  web/data/demo_customers.json — a small, curated set of real customers'
+  web/data/demo_customers.json: a small, curated set of real customers'
     derived mandates (see mandate/src/mandate_checker.py), for the Live
     Test Harness's customer picker. Deliberately small and committed
     (unlike the full generate/data/ dataset) so it can ship in the
@@ -42,8 +42,8 @@ GENERATE_DATA_DIR = REPO_ROOT / "generate" / "data"
 DECISIONS_PATH = PIPELINE_ROOT / "decisions" / "pipeline_decisions.json"
 WEB_DATA_DIR = REPO_ROOT / "web" / "data"
 
-# Prefer a BLOCK example for drama, except pattern_copy — its one ALLOW
-# example (out of 28 real generated instances) is a more interesting
+# Prefer a BLOCK example for drama, except pattern_copy, where its one
+# ALLOW example (out of 28 real generated instances) is a more interesting
 # story: a copied spending pattern legitimate enough to slip the detect
 # layer, still a real outcome from a real run.
 PREFERRED_DECISION = {
@@ -57,7 +57,7 @@ PREFERRED_DECISION = {
 RULE_LABELS = {
     "spending_limit": "Spending limit",
     "merchant_whitelist": "Merchant whitelist",
-    "time_restriction": "Time-of-day window",
+    "time_restriction": "Time of day window",
     "velocity": "Daily velocity",
 }
 
@@ -100,7 +100,7 @@ def build_demo_customers(rng, count=6):
         by_customer.setdefault(tx["customer_id"], []).append(tx)
 
     # Only customers with a reasonable amount of history make an
-    # interesting demo mandate (tight-enough limits to actually trigger
+    # interesting demo mandate (limits tight enough to actually trigger
     # PASS/FAIL depending on what the judge types into the form).
     eligible = [cid for cid, txs in by_customer.items() if len(txs) >= 6]
     chosen = rng.sample(eligible, min(count, len(eligible)))

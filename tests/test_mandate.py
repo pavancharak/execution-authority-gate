@@ -5,7 +5,7 @@ import mandate_checker as mc
 
 
 # ---------------------------------------------------------------------------
-# rules.py — four independent checks
+# rules.py, four independent checks
 # ---------------------------------------------------------------------------
 
 def test_check_spending_limit():
@@ -92,7 +92,7 @@ def test_check_mandate_blocks_on_any_single_violation(make_transaction):
     history = [make_transaction(False, customer_id="cust_1", merchant="QuickMart", amount=20, hour_of_day=10) for _ in range(5)]
     mandate = mc.derive_mandate_from_history(history)
 
-    # Amount, merchant, and hours are all fine — only the hour is off.
+    # Amount and merchant are fine, only the hour is off.
     tx = make_transaction(False, customer_id="cust_1", merchant="QuickMart", amount=20, hour_of_day=3)
 
     result = mc.check_mandate(tx, mandate, month_to_date_total=0.0, tx_count_today=0)

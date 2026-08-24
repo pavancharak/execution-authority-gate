@@ -1,4 +1,4 @@
-"""Tests for detect/src/detector.py — real functions, not a class API."""
+"""Tests for detect/src/detector.py. Real functions, not a class API."""
 
 import detector as det
 
@@ -31,7 +31,7 @@ def test_train_and_evaluate_separates_synthetic_fraud(synthetic_dataset):
     scores = metrics.pop("scores")
 
     # This dataset's fraud/legit distributions barely overlap by
-    # construction (see conftest._make_transaction) — a RandomForest
+    # construction (see conftest._make_transaction), so a RandomForest
     # should separate them almost perfectly.
     assert metrics["fraud_caught_rate"] > 0.9
     assert metrics["false_positive_rate"] < 0.1

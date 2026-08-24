@@ -78,7 +78,7 @@ function renderOverview(data) {
   return `
     <div class="section">
       <h1>Parmana Authority Gate</h1>
-      <p>Dual-layer fraud defense: a transaction is only allowed through when the <strong>detect</strong> layer scores it as low risk <em>and</em> the <strong>mandate</strong> layer confirms it's actually authorized against the customer's own history. Every final decision is signed by an external authority before it counts.</p>
+      <p>Two layer fraud defense: a transaction is only allowed through when the <strong>detect</strong> layer scores it as low risk <em>and</em> the <strong>mandate</strong> layer confirms it's actually authorized against the customer's own history. Every final decision is signed by an external authority before it counts.</p>
     </div>
 
     <div class="section">
@@ -106,7 +106,7 @@ function renderOverview(data) {
 
     <div class="section">
       <div class="card">
-        <h3>Generation layer — OpenAI API activity</h3>
+        <h3>Generation layer, OpenAI API activity</h3>
         ${
           api.total_calls > 0
             ? `<div class="stat-row">
@@ -115,7 +115,7 @@ function renderOverview(data) {
                 ${statTile("Cost", fmtCost(api.total_cost_usd))}
                 ${statTile("Avg latency", `${api.avg_latency_ms}ms`)}
               </div>`
-            : `<p>No API calls recorded yet. Agents 1, 2, 4, and 7 call the real OpenAI API — set <code>OPENAI_API_KEY</code> in a repo-root <code>.env</code> and run the generate layer to populate this.</p>`
+            : `<p>No API calls recorded yet. Agents 1, 2, 4, and 7 call the real OpenAI API. Set <code>OPENAI_API_KEY</code> in a repo root <code>.env</code> and run the generate layer to populate this.</p>`
         }
       </div>
     </div>
@@ -154,7 +154,7 @@ function renderAttacks(data) {
   return `
     <div class="section">
       <h1>Attack taxonomy</h1>
-      <p>Seven ways AI commits payment fraud. Six are actively simulated by bounded agents in <code>generate/src/fraud_agents.py</code>; one (feedback-loop poisoning) is an honest, documented gap.</p>
+      <p>Seven ways AI commits payment fraud. Six are actively simulated by bounded agents in <code>generate/src/fraud_agents.py</code>; one (feedback loop poisoning) is an honest, documented gap.</p>
     </div>
 
     ${
@@ -185,7 +185,7 @@ function renderDetect(data) {
   return `
     <div class="section">
       <h1>Detection layer</h1>
-      <p>A RandomForest classifier trained on six transaction features, proposing BLOCK / FLAG / ALLOW by fraud score. This layer only proposes — nothing here is final until the mandate and sign layers run too.</p>
+      <p>A RandomForest classifier trained on six transaction features, proposing BLOCK / FLAG / ALLOW by fraud score. This layer only proposes. Nothing here is final until the mandate and sign layers run too.</p>
     </div>
 
     <div class="section">
@@ -206,7 +206,7 @@ function renderDetect(data) {
           "Precision",
           fmtPct(m.precision),
           "",
-          `Of ${totalFlagged} transactions flagged, ${cm.true_positive} are real fraud — the detect layer's job is recall, not precision; see note below`
+          `Of ${totalFlagged} transactions flagged, ${cm.true_positive} are real fraud. The detect layer's job is recall, not precision; see note below`
         )}
       </div>
     </div>
@@ -233,14 +233,14 @@ function renderDetect(data) {
         <p>
           Fraud is rare here (${totalFraud} cases out of ${(totalFraud + totalLegit).toLocaleString()} transactions,
           about 2%). Tuning a classifier to catch ${fmtPct(m.fraud_caught_rate)} of that rare an event means it has
-          to flag aggressively, which produces false positives — the same trade-off airport security makes to catch
+          to flag aggressively, which produces false positives. It is the same tradeoff airport security makes to catch
           most weapons at the cost of flagging some harmless bags.
         </p>
         <p>
           Precision (${fmtPct(m.precision)}) measures the <em>detect layer alone</em>, in isolation, on this
-          held-out test set. It is not the system's real-world false-accusation rate: nothing here is auto-executed
-          off a detect-layer flag. A flag still has to clear the <strong>mandate</strong> layer's independent,
-          rule-based check before anything is blocked, and every final decision — ALLOW or BLOCK — is signed and
+          held out test set. It is not the system's real world false accusation rate: nothing here is auto executed
+          off a detect layer flag. A flag still has to clear the <strong>mandate</strong> layer's independent,
+          rule based check before anything is blocked, and every final decision, ALLOW or BLOCK, is signed and
           auditable. See <code>docs/JUDGES_GUIDE.md</code> for the full breakdown.
         </p>
       </div>
@@ -261,7 +261,7 @@ function renderMandate(data) {
   const ruleLabels = {
     spending_limit: "Spending limit",
     merchant_whitelist: "Merchant whitelist",
-    time_restriction: "Time-of-day window",
+    time_restriction: "Time of day window",
     velocity: "Daily velocity",
   };
   const ruleRows = Object.entries(md.rule_violation_counts).map(([rule, count]) => ({
@@ -287,7 +287,7 @@ function renderMandate(data) {
   return `
     <div class="section">
       <h1>Mandate layer</h1>
-      <p>Deterministic authorization rules, independent of the fraud score. Each customer's mandate — spending limit, allowed merchants, allowed hours, daily transaction count — is derived from their own known-good transaction history, not hand-authored.</p>
+      <p>Deterministic authorization rules, independent of the fraud score. Each customer's mandate, spending limit, allowed merchants, allowed hours, daily transaction count, is derived from their own known good transaction history, not hand authored.</p>
     </div>
 
     <div class="section">
@@ -327,15 +327,15 @@ function renderMandate(data) {
   `;
 }
 
-/** Shared render for a full pipeline outcome — used by both the Attack
- * Walkthrough (precomputed, real, already-signed decisions) and the
+/** Shared render for a full pipeline outcome, used by both the Attack
+ * Walkthrough (precomputed, real, already signed decisions) and the
  * Live Test Harness (a decision computed live, right now, by this
  * request). txSummaryRows: [{label, value}]. */
 function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
   const ruleLabels = {
     spending_limit: "Spending limit",
     merchant_whitelist: "Merchant whitelist",
-    time_restriction: "Time-of-day window",
+    time_restriction: "Time of day window",
     velocity: "Daily velocity",
   };
 
@@ -390,11 +390,11 @@ function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
         <p>${
           decision.final_decision === "BLOCK"
             ? (!decision.mandate_allowed
-                ? `Mandate layer rejected it (${decision.violated_mandate_rules.map((r) => ruleLabels[r] || r).join(", ")}) — blocked regardless of the detect score.`
-                : `Detect layer scored it high-risk (${decision.fraud_score.toFixed(2)}) — blocked even though the mandate layer had no objection.`)
+                ? `Mandate layer rejected it (${decision.violated_mandate_rules.map((r) => ruleLabels[r] || r).join(", ")}), blocked regardless of the detect score.`
+                : `Detect layer scored it high risk (${decision.fraud_score.toFixed(2)}), blocked even though the mandate layer had no objection.`)
             : decision.final_decision === "FLAG"
-            ? `Detect layer is unsure (${decision.fraud_score.toFixed(2)}) and the mandate layer has no objection — flagged for review, not auto-blocked.`
-            : `Low risk (${decision.fraud_score.toFixed(2)}) and every mandate rule passed — allowed.`
+            ? `Detect layer is unsure (${decision.fraud_score.toFixed(2)}) and the mandate layer has no objection, flagged for review, not auto blocked.`
+            : `Low risk (${decision.fraud_score.toFixed(2)}) and every mandate rule passed, allowed.`
         }</p>
       </div>
     </div>
@@ -423,7 +423,7 @@ function renderWalkthrough(data, scenarios) {
   return `
     <div class="section">
       <h1>Attack walkthrough</h1>
-      <p>Pick a real attack type below to see one actual, already-signed decision from this repo's own pipeline run — the detect score, the mandate rules it hit, the signature, and why the final decision came out the way it did.</p>
+      <p>Pick a real attack type below to see one actual, already signed decision from this repo's own pipeline run: the detect score, the mandate rules it hit, the signature, and why the final decision came out the way it did.</p>
     </div>
 
     <div class="section">
@@ -473,7 +473,7 @@ function renderLiveTest(data, customersData) {
   return `
     <div class="section">
       <h1>Live test harness</h1>
-      <p>Submit a transaction and it runs through the real pipeline right now — the actual trained detector, the actual mandate rules derived from that customer's history, and a real Ed25519 signature from this deployment's own authority key.</p>
+      <p>Submit a transaction and it runs through the real pipeline right now: the actual trained detector, the actual mandate rules derived from that customer's history, and a real Ed25519 signature from this deployment's own authority key.</p>
     </div>
 
     <div class="section">
@@ -489,15 +489,15 @@ function renderLiveTest(data, customersData) {
             <input list="merchant-list" name="merchant" value="${esc(merchants[0] || "")}" required>
             <datalist id="merchant-list">${merchantOptions}</datalist>
           </label>
-          <label>Hour of day (0&ndash;23)
+          <label>Hour of day (0 to 23)
             <input type="number" name="hour_of_day" min="0" max="23" value="12" required>
           </label>
-          <label>AI-generated signal (0&ndash;1)
+          <label>AI generated signal (0 to 1)
             <input type="number" name="ai_generated_signal" min="0" max="1" step="0.01" value="0.1" required>
           </label>
           <button type="submit" class="submit-btn">Run transaction</button>
         </form>
-        <p class="form-hint">Each customer's mandate (spending limit, allowed merchants, allowed hours) was derived from their own real transaction history — try an unlisted merchant or an odd hour to see the mandate layer object on its own.</p>
+        <p class="form-hint">Each customer's mandate (spending limit, allowed merchants, allowed hours) was derived from their own real transaction history. Try an unlisted merchant or an odd hour to see the mandate layer object on its own.</p>
       </div>
     </div>
 
@@ -525,7 +525,7 @@ function renderProof(data) {
   return `
     <div class="section">
       <h1>Proof</h1>
-      <p>Every final decision is signed with Ed25519 by an external authority — neither the detector nor the mandate checker holds a private key. Anyone can verify a signature independently using only the public key on disk, with no access to any private key.</p>
+      <p>Every final decision is signed with Ed25519 by an external authority. Neither the detector nor the mandate checker holds a private key. Anyone can verify a signature independently using only the public key on disk, with no access to any private key.</p>
     </div>
 
     <div class="section">
@@ -534,7 +534,7 @@ function renderProof(data) {
           <span class="dot ${v.all_verified ? "good" : "critical"}"></span>
           <strong>${v.verified}/${v.total}</strong>&nbsp;signed decisions verify independently
         </div>
-        <p>Verification uses only <code>sign/tokens/authority_public_key.pem</code> — a script that can verify a signature cannot forge one.</p>
+        <p>Verification uses only <code>sign/tokens/authority_public_key.pem</code>. A script that can verify a signature cannot forge one.</p>
       </div>
     </div>
 
@@ -632,14 +632,14 @@ function wireLiveTest() {
           { label: "Amount", value: fmtMoney(tx.amount) },
           { label: "Merchant", value: tx.merchant },
           { label: "Hour of day", value: tx.hour_of_day },
-          { label: "AI-generated signal", value: tx.ai_generated_signal },
+          { label: "AI generated signal", value: tx.ai_generated_signal },
         ],
         payload.decision,
         payload.mandate_checks,
         payload.verified
       );
     } catch (err) {
-      result.innerHTML = `<div class="error-inline">Couldn't run the live pipeline: ${esc(err.message)}.<br>The Live Test Harness needs the Flask server (<code>python web/server.py</code>) — it isn't available under <code>python -m http.server</code>.</div>`;
+      result.innerHTML = `<div class="error-inline">Couldn't run the live pipeline: ${esc(err.message)}.<br>The Live Test Harness needs the Flask server (<code>python web/server.py</code>). It isn't available under <code>python -m http.server</code>.</div>`;
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Run transaction";
@@ -648,6 +648,26 @@ function wireLiveTest() {
 }
 
 const FAQ_ITEMS = [
+  {
+    q: "What makes this different from a typical fraud detection system?",
+    a: "Most fraud tools stop at a risk score. This project adds a second, independent layer that checks the transaction against that specific customer's own history instead of a model's guess, and neither layer is treated as final until a separate authority signs the combined result. A model being confident is not the same as a transaction being authorized, and this project keeps those two ideas apart on purpose.",
+  },
+  {
+    q: "What does this system actually allow that a fraud score alone does not?",
+    a: "It lets anyone, a judge, an auditor, another system, check afterward that a specific decision was really made, by which layers, and was not silently changed. A score alone cannot prove any of that. The signature and the mandate check are what turn a model's opinion into something you can point to later.",
+  },
+  {
+    q: "Why does this fit naturally into agentic commerce?",
+    a: "When an AI agent is the one deciding whether to complete a payment, the question stops being only whether a transaction looks like fraud and becomes whether that agent was actually authorized to do it. A risk score cannot answer the second question, because it is about permission, not detection. The mandate layer checks permission against the customer's real history, and the signature makes that permission check something the agent itself cannot forge or quietly skip, since it never holds the signing key.",
+  },
+  {
+    q: "Could an AI agent fake or skip this check?",
+    a: "Not the signature. Nothing calling this pipeline, agent or otherwise, has access to the private signing key, so it cannot produce a valid signed ALLOW on its own. It could still choose not to call the pipeline at all, which is why this belongs at the point where a transaction actually executes, not as an optional step an agent can decide to skip. Wiring it into that execution point is not done in this repo yet, see the enforcement question below.",
+  },
+  {
+    q: "Does this replace a human reviewer?",
+    a: "No, and it is not trying to. FLAG decisions exist for exactly the cases where neither layer is confident enough to decide alone. What this project replaces is blind trust in a single model's score, not human judgment.",
+  },
   {
     q: "Why is precision only 21.1%?",
     a: "Fraud is rare, about 2% of transactions in this dataset. Catching 89.1% of a rare event requires flagging aggressively, and that lowers precision. See the Detection tab for the full breakdown.",

@@ -1,12 +1,12 @@
 """
 Backend for the dashboard's interactive demo: the Attack Walkthrough tab
-(reads precomputed, already-signed real decisions) and the Live Test
-Harness tab (runs a real transaction through the actual detect -> mandate
--> sign pipeline, on demand, in this process).
+(reads precomputed, already signed real decisions) and the Live Test
+Harness tab (runs a real transaction through the actual detect to
+mandate to sign pipeline, on demand, in this process).
 
 Loads the same detect/mandate/sign modules the offline pipeline
 (pipeline/src/run_pipeline.py) uses, so a live evaluation here is the
-real thing, not a simulation — same trained model, same rule engine,
+real thing, not a simulation. Same trained model, same rule engine,
 same authority keypair.
 """
 
@@ -31,11 +31,11 @@ import signature_verifier as verify  # noqa: E402
 SCENARIOS_PATH = WEB_DIR / "data" / "attack_scenarios.json"
 DEMO_CUSTOMERS_PATH = WEB_DIR / "data" / "demo_customers.json"
 
-# Neutral defaults for the features the Live Test form doesn't expose —
-# median-ish values from the real legitimate population, same idea as
-# detect/src/detector.py's median_neutral_features, so amount/merchant/
-# hour/ai-signal are what's actually driving the score, not noise from
-# fields the judge never touched.
+# Neutral defaults for the features the Live Test form doesn't expose.
+# Values close to the median of the real legitimate population, same
+# idea as detect/src/detector.py's median_neutral_features, so
+# amount, merchant, hour, and ai signal are what's actually driving
+# the score, not noise from fields the judge never touched.
 NEUTRAL_FEATURES = {
     "seconds_since_prev_tx": 3600.0,
     "location_mismatch_km": 5.0,
@@ -109,7 +109,7 @@ def _validate_inputs(customer_id, amount, merchant, hour_of_day, ai_generated_si
         raise ValidationError(f"amount must be between {MIN_AMOUNT} and {MAX_AMOUNT}")
 
     if not isinstance(merchant, str) or not (1 <= len(merchant) <= 80):
-        raise ValidationError("merchant must be a non-empty string (max 80 chars)")
+        raise ValidationError("merchant must be a string that is not empty (max 80 chars)")
 
     try:
         hour_of_day = int(hour_of_day)
@@ -185,5 +185,5 @@ def evaluate_transaction(customer_id, amount, merchant, hour_of_day, ai_generate
         "mandate_checks": mandate_result["checks"],
         "decision": signed,
         "verified": verified,
-        "note": "Single-transaction demo: month-to-date spend and today's transaction count are assumed zero going in — the spending-limit and velocity rules still run for real, just without a running session history to accumulate against.",
+        "note": "Single transaction demo: month to date spend and today's transaction count are assumed zero going in. The spending limit and velocity rules still run for real, just without a running session history to accumulate against.",
     }

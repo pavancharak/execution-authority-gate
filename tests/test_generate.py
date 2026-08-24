@@ -2,10 +2,10 @@
 Tests for generate/src/fraud_agents.py.
 
 Agents 5 (PatternReplicatorAgent) and 6 (InjectionGeneratorAgent) are
-local/statistical — no OpenAI calls, so they're tested directly, every
+local and statistical, no OpenAI calls, so they're tested directly, every
 run. Agents 1, 2, 4, 7 call the real OpenAI API and only run when
 ALLOW_LIVE_OPENAI=1 and OPENAI_API_KEY are both set (see the bottom of
-this file) — they cost real money, so they're opt-in.
+this file). They cost real money, so they're opt in.
 """
 
 import os
@@ -38,7 +38,7 @@ def test_pattern_replicator_respects_token_cap(isolated_generate_env):
     histories = [{"customer_id": "cust_1", "customer_name": "Test", "avg_amount": 42.5, "currency": "USD"}]
 
     agent = fa.PatternReplicatorAgent(max_transactions=7)
-    # Ask for more than the token allows — the agent should stop at the
+    # Ask for more than the token allows. The agent should stop at the
     # token's max_operations, not the requested target_count.
     txs = agent.run(histories, target_count=100)
 
@@ -95,7 +95,7 @@ def test_make_stolen_card_histories(make_transaction):
 
 
 # ---------------------------------------------------------------------------
-# Live OpenAI tests — opt-in only (real API calls, real cost).
+# Live OpenAI tests, opt in only (real API calls, real cost).
 # Run with: ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
 # ---------------------------------------------------------------------------
 
@@ -126,7 +126,7 @@ def test_social_engineer_agent_generates_real_transcripts(isolated_generate_env)
     txs = agent.run(seed_profiles)
 
     # Not every conversation "succeeds", so this only asserts the run
-    # completes and produces well-formed output when it does.
+    # completes and produces well formed output when it does.
     assert all(tx["attack_type"] == "social_engineering" for tx in txs)
 
 

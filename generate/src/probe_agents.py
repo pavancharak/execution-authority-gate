@@ -1,22 +1,23 @@
 """
 Entry point: python probe_agents.py
 
-Phase 2: red-teams our OWN trained detector. Run this after the detect
-layer has trained and saved a model (e.g. after run_simulation.py +
-detect/src/check_results.py or pipeline/src/run_pipeline.py).
+Phase 2: runs a red team exercise against our OWN trained detector. Run
+this after the detect layer has trained and saved a model (e.g. after
+run_simulation.py + detect/src/check_results.py or
+pipeline/src/run_pipeline.py).
 
 Agent 3 (Limit Prober): submits amounts $10 to $10,000 through the real
 detector, holding every other feature at the legitimate population's
 median, and reads back the real decision boundary. No external API, no
-fabricated sandbox — just our own model. Free.
+fabricated sandbox, just our own model. Free.
 
 Agent 7 (Feedback Loop Exploit): samples transactions our detector
 actually blocked, asks GPT to propose small realistic feature variants,
-and re-scores each variant through the real detector to see which ones
+and rescores each variant through the real detector to see which ones
 actually evade. Genuine adversarial robustness testing against our own
-local model. Real OpenAI calls — kept small (a handful of blocked
-transactions, a couple of variants each) since this is a real-cost proof
-run, not a full-scale reproduction.
+local model. Real OpenAI calls, kept small (a handful of blocked
+transactions, a couple of variants each) since this is a real cost proof
+run, not a full scale reproduction.
 
 Both reports are signed by the external authority and written to
 ../data/probe_report.json.
@@ -56,10 +57,11 @@ def load(name):
 
 def build_blocked_sample(good, fraud, model, n=3):
     """Score every transaction fresh through the trained model and pick
-    the blocked ones closest to the 0.80 threshold — those are the
-    genuinely testable cases. The highest-confidence blocks are trivially
-    robust to small nudges, testing those would make evasion look
-    artificially hard rather than showing a real adversarial result."""
+    the blocked ones closest to the 0.80 threshold. Those are the
+    genuinely testable cases. The blocks with the highest confidence are
+    trivially robust to small nudges, so testing those would make
+    evasion look artificially hard rather than showing a real
+    adversarial result."""
     all_tx = good + fraud
     X, _y = det.build_matrix(all_tx)
     scores = model.predict_proba(X)[:, 1]

@@ -96,8 +96,8 @@ def test_build_defaults_api_activity_when_missing(tmp_path, monkeypatch):
 
 
 def test_committed_dashboard_json_has_the_shape_the_web_page_expects():
-    """The real, committed web/data/dashboard.json — the one script.js
-    actually fetches — has every top-level key the page reads."""
+    """The real, committed web/data/dashboard.json, the one script.js
+    actually fetches, has every top level key the page reads."""
     dashboard_path = REPO_ROOT / "web" / "data" / "dashboard.json"
     if not dashboard_path.exists():
         pytest.skip("web/data/dashboard.json not present (run the pipeline layer to generate it)")

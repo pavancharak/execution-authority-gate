@@ -20,7 +20,7 @@ Deterministic rule checker verifies authorization.
 **Rules:**
 - Spending limit enforcement
 - Merchant category whitelist
-- Time-based restrictions
+- Time based restrictions
 - Velocity checks
 
 ## Layer 4: Sign + Authority

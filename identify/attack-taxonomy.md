@@ -50,7 +50,7 @@ questions based on personal knowledge.
 **Damage:** Account takeover, unauthorized card issuance, disabled fraud
 alerts.
 **Agent:** `agent2_social_engineer`, GPT-4o-mini generates fictional
-call-center transcripts. Text only: no voice cloning, no audio, no real
+call center transcripts. Text only: no voice cloning, no audio, no real
 support line contacted.
 
 ## 5. Authorization Limit Probing, *simulated, real: attacks our own detector*
@@ -84,8 +84,8 @@ teach a retraining pipeline that fraud patterns are normal.
 **Why it's hard to catch:** Attacks the training data, not the
 transaction. The model's own confidence goes up, not down.
 **Damage:** Long term degradation of detection accuracy.
-**Note:** `agent7_feedback_loop` is related but distinct — it generates
-real-time evasion variants against the already-trained model, it does
+**Note:** `agent7_feedback_loop` is related but distinct. It generates
+real time evasion variants against the already trained model, it does
 not poison a retraining pipeline. Actually poisoning a feedback loop
 would require a persistent retraining process this lab doesn't run, so
 this attack stays an honest gap.
@@ -94,5 +94,5 @@ this attack stays an honest gap.
 
 Ported from the original mastercard/parmana lab's `docs/attacks.md`.
 Agent implementations live in `generate/src/fraud_agents.py`; the
-detect-layer probing scripts for attacks #5 and #7 have not been ported
+detect layer probing scripts for attacks #5 and #7 have not been ported
 into this repo yet.

@@ -1,5 +1,5 @@
 """
-External Authority — signs decisions and authorization tokens.
+External Authority. Signs decisions and authorization tokens.
 
 This module simulates an authority that lives OUTSIDE the fraud agents and
 OUTSIDE the fraud detector. Neither the agents nor the detector hold the
@@ -74,14 +74,14 @@ def _load_or_create_keypair(name: str):
 
 
 class Signer:
-    """A single external-authority identity (its own keypair)."""
+    """A single external authority identity (its own keypair)."""
 
     def __init__(self, name: str):
         self.name = name
         self._private_key = _load_or_create_keypair(name)
 
     def sign_record(self, payload: dict) -> dict:
-        """Return payload + signature, envelope-style. Payload is untouched
+        """Return payload plus signature, as an envelope. Payload is untouched
         (all fields the judge cares about are visible in plaintext); the
         signature only proves *this signer* produced it and it wasn't
         altered afterward."""
@@ -100,7 +100,7 @@ REVIEWER = Signer("reviewer")
 
 def issue_agent_token(agent_id: str, action: str, max_operations: int, ttl_seconds: int = 3600) -> dict:
     """AUTHORITY issues a signed, bounded permission token to an agent.
-    The agent cannot raise max_operations after the fact — any attempt to
+    The agent cannot raise max_operations after the fact. Any attempt to
     claim a higher number is directly contradicted by this signed file."""
     now = time.time()
     token = AUTHORITY.sign_record(
@@ -157,7 +157,7 @@ def sign_pipeline_decision(
     final_decision: str,
     reasons: list,
 ) -> dict:
-    """AUTHORITY signs the pipeline's combined decision — detect layer
+    """AUTHORITY signs the pipeline's combined decision: detect layer
     score/decision AND mandate layer result, folded into one final
     decision. Neither the detector nor the mandate checker can make a
     decision final on their own; only this signature does."""

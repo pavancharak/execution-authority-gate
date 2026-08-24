@@ -2,7 +2,7 @@
 Tests for sign/src/authority_signer.py and signature_verifier.py.
 
 Every test uses isolated_sign_env (see conftest.py) so nothing here
-touches the repo's real sign/tokens/ or generates real long-lived keys.
+touches the repo's real sign/tokens/ or generates real keys that live long.
 """
 
 
@@ -37,7 +37,7 @@ def test_sign_pipeline_decision_verifies(isolated_sign_env):
 
 def test_key_separation_authority_vs_reviewer(isolated_sign_env):
     """A record signed by one identity must never verify against the
-    other's public key — this is the whole point of using two keys."""
+    other's public key. This is the whole point of using two keys."""
     auth, verify = isolated_sign_env
 
     decision = auth.sign_block_decision("tx_1", 0.5, "FLAG", [])
@@ -74,7 +74,7 @@ def test_verify_record_without_signature_returns_false(isolated_sign_env):
 def test_two_signings_of_the_same_payload_are_not_identical(isolated_sign_env):
     """Each signed record gets a fresh record_id/signed_at, so signing
     the same logical decision twice produces two different (both valid)
-    signatures — this is intentional, not a determinism bug: it means
+    signatures. This is intentional, not a determinism bug. It means
     two signing events are always distinguishable."""
     auth, verify = isolated_sign_env
 

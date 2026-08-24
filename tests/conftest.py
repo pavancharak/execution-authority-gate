@@ -1,6 +1,6 @@
 """
-Shared fixtures. Every layer here is a flat, non-packaged module (no
-top-level src/ package — see the README's layer layout), so we put each
+Shared fixtures. Every layer here is a flat module with no package (no
+top level src/ package, see the README's layer layout), so we put each
 layer's src/ directory on sys.path once, then every test file imports
 modules by their bare name (import detector, import mandate_checker,
 ...), exactly like the source files import each other.
@@ -27,9 +27,9 @@ def isolated_sign_env(tmp_path, monkeypatch):
 
     authority_signer.py creates its AUTHORITY/REVIEWER singletons (and
     signature_verifier.py copies TOKENS_DIR via `from authority_signer
-    import ... TOKENS_DIR`) once, at import time — both bound to the
+    import ... TOKENS_DIR`) once, at import time, both bound to the
     real sign/tokens/ path. Reassigning authority_signer.TOKENS_DIR
-    later would not change signature_verifier's already-copied value,
+    later would not change the value signature_verifier already copied,
     so every module that captured a copy has to be patched here.
     """
     import authority_signer as auth
@@ -110,7 +110,7 @@ def make_transaction():
 @pytest.fixture
 def synthetic_dataset():
     """60 legitimate + 60 fraudulent transactions from clearly separated
-    distributions — enough signal for detector.train()'s RandomForest to
+    distributions, enough signal for detector.train()'s RandomForest to
     reliably tell them apart in a fast, hermetic test."""
     rng = random.Random(42)
     good = [_make_transaction(rng, is_fraud=False) for _ in range(60)]

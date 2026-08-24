@@ -1,5 +1,5 @@
 """
-Independent signature verification — deliberately separate from
+Independent signature verification, deliberately separate from
 authority_signer.py.
 
 Verification here uses ONLY the public key files on disk (tokens/*.pem).
@@ -16,7 +16,7 @@ from authority_signer import _canonical, TOKENS_DIR
 
 
 def verify_record(record: dict, signer_name: str) -> bool:
-    """Verify a signed record using ONLY the public key file on disk —
+    """Verify a signed record using ONLY the public key file on disk,
     exactly what a judge would do, with no access to any private key."""
     pub_path = TOKENS_DIR / f"{signer_name}_public_key.pem"
     if not pub_path.exists():

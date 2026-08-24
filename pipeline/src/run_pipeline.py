@@ -3,18 +3,18 @@ Entry point: python run_pipeline.py
 
 Orchestrates all four layers end to end:
 
-  1. DETECT  — train the RandomForest model, score each held-out test
+  1. DETECT: train the RandomForest model, score each held out test
      transaction, propose BLOCK/FLAG/ALLOW.
-  2. MANDATE — derive each customer's mandate from their own good-
+  2. MANDATE: derive each customer's mandate from their own good
      transaction history, check the transaction against it.
-  3. COMBINE — a transaction is only ALLOWed if detect says ALLOW *and*
+  3. COMBINE: a transaction is only ALLOWed if detect says ALLOW *and*
      mandate says allowed. Either layer objecting is enough to BLOCK.
      Neither layer's proposal is final on its own.
-  4. SIGN    — the authority signs the combined decision. Nothing above
+  4. SIGN: the authority signs the combined decision. Nothing above
      is enforceable until this step.
 
 Reads transaction data from ../../generate/data/, trains and saves the
-detect-layer model to ../../detect/models/, and writes the signed
+detect layer model to ../../detect/models/, and writes the signed
 decision log to ./decisions/pipeline_decisions.json.
 """
 
@@ -54,7 +54,7 @@ def load(name):
 def combine_decision(detect_decision, mandate_result):
     """BLOCK wins over everything: either layer objecting blocks the
     transaction. FLAG only happens when detect is unsure AND mandate has
-    no objection — a clean mandate doesn't downgrade a detect BLOCK, and
+    no objection. A clean mandate doesn't downgrade a detect BLOCK, and
     a clean detect score doesn't upgrade a mandate violation past BLOCK."""
     if detect_decision == "BLOCK" or not mandate_result["mandate_allowed"]:
         return "BLOCK"
@@ -80,7 +80,7 @@ def main():
     scores = metrics.pop("scores")
     print(f"      fraud_caught_rate={metrics['fraud_caught_rate']:.2%}  false_positive_rate={metrics['false_positive_rate']:.2%}")
 
-    print("\n[3/4] Deriving customer mandates from their good-transaction history...")
+    print("\n[3/4] Deriving customer mandates from their good transaction history...")
     by_customer_good = {}
     for tx in good:
         by_customer_good.setdefault(tx["customer_id"], []).append(tx)
@@ -88,10 +88,10 @@ def main():
     print(f"      -> {len(mandates)} customer mandates derived")
 
     print("\n[4/4] Combining detect + mandate, signing every final decision...")
-    # Running per-customer totals for this run only, walked in test-set
+    # Running per customer totals for this run only, walked in test set
     # order. The synthetic data has no real timestamps (only hour_of_day),
     # so this is a simplified sequential walk, not true chronological
-    # replay — good enough to demonstrate spending-limit and velocity
+    # replay. Good enough to demonstrate spending limit and velocity
     # rules firing, not a claim about real elapsed time.
     month_to_date = {}
     tx_count_today = {}
@@ -110,7 +110,7 @@ def main():
         final_decision = combine_decision(detect_decision, mandate_result)
 
         # A blocked transaction shouldn't count against the customer's
-        # budget or daily count — it never actually went through.
+        # budget or daily count. It never actually went through.
         if final_decision != "BLOCK":
             month_to_date[cust_id] = mtd_total + tx["amount"]
             tx_count_today[cust_id] = tx_today + 1
@@ -147,7 +147,7 @@ def main():
     print(f"      wrote {path}")
 
     verified_count = sum(1 for e in entries if verify.verify_record(dict(e["decision"]), "authority"))
-    print(f"\nVerification: {verified_count}/{len(entries)} signatures verify independently (public-key check only)")
+    print(f"\nVerification: {verified_count}/{len(entries)} signatures verify independently (public key check only)")
 
     print("\nBuilding web dashboard...")
     verification = {

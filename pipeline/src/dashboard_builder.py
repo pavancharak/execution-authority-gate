@@ -1,7 +1,7 @@
 """
-Assembles web/data/dashboard.json from a completed pipeline run — the
+Assembles web/data/dashboard.json from a completed pipeline run, the
 single file the web dashboard reads. Everything in it is real output
-from this run: nothing here is hand-authored sample data.
+from this run: nothing here is hand authored sample data.
 """
 
 import json

@@ -3,7 +3,7 @@ Thin wrapper around the OpenAI API for the agents that use real GPT calls
 (Agent 1 identity generation, Agent 2 social engineering transcripts,
 Agent 4 KYC bundles, Agent 7 evasion variant suggestions).
 
-Loads OPENAI_API_KEY from the repo-root .env file (never committed, see
+Loads OPENAI_API_KEY from the repo root .env file (never committed, see
 .gitignore) so the key never has to be pasted into chat, code, or any
 committed file. Every call's real token usage is printed with an
 approximate cost so nothing runs up a surprise bill.

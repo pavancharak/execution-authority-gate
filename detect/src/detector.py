@@ -2,7 +2,7 @@
 Detection layer: trains a classifier on transaction features and scores
 new transactions for fraud risk.
 
-This layer only detects — it does not sign or enforce anything. A
+This layer only detects. It does not sign or enforce anything. A
 proposed decision from `decision_for_score` is not final until the
 mandate layer and the signing layer (see ../../mandate, ../../sign) have
 both run on it. That composition happens in ../../pipeline.
@@ -94,7 +94,7 @@ def evaluate(model, X_test, y_test):
 
 
 def _reasons_for(tx, model):
-    """Cheap, explainable-by-eye rationale: which features look most
+    """Cheap, explainable by eye rationale: which features look most
     unusual for this transaction, weighted by what the model actually
     relies on."""
     importances = dict(zip(FEATURES, model.feature_importances_))
@@ -132,7 +132,7 @@ def decision_for_score(score: float) -> str:
 
 def generate_decisions(model, tx_test, scores):
     """Proposed (unsigned) decisions for every test transaction. This is
-    the detect layer's full output — the mandate layer, then the sign
+    the detect layer's full output. The mandate layer, then the sign
     layer, still have to run before any of these is a final, enforceable
     decision."""
     entries = []

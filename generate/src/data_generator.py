@@ -1,6 +1,6 @@
 """Generates the legitimate transaction population used to train/test the
 detector alongside the fraud agents' output. No authorization token is
-needed here because this isn't an attack — it's the baseline of normal
+needed here because this isn't an attack. It's the baseline of normal
 customer behavior the detector must learn NOT to flag."""
 
 import random
@@ -21,7 +21,7 @@ def generate_good_transactions(n_customers=200, avg_tx_per_customer=5, max_trans
         base_amount = random.uniform(8, 300)
         n_tx = max(1, int(random.gauss(avg_tx_per_customer, 2)))
         for _ in range(n_tx):
-            # A small slice of otherwise-legitimate activity is genuinely
+            # A small slice of otherwise legitimate activity is genuinely
             # unusual (traveling customer, gift purchase, AI shopping
             # assistant/autofill) so the detector faces realistic overlap
             # instead of a clean separation it could never see in practice.

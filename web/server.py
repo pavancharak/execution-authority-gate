@@ -1,12 +1,12 @@
 """
 Optional Flask server for the dashboard.
 
-Not required for local use — `python -m http.server` from web/ works
-fine (see the README). This exists for deployment: a static-file server
-with a health check at /api/status, matching ../Dockerfile and
+Not required for local use, `python -m http.server` from web/ works
+fine (see the README). This exists for deployment: a server for static
+files with a health check at /api/status, matching ../Dockerfile and
 ../fly.toml.
 
-Serves whatever is in web/data/dashboard.json at request time — for a
+Serves whatever is in web/data/dashboard.json at request time. For a
 deployed image that's the version committed to the repo, since the
 pipeline isn't run inside the container.
 """

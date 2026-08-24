@@ -1,6 +1,6 @@
 """
 Individual mandate rules. Each function checks one thing and returns
-(passed: bool, reason: str) — deterministic, no ML, no LLM. Composed
+(passed: bool, reason: str), deterministic, no ML, no LLM. Composed
 together in mandate_checker.py.
 """
 

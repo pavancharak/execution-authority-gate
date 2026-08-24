@@ -1,6 +1,6 @@
 """
-End-to-end tests wiring detect + mandate + sign together, the same way
-pipeline/src/run_pipeline.py does — but against the hermetic synthetic
+Tests wiring detect + mandate + sign together end to end, the same way
+pipeline/src/run_pipeline.py does, but against the hermetic synthetic
 dataset and an isolated sign environment, not real files on disk.
 """
 
@@ -48,7 +48,7 @@ def test_full_pipeline_signs_every_decision_and_all_verify(synthetic_dataset, is
 
 def test_final_decision_is_never_looser_than_either_layer(synthetic_dataset, isolated_sign_env):
     """BLOCK from either layer must always propagate to the final
-    decision — this is the property the whole dual-layer pitch rests
+    decision. This is the property the whole two layer pitch rests
     on."""
     auth, verify = isolated_sign_env
     good, fraud = synthetic_dataset

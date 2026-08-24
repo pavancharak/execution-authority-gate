@@ -1,7 +1,7 @@
 """
 Cryptographic guarantees the sign layer is supposed to provide, tested
-directly rather than assumed. Complements test_signer.py's per-function
-tests with properties that should hold across many inputs.
+directly rather than assumed. Complements test_signer.py's tests per
+function with properties that should hold across many inputs.
 """
 
 
@@ -21,10 +21,10 @@ def test_verification_fails_without_the_public_key_file(isolated_sign_env, tmp_p
 
 
 def test_verification_cannot_be_satisfied_by_a_different_authoritys_key(tmp_path, monkeypatch):
-    """Two independently-generated 'authority' identities, in two
-    separate directories, must not cross-verify each other's records —
-    proves verification is tied to the specific key on disk, not the
-    signer name alone."""
+    """Two independently generated 'authority' identities, in two
+    separate directories, must not cross verify each other's records.
+    This proves verification is tied to the specific key on disk, not
+    the signer name alone."""
     import authority_signer as auth
     import signature_verifier as verify
 
@@ -43,7 +43,7 @@ def test_verification_cannot_be_satisfied_by_a_different_authoritys_key(tmp_path
     pub_key_a = (auth.TOKENS_DIR / "authority_public_key.pem").read_bytes()
 
     _fresh_env("env_b")
-    assert verify.verify_record(dict(record_a), "authority") is False, "signed under env_a's key, verified under env_b's — should fail"
+    assert verify.verify_record(dict(record_a), "authority") is False, "signed under env_a's key, verified under env_b's, should fail"
 
     pub_key_b = (auth.TOKENS_DIR / "authority_public_key.pem").read_bytes()
     assert pub_key_a != pub_key_b
@@ -58,7 +58,7 @@ def test_canonical_encoding_differs_for_different_content(isolated_sign_env):
 
 def test_mandate_allowed_is_exactly_no_violations(make_transaction):
     """mandate_allowed must always be equivalent to violated_rules being
-    empty — the two fields can never disagree, across many random
+    empty. The two fields can never disagree, across many random
     transactions against many random mandates."""
     import random
 

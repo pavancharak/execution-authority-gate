@@ -2,11 +2,11 @@
 Mandate layer: deterministic authorization rules, independent of the
 detect layer's fraud score. A transaction can look statistically normal
 (low fraud score) and still be unauthorized (over budget, wrong merchant,
-odd hour, too many today) — that's the case this layer exists to catch.
+odd hour, too many today), and that's the case this layer exists to catch.
 
-A mandate is derived from a customer's own known-good transaction
+A mandate is derived from a customer's own known good transaction
 history: this is "the customer's actual $200/month grocery budget", not
-a hand-authored policy. See derive_mandate_from_history.
+a hand authored policy. See derive_mandate_from_history.
 """
 
 import rules
@@ -18,7 +18,7 @@ DEFAULT_MAX_TX_PER_DAY = 8
 
 def default_mandate(customer_id=None):
     """Used when a customer has no transaction history to derive a
-    mandate from (e.g. a brand-new account) — deliberately loose, since
+    mandate from (e.g. a brand new account). This is deliberately loose, since
     there's nothing yet to base a tighter policy on."""
     return {
         "customer_id": customer_id,
@@ -30,7 +30,7 @@ def default_mandate(customer_id=None):
 
 
 def derive_mandate_from_history(customer_transactions):
-    """Build a customer-specific mandate from their own known-good
+    """Build a mandate specific to the customer from their own known good
     transactions: monthly cap based on their real historical volume,
     merchants they've actually used, the hours they actually transact in
     (with a small margin), and daily velocity a bit above their observed
@@ -53,8 +53,8 @@ def derive_mandate_from_history(customer_transactions):
 
 
 def check_mandate(transaction, mandate, month_to_date_total=0.0, tx_count_today=0):
-    """Run every mandate rule against a transaction. ALL must pass — this
-    is deliberately AND, not OR: a transaction within its spending limit
+    """Run every mandate rule against a transaction. ALL must pass. This
+    is deliberately AND, not OR. A transaction within its spending limit
     but at 3am from a merchant the customer has never used should still
     fail the mandate, even if the detect layer scored it as low risk."""
     checks = [
