@@ -73,6 +73,16 @@ From the run behind the committed `web/data/dashboard.json` fully self-generated
 - **All decisions signed:** 6,869/6,869 verify independently
 - **Red team (agent 7):** 18 evasion variants tested against the trained model, 1 evaded detection with balanced class weighting, the model held up far better against adversarial nudges than an earlier, more imbalanced version of this dataset (16/18 evaded then)
 
+### Why precision is 21.1% (and why that's expected)
+
+The detect layer's **precision is 21.1%**: of the 582 transactions it flags (459 false positives + 123 true positives), only about 1 in 5 is actually fraud. That number looks bad in isolation, so here's the context:
+
+- **Fraud is rare** (138 of 6,869 test-set transactions, ~2%). Tuning a classifier to catch 89.1% of that rare an event requires flagging aggressively — the same trade-off airport security makes to catch most weapons at the cost of screening plenty of harmless bags. Recall and precision pull against each other; you cannot maximize both when the positive class is this sparse.
+- **Precision measures the detect layer alone**, in isolation, on the held-out test set. It is *not* the system's real-world false-accusation rate — a detect-layer flag doesn't block anything by itself. It still has to clear the independent, rule-based **mandate** layer (spending limits, merchant whitelist, time-of-day, velocity) before a transaction is denied, and every final decision — ALLOW or BLOCK — is signed and independently verifiable.
+- The confusion matrix behind these numbers: of 6,731 legitimate test transactions, 6,272 passed and 459 were flagged; of 138 fraud transactions, 123 were caught and 15 were missed. (`web/data/dashboard.json` → `detect.metrics.confusion_matrix`, also rendered live on the [dashboard](https://execution-authority-gate.fly.dev)'s Detection tab.)
+
+See [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md) for the full walkthrough, including why a low-precision/high-recall detector is standard practice in fraud detection rather than a flaw.
+
 ## Robustness
 
 Numbers vary run to run: agents 1, 2, 4, and 7 call the real OpenAI API at temperature=0.9, non-deterministic by design. Re-running `generate/src/run_simulation.py` (then `detect/src/check_results.py`, `generate/src/probe_agents.py`, and `pipeline/src/run_pipeline.py`) with your own `OPENAI_API_KEY` will produce different fraud examples and slightly different metrics that's deliberate, it proves the detector holds up across different fraud patterns, not just one fixed dataset.

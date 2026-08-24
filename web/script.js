@@ -24,8 +24,8 @@ function esc(s) {
   return div.innerHTML;
 }
 
-function statTile(label, value, cls = "") {
-  return `<div class="stat-tile">
+function statTile(label, value, cls = "", tooltip = "") {
+  return `<div class="stat-tile"${tooltip ? ` title="${esc(tooltip)}"` : ""}>
     <div class="stat-label">${esc(label)}</div>
     <div class="stat-value ${cls}">${value}</div>
   </div>`;
@@ -178,6 +178,10 @@ function renderDetect(data) {
     colorVar: "--series-1",
   }));
 
+  const totalFraud = cm.true_positive + cm.false_negative;
+  const totalLegit = cm.true_negative + cm.false_positive;
+  const totalFlagged = cm.true_positive + cm.false_positive;
+
   return `
     <div class="section">
       <h1>Detection layer</h1>
@@ -186,9 +190,24 @@ function renderDetect(data) {
 
     <div class="section">
       <div class="stat-row">
-        ${statTile("Fraud caught", fmtPct(m.fraud_caught_rate), "good")}
-        ${statTile("False positive rate", fmtPct(m.false_positive_rate))}
-        ${statTile("Precision", fmtPct(m.precision))}
+        ${statTile(
+          "Fraud caught",
+          fmtPct(m.fraud_caught_rate),
+          "good",
+          `Catches ${cm.true_positive} of ${totalFraud} fraud cases in the test set`
+        )}
+        ${statTile(
+          "False positive rate",
+          fmtPct(m.false_positive_rate),
+          "",
+          `Flags ${cm.false_positive} of ${totalLegit} legitimate transactions`
+        )}
+        ${statTile(
+          "Precision",
+          fmtPct(m.precision),
+          "",
+          `Of ${totalFlagged} transactions flagged, ${cm.true_positive} are real fraud — the detect layer's job is recall, not precision; see note below`
+        )}
       </div>
     </div>
 
@@ -205,6 +224,25 @@ function renderDetect(data) {
       <div class="card">
         <h3>Top signals (feature importance)</h3>
         ${barChart(signalRows, { valueFmt: (v) => v.toFixed(3) })}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="card">
+        <h3>Why precision looks low</h3>
+        <p>
+          Fraud is rare here (${totalFraud} cases out of ${(totalFraud + totalLegit).toLocaleString()} transactions,
+          about 2%). Tuning a classifier to catch ${fmtPct(m.fraud_caught_rate)} of that rare an event means it has
+          to flag aggressively, which produces false positives — the same trade-off airport security makes to catch
+          most weapons at the cost of flagging some harmless bags.
+        </p>
+        <p>
+          Precision (${fmtPct(m.precision)}) measures the <em>detect layer alone</em>, in isolation, on this
+          held-out test set. It is not the system's real-world false-accusation rate: nothing here is auto-executed
+          off a detect-layer flag. A flag still has to clear the <strong>mandate</strong> layer's independent,
+          rule-based check before anything is blocked, and every final decision — ALLOW or BLOCK — is signed and
+          auditable. See <code>docs/JUDGES_GUIDE.md</code> for the full breakdown.
+        </p>
       </div>
     </div>
   `;
