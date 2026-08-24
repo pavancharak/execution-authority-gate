@@ -327,6 +327,184 @@ function renderMandate(data) {
   `;
 }
 
+/** Shared render for a full pipeline outcome — used by both the Attack
+ * Walkthrough (precomputed, real, already-signed decisions) and the
+ * Live Test Harness (a decision computed live, right now, by this
+ * request). txSummaryRows: [{label, value}]. */
+function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
+  const ruleLabels = {
+    spending_limit: "Spending limit",
+    merchant_whitelist: "Merchant whitelist",
+    time_restriction: "Time-of-day window",
+    velocity: "Daily velocity",
+  };
+
+  const txRows = txSummaryRows
+    .map((r) => `<div class="kv-row"><span class="kv-key">${esc(r.label)}</span><span class="kv-value">${esc(r.value)}</span></div>`)
+    .join("");
+
+  const mandateRows = mandateChecks
+    .map(
+      (c) => `<tr>
+        <td>${ruleLabels[c.rule] || c.rule}</td>
+        <td>${c.passed ? '<span class="dot good"></span> pass' : '<span class="dot critical"></span> fail'}</td>
+        <td>${esc(c.reason)}</td>
+      </tr>`
+    )
+    .join("");
+
+  return `
+    <div class="pipeline-steps">
+      <div class="card pipeline-step">
+        <h3>Step 1 &middot; Detection</h3>
+        <div class="stat-row">
+          ${statTile("Fraud score", decision.fraud_score.toFixed(4))}
+          ${statTile("Detect layer proposes", badge(decision.detect_decision))}
+        </div>
+        <p>${(decision.reasons || []).filter((r) => r.startsWith("detect:")).map((r) => esc(r.replace("detect: ", ""))).join(", ") || "no single dominant signal"}</p>
+      </div>
+
+      <div class="card pipeline-step">
+        <h3>Step 2 &middot; Mandate</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rule</th><th>Result</th><th>Reason</th></tr></thead>
+            <tbody>${mandateRows}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card pipeline-step">
+        <h3>Step 3 &middot; Signing</h3>
+        <div class="sig-line">
+          <span class="dot ${verified ? "good" : "critical"}"></span>
+          <strong>${verified ? "Signature verifies" : "Signature does NOT verify"}</strong>
+        </div>
+        <div class="kv-block"><span class="kv-key">Ed25519 signature</span><span class="kv-value mono">${esc(decision.signature.slice(0, 32))}&hellip;</span></div>
+        <div class="kv-block"><span class="kv-key">Signed by</span><span class="kv-value">${esc(decision.signer)}</span></div>
+      </div>
+
+      <div class="card pipeline-step">
+        <h3>Step 4 &middot; Authority (final decision)</h3>
+        <div class="sig-line" style="margin-bottom:12px">${badge(decision.final_decision)}</div>
+        <p>${
+          decision.final_decision === "BLOCK"
+            ? (!decision.mandate_allowed
+                ? `Mandate layer rejected it (${decision.violated_mandate_rules.map((r) => ruleLabels[r] || r).join(", ")}) — blocked regardless of the detect score.`
+                : `Detect layer scored it high-risk (${decision.fraud_score.toFixed(2)}) — blocked even though the mandate layer had no objection.`)
+            : decision.final_decision === "FLAG"
+            ? `Detect layer is unsure (${decision.fraud_score.toFixed(2)}) and the mandate layer has no objection — flagged for review, not auto-blocked.`
+            : `Low risk (${decision.fraud_score.toFixed(2)}) and every mandate rule passed — allowed.`
+        }</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Transaction</h3>
+      <div class="kv-grid">${txRows}</div>
+    </div>
+  `;
+}
+
+function renderWalkthrough(data, scenarios) {
+  if (!scenarios || !scenarios.length) {
+    return `<div class="section"><h1>Attack walkthrough</h1><p class="error-inline">Couldn't load data/attack_scenarios.json.</p></div>`;
+  }
+
+  const buttons = scenarios
+    .map(
+      (s, i) => `<button class="scenario-btn" data-scenario-id="${esc(s.id)}" data-index="${i}">
+        <span class="scenario-name">${esc(s.name)}</span>
+        ${badge(s.example.decision.final_decision)}
+      </button>`
+    )
+    .join("");
+
+  return `
+    <div class="section">
+      <h1>Attack walkthrough</h1>
+      <p>Pick a real attack type below to see one actual, already-signed decision from this repo's own pipeline run — the detect score, the mandate rules it hit, the signature, and why the final decision came out the way it did.</p>
+    </div>
+
+    <div class="section">
+      <div class="scenario-picker">${buttons}</div>
+    </div>
+
+    <div class="section" id="walkthrough-detail"></div>
+  `;
+}
+
+function renderScenarioDetail(scenario) {
+  const ex = scenario.example;
+  const gt = ex.ground_truth;
+  return `
+    <div class="card" style="margin-bottom:14px">
+      <h3>${esc(scenario.name)}</h3>
+      <p><strong>Where:</strong> ${esc(scenario.stage)}</p>
+      <p><strong>Why it's hard to catch:</strong> ${esc(scenario.why_hard_to_catch)}</p>
+    </div>
+    ${renderDecisionCard(
+      [
+        { label: "Amount", value: fmtMoney(gt.amount) },
+        { label: "Merchant", value: gt.merchant },
+        { label: "Currency", value: gt.currency },
+        { label: "Ground truth", value: gt.is_fraud ? "Actually fraud" : "Actually legitimate" },
+      ],
+      ex.decision,
+      ex.mandate_checks,
+      ex.verified
+    )}
+  `;
+}
+
+function renderLiveTest(data, customersData) {
+  const customers = (customersData && customersData.customers) || [];
+  const merchants = (customersData && customersData.merchants) || [];
+
+  if (!customers.length) {
+    return `<div class="section"><h1>Live test harness</h1><p class="error-inline">Couldn't load data/demo_customers.json.</p></div>`;
+  }
+
+  const customerOptions = customers
+    .map((c) => `<option value="${esc(c.customer_id)}">${esc(c.customer_name)} (${esc(c.customer_id)})</option>`)
+    .join("");
+  const merchantOptions = merchants.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+
+  return `
+    <div class="section">
+      <h1>Live test harness</h1>
+      <p>Submit a transaction and it runs through the real pipeline right now — the actual trained detector, the actual mandate rules derived from that customer's history, and a real Ed25519 signature from this deployment's own authority key.</p>
+    </div>
+
+    <div class="section">
+      <div class="card">
+        <form id="live-test-form" class="live-form">
+          <label>Customer
+            <select name="customer_id" required>${customerOptions}</select>
+          </label>
+          <label>Amount (USD)
+            <input type="number" name="amount" min="0.01" max="1000000" step="0.01" value="50.00" required>
+          </label>
+          <label>Merchant
+            <input list="merchant-list" name="merchant" value="${esc(merchants[0] || "")}" required>
+            <datalist id="merchant-list">${merchantOptions}</datalist>
+          </label>
+          <label>Hour of day (0&ndash;23)
+            <input type="number" name="hour_of_day" min="0" max="23" value="12" required>
+          </label>
+          <label>AI-generated signal (0&ndash;1)
+            <input type="number" name="ai_generated_signal" min="0" max="1" step="0.01" value="0.1" required>
+          </label>
+          <button type="submit" class="submit-btn">Run transaction</button>
+        </form>
+        <p class="form-hint">Each customer's mandate (spending limit, allowed merchants, allowed hours) was derived from their own real transaction history — try an unlisted merchant or an odd hour to see the mandate layer object on its own.</p>
+      </div>
+    </div>
+
+    <div class="section" id="live-test-result"></div>
+  `;
+}
+
 function renderProof(data) {
   const v = data.verification;
   const sample = data.pipeline.sample_decisions.find((e) => e.decision.final_decision === "BLOCK") || data.pipeline.sample_decisions[0];
@@ -385,6 +563,90 @@ function renderProof(data) {
   `;
 }
 
+async function fetchJsonSafe(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.warn(`Couldn't load ${url}: ${err.message}`);
+    return null;
+  }
+}
+
+function wireWalkthrough(scenarios) {
+  const picker = document.querySelector('.panel[data-panel="walkthrough"] .scenario-picker');
+  const detail = document.getElementById("walkthrough-detail");
+  if (!picker || !detail || !scenarios) return;
+
+  picker.addEventListener("click", (e) => {
+    const btn = e.target.closest(".scenario-btn");
+    if (!btn) return;
+    picker.querySelectorAll(".scenario-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    const scenario = scenarios[Number(btn.dataset.index)];
+    detail.innerHTML = renderScenarioDetail(scenario);
+  });
+
+  // Show the first scenario by default.
+  const firstBtn = picker.querySelector(".scenario-btn");
+  if (firstBtn) {
+    firstBtn.classList.add("active");
+    detail.innerHTML = renderScenarioDetail(scenarios[0]);
+  }
+}
+
+function wireLiveTest() {
+  const form = document.getElementById("live-test-form");
+  const result = document.getElementById("live-test-result");
+  if (!form || !result) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const submitBtn = form.querySelector(".submit-btn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Running…";
+    result.innerHTML = `<div class="loading">Running the live pipeline&hellip;</div>`;
+
+    const fd = new FormData(form);
+    const body = {
+      customer_id: fd.get("customer_id"),
+      amount: Number(fd.get("amount")),
+      merchant: fd.get("merchant"),
+      hour_of_day: Number(fd.get("hour_of_day")),
+      ai_generated_signal: Number(fd.get("ai_generated_signal")),
+    };
+
+    try {
+      const res = await fetch("api/demo/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
+
+      const tx = payload.transaction;
+      result.innerHTML = renderDecisionCard(
+        [
+          { label: "Customer", value: `${tx.customer_name} (${tx.customer_id})` },
+          { label: "Amount", value: fmtMoney(tx.amount) },
+          { label: "Merchant", value: tx.merchant },
+          { label: "Hour of day", value: tx.hour_of_day },
+          { label: "AI-generated signal", value: tx.ai_generated_signal },
+        ],
+        payload.decision,
+        payload.mandate_checks,
+        payload.verified
+      );
+    } catch (err) {
+      result.innerHTML = `<div class="error-inline">Couldn't run the live pipeline: ${esc(err.message)}.<br>The Live Test Harness needs the Flask server (<code>python web/server.py</code>) — it isn't available under <code>python -m http.server</code>.</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Run transaction";
+    }
+  });
+}
+
 const RENDERERS = {
   overview: renderOverview,
   attacks: renderAttacks,
@@ -405,14 +667,25 @@ async function main() {
     return;
   }
 
+  const [scenarios, customersData] = await Promise.all([
+    fetchJsonSafe("data/attack_scenarios.json"),
+    fetchJsonSafe("data/demo_customers.json"),
+  ]);
+
   const panels = {};
   for (const name of Object.keys(RENDERERS)) {
     panels[name] = RENDERERS[name](data);
   }
+  panels.walkthrough = renderWalkthrough(data, scenarios);
+  panels["live-test"] = renderLiveTest(data, customersData);
 
-  app.innerHTML = Object.entries(panels)
-    .map(([name, html], i) => `<div class="panel${i === 0 ? " active" : ""}" data-panel="${name}">${html}</div>`)
+  const order = ["overview", "attacks", "walkthrough", "detect", "mandate", "live-test", "proof"];
+  app.innerHTML = order
+    .map((name, i) => `<div class="panel${i === 0 ? " active" : ""}" data-panel="${name}">${panels[name]}</div>`)
     .join("");
+
+  wireWalkthrough(scenarios);
+  wireLiveTest();
 
   document.getElementById("tabs").addEventListener("click", (e) => {
     const btn = e.target.closest(".tab-btn");

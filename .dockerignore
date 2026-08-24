@@ -1,0 +1,23 @@
+# Real secrets — never bake these into the image.
+.env
+.env.local
+.env.*.local
+
+.git
+.gitignore
+__pycache__
+*.pyc
+.pytest_cache
+
+# Raw synthetic dataset and full decision log — large, and not needed
+# at runtime; the demo ships small, curated snapshots under web/data/
+# instead (see pipeline/src/build_demo_data.py).
+generate/data/
+pipeline/decisions/
+
+EAG-AUDIT-GAPS.md
+
+# NOTE: sign/tokens/ (the app's own Ed25519 signing keypair) and
+# detect/models/*.pkl (the trained detector) are deliberately NOT
+# excluded — the deployed container needs both to run the live
+# pipeline for the interactive demo (see web/interactive_demo.py).

@@ -1,0 +1,136 @@
+{
+  "customers": [
+    {
+      "customer_id": "cust_b6bb7366",
+      "customer_name": "Sam Garcia",
+      "transaction_count": 6,
+      "mandate": {
+        "customer_id": "cust_b6bb7366",
+        "monthly_limit_usd": 2770.08,
+        "allowed_merchants": [
+          "CloudHost",
+          "FreshGrocer",
+          "QuickMart",
+          "StreamFlix",
+          "TravelEasy"
+        ],
+        "allowed_hours": [
+          0,
+          20
+        ],
+        "max_tx_per_day": 8
+      }
+    },
+    {
+      "customer_id": "cust_adadc707",
+      "customer_name": "Jordan Chen",
+      "transaction_count": 7,
+      "mandate": {
+        "customer_id": "cust_adadc707",
+        "monthly_limit_usd": 2244.12,
+        "allowed_merchants": [
+          "CloudHost",
+          "FreshGrocer",
+          "GameVault",
+          "TravelEasy"
+        ],
+        "allowed_hours": [
+          2,
+          23
+        ],
+        "max_tx_per_day": 8
+      }
+    },
+    {
+      "customer_id": "cust_fb04e1b0",
+      "customer_name": "Morgan Nguyen",
+      "transaction_count": 6,
+      "mandate": {
+        "customer_id": "cust_fb04e1b0",
+        "monthly_limit_usd": 404.43,
+        "allowed_merchants": [
+          "FreshGrocer",
+          "StreamFlix",
+          "TechBazaar",
+          "UrbanCafe"
+        ],
+        "allowed_hours": [
+          11,
+          23
+        ],
+        "max_tx_per_day": 8
+      }
+    },
+    {
+      "customer_id": "cust_a3e73c33",
+      "customer_name": "Jordan Kowalski",
+      "transaction_count": 6,
+      "mandate": {
+        "customer_id": "cust_a3e73c33",
+        "monthly_limit_usd": 1464.69,
+        "allowed_merchants": [
+          "CloudHost",
+          "GameVault",
+          "QuickMart",
+          "StreamFlix",
+          "TechBazaar"
+        ],
+        "allowed_hours": [
+          12,
+          22
+        ],
+        "max_tx_per_day": 8
+      }
+    },
+    {
+      "customer_id": "cust_94b366c3",
+      "customer_name": "Casey Kowalski",
+      "transaction_count": 6,
+      "mandate": {
+        "customer_id": "cust_94b366c3",
+        "monthly_limit_usd": 1181.76,
+        "allowed_merchants": [
+          "CloudHost",
+          "QuickMart",
+          "TravelEasy"
+        ],
+        "allowed_hours": [
+          8,
+          16
+        ],
+        "max_tx_per_day": 8
+      }
+    },
+    {
+      "customer_id": "cust_07247c18",
+      "customer_name": "Sam Diaz",
+      "transaction_count": 6,
+      "mandate": {
+        "customer_id": "cust_07247c18",
+        "monthly_limit_usd": 1049.09,
+        "allowed_merchants": [
+          "CloudHost",
+          "GameVault",
+          "StreamFlix",
+          "TravelEasy",
+          "UrbanCafe"
+        ],
+        "allowed_hours": [
+          9,
+          17
+        ],
+        "max_tx_per_day": 8
+      }
+    }
+  ],
+  "merchants": [
+    "CloudHost",
+    "FreshGrocer",
+    "GameVault",
+    "QuickMart",
+    "StreamFlix",
+    "TechBazaar",
+    "TravelEasy",
+    "UrbanCafe"
+  ]
+}

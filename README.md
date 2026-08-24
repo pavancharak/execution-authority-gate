@@ -110,7 +110,7 @@ ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
 - **mandate/** — Authorization rule checker
 - **sign/** — Ed25519 signing + verification
 - **pipeline/** — Orchestration of all layers
-- **web/** — Interactive dashboard
+- **web/** — Interactive dashboard, plus an Attack Walkthrough (real precomputed decisions) and a Live Test Harness (runs a submitted transaction through the real pipeline on demand — needs `python web/server.py`, not the static `http.server`)
 - **tests/** — Comprehensive test suite
 
 ## Deployment
