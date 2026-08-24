@@ -680,8 +680,9 @@ async function main() {
   panels["live-test"] = renderLiveTest(data, customersData);
 
   const order = ["overview", "attacks", "walkthrough", "detect", "mandate", "live-test", "proof"];
+  const DEFAULT_TAB = "live-test";
   app.innerHTML = order
-    .map((name, i) => `<div class="panel${i === 0 ? " active" : ""}" data-panel="${name}">${panels[name]}</div>`)
+    .map((name) => `<div class="panel${name === DEFAULT_TAB ? " active" : ""}" data-panel="${name}">${panels[name]}</div>`)
     .join("");
 
   wireWalkthrough(scenarios);
