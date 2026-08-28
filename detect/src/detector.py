@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, recall_score, precision_score
+from sklearn.metrics import confusion_matrix, recall_score, precision_score, f1_score, roc_auc_score
 
 ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = ROOT / "models" / "detector.pkl"
@@ -78,6 +78,8 @@ def evaluate(model, X_test, y_test):
     tn, fp, fn, tp = confusion_matrix(y_test, preds).ravel()
     recall = recall_score(y_test, preds)
     precision = precision_score(y_test, preds)
+    f1 = f1_score(y_test, preds)
+    roc_auc = roc_auc_score(y_test, scores)
     false_positive_rate = fp / (fp + tn) if (fp + tn) else 0.0
 
     importances = sorted(zip(FEATURES, model.feature_importances_), key=lambda kv: -kv[1])
@@ -87,6 +89,8 @@ def evaluate(model, X_test, y_test):
         "fraud_caught_rate": round(float(recall), 4),
         "fraud_missed_rate": round(1 - float(recall), 4),
         "precision": round(float(precision), 4),
+        "f1_score": round(float(f1), 4),
+        "roc_auc": round(float(roc_auc), 4),
         "false_positive_rate": round(float(false_positive_rate), 4),
         "top_signals": [{"feature": f, "importance": round(float(i), 4)} for f, i in importances[:3]],
         "scores": scores,

@@ -208,6 +208,18 @@ function renderDetect(data) {
           "",
           `Of ${totalFlagged} transactions flagged, ${cm.true_positive} are real fraud. The detect layer's job is recall, not precision; see note below`
         )}
+        ${statTile(
+          "F1 score",
+          m.f1_score.toFixed(3),
+          "",
+          "Harmonic mean of precision and recall, low here for the same reason precision is low: fraud is rare and recall is prioritized"
+        )}
+        ${statTile(
+          "ROC AUC",
+          m.roc_auc.toFixed(3),
+          "good",
+          "Threshold independent separability of fraud from legitimate transactions by fraud score"
+        )}
       </div>
     </div>
 

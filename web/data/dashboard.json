@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Parmana Authority Gate",
-    "generated_at": "2026-08-23T16:13:50.365424+00:00"
+    "generated_at": "2026-08-28T23:34:12.185216+00:00"
   },
   "attacks": [
     {
@@ -395,6 +395,8 @@
       "fraud_caught_rate": 0.8913,
       "fraud_missed_rate": 0.1087,
       "precision": 0.2113,
+      "f1_score": 0.3417,
+      "roc_auc": 0.9308,
       "false_positive_rate": 0.0682,
       "top_signals": [
         {
@@ -441,10 +443,10 @@
             "detect: ai_generated_signal",
             "mandate: time_restriction"
           ],
-          "record_id": "09dd10f0-56fb-409b-b400-2b4293db8968",
-          "signed_at": 1787501620.0601287,
+          "record_id": "c693d50f-d5b1-4bae-a261-552ce432a3ce",
+          "signed_at": 1787960042.7817612,
           "signer": "authority",
-          "signature": "06611d09e601db7f6e9b5c34a42a6afdc85fe56238bf5836ab853daf26b8c69e6a40fc382d75c2cf0e4c42aefd4816bb99918a77df4799f72f0c8419e9946a05"
+          "signature": "249e1d9d7c139b6d399537c784d44e14e4d8d2f2012f43c7b9d10c350a4c1549d930c8b768668cfe63d5d1e37a5481aa5389514f533d7e673ac822451c8b4c0c"
         },
         "mandate_checks": [
           {
@@ -494,10 +496,10 @@
             "mandate: merchant_whitelist",
             "mandate: time_restriction"
           ],
-          "record_id": "05bde492-eb5b-4dd0-bfcf-95e4d37e18a4",
-          "signed_at": 1787501598.5351803,
+          "record_id": "487d5747-23bb-4060-bc80-95b44d480483",
+          "signed_at": 1787960029.348938,
           "signer": "authority",
-          "signature": "11cad369192433138f16e4fbf11cd120912d3bb0e0336eea9fbe2b8c8f70fa94cb22065c03701191d3c71ec0b9d7383b8510bf2d78b9e411fa22b331d0f4e207"
+          "signature": "51d7a3ccde1ae6be0fcd8ca492723b62419d104b0f375fac449a827bbab8e533fc00397d274ea64457ae0a126ec1bedde3db10071673cb7103f723143c52f30b"
         },
         "mandate_checks": [
           {
@@ -545,10 +547,10 @@
             "detect: ai_generated_signal",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "e8f6ad20-bcff-479c-93b0-bce852ecfea5",
-          "signed_at": 1787501613.650762,
+          "record_id": "6fa69902-1a23-466b-934a-821d08413217",
+          "signed_at": 1787960038.8321455,
           "signer": "authority",
-          "signature": "97c17be3a12df847f40dbef464bb6cb2f5c145f1fe5439f0bd851c80bed6fc524d166bdaebaa62ab782e922cede16ad4f9dad698ea950452d3df3e26aee43804"
+          "signature": "0be41bbbd1097628fd429592e038d8f0889bcce595bd0e08699cbd477f53efcb04d0c53912f192d0ccd4a05edd9ff64f78e5a794736fd50429f28388f1728e03"
         },
         "mandate_checks": [
           {
@@ -596,10 +598,10 @@
             "detect: amount",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "b5930a9e-c1ef-442f-bf28-b854942163f1",
-          "signed_at": 1787501588.7329257,
+          "record_id": "8003a721-01b8-4afe-8e83-2b14a9f67525",
+          "signed_at": 1787960023.7925088,
           "signer": "authority",
-          "signature": "7c28dbef9ce85cd6756b9d80c8120e2c91587234a2d9fa1b678655fb21f50f7922e4e9244a82fa5fd329f58c199dc398831249ddbaa052ef33341cc869881e0f"
+          "signature": "bc6fa0d6317c7c52040f2a0c651af53512f1ead64a4ab7282d7d1587a420f71f932b445e95d0a72c077975bdb1e632fdb11e2cc4ea7f56a99943ebfa99578707"
         },
         "mandate_checks": [
           {
@@ -646,10 +648,10 @@
             "detect: ai_generated_signal",
             "mandate: time_restriction"
           ],
-          "record_id": "9d184b3b-1261-4bbf-9a16-b61e70ff85fd",
-          "signed_at": 1787501615.9119434,
+          "record_id": "88eb810a-3bc1-4e69-9c68-155f2989418a",
+          "signed_at": 1787960040.2157388,
           "signer": "authority",
-          "signature": "2a2e6ed87f2bf4cac5f3410c9ca7f63fb29ddba41505faf73998d359b93b0f228d0464a7d44a16092452106699462f77de720a0694659a3d1535379d4ee3eb0b"
+          "signature": "3797dccd0245c94920862d67171ad731fb402b5e672eed908b7e5da650cb067eb02c82a4cec189955eb0477d53349fb0cb3b4d00723e7bec3259c356fba8a208"
         },
         "mandate_checks": [
           {
@@ -703,10 +705,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "e24dc325-d70b-4526-986f-e677386d985d",
-          "signed_at": 1787501628.6854122,
+          "record_id": "5d891cb2-3af7-43ba-bfd8-1073a5907ea8",
+          "signed_at": 1787960049.776989,
           "signer": "authority",
-          "signature": "74f485c9ed80e474b624609d076c0f4d52ef3a3c0f70b9750a0f10841457c3931d405f134c4d9edea8d388ade258b7bd41d8aa1ecf90948a129a32f9042d1c02"
+          "signature": "b46dd8939788c6dcdedd3feab403c6e0c6ee6f4a550374d3cb4f9ebc7fabfee68538b2aa2e01c213883471164b015743d060d47082d5f35aad8ddfef410bb802"
         },
         "mandate_checks": [
           {
@@ -751,10 +753,10 @@
             "detect: ai_generated_signal",
             "detect: location_mismatch_km"
           ],
-          "record_id": "792c0148-2ddb-47d5-8cc4-e4da7dd96fdd",
-          "signed_at": 1787501612.335287,
+          "record_id": "52f6e82b-ce91-430f-b217-fff392f26519",
+          "signed_at": 1787960038.0260608,
           "signer": "authority",
-          "signature": "2654c2b2d220675116307832359b12bfba818ae9dce8c28cf9a0920fe135e4c7a7e39a15d73a41f3bac9592f0bc662a910734ec3a47b43dda491f7d4e07b9b0e"
+          "signature": "ab81d63d51cad207111901e21f720e425ed3379d295e604f5ea3795f7c396bb499e39a3629e8bb5dfee337a09a0622caea5bd1c388782a9a2eb6070719a7600c"
         },
         "mandate_checks": [
           {
@@ -799,10 +801,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "b48bafab-2ee4-460d-ae66-1bb140a1a460",
-          "signed_at": 1787501583.257144,
+          "record_id": "9b8c9757-c370-4d3d-98ac-f596df6bc05b",
+          "signed_at": 1787960020.827779,
           "signer": "authority",
-          "signature": "750b21a6c791c292d9e3e9077a1c8808db52d10bb030a0f20ca14fa41194034419f76eaac16f43efa21f96c1875b883fe9071a79da22777f7442ec36e80c740e"
+          "signature": "db4f9321d4fae6c4912cb240f8a24508e55968af60a6e2cdb3831c12f946800ed6d6daeb9020c1907e9caecf23b4f5244c8a6cd49b85b83cb5e28d5cb0378e01"
         },
         "mandate_checks": [
           {
@@ -846,10 +848,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "b3410c5c-d528-4a9f-9495-a94072d6ddd0",
-          "signed_at": 1787501601.344789,
+          "record_id": "c8b4ee4a-d236-4921-9d7e-949c48f6c180",
+          "signed_at": 1787960031.2412004,
           "signer": "authority",
-          "signature": "d2222b425a04298ab48b76ddaa3166772964ecd8646b696246977f526f88ceb5e9f5a20635e3235ac567a867839772b26c034048604aa5f3cc77bf1ba344c600"
+          "signature": "91ffce893a1b522efdaea48d8df1c7550a99cbb39faf9ec19ad80fcb000267b4648afbd78326d8d96d61ba8d194b80c47855749bccf6d893ca4643bb24aa210e"
         },
         "mandate_checks": [
           {
@@ -893,10 +895,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "e1549dcf-db7e-44d9-aba2-c5cdd7644116",
-          "signed_at": 1787501615.260389,
+          "record_id": "bf09fa8a-edd5-4d03-a870-53d393f775fd",
+          "signed_at": 1787960039.8330264,
           "signer": "authority",
-          "signature": "9d1a2b3bc8b9e8577ac64f0c3f9a2a2fbbce6a095884a2db707f2af55ff01702ac2e5b5464ec26799d201cc04626b7e1cc0d263d54a95c98dc92321fc1ad3307"
+          "signature": "d016710270808e33e6bb8d5de076899fc5f0686417529fd8aa7e41d2ad103e08df26ffcb5616a42a29ac4c0218356ff5205ad0e63e3c3eea2f335e13b421d901"
         },
         "mandate_checks": [
           {
@@ -940,10 +942,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "e8ca0949-59f4-4a6c-88fe-3ccc137c83c8",
-          "signed_at": 1787501580.7214415,
+          "record_id": "54a243c5-5430-4407-a51c-845ef612aaa3",
+          "signed_at": 1787960017.2964642,
           "signer": "authority",
-          "signature": "5c3916ff2561cd381ead59469a1387b87c115bb2f0636604d2f8609679408979864169982911a2b4dbcd95db548fd4431de8dcbb618c7468b850a7b738f1ca09"
+          "signature": "bc0ae788ac6832a1d02a52d7d0b5cba9a8946e9b8f405c42859d5efb34adb71017f24b9ebd900012388e6cb2675d29fda4f90fb15a05f9e4d3d8d6e1ceae6f0e"
         },
         "mandate_checks": [
           {
@@ -988,10 +990,10 @@
             "detect: ai_generated_signal",
             "detect: pattern_similarity"
           ],
-          "record_id": "8ee5bf87-bff0-4410-9995-aebf444aba89",
-          "signed_at": 1787501610.5570502,
+          "record_id": "e4ec70a3-7402-4a00-a4b7-7d0ca69cf3dd",
+          "signed_at": 1787960036.9139001,
           "signer": "authority",
-          "signature": "3b62b5f661a28e924360fa1c502ff64cebada6afc1bbe4fce1d3da930cf9d0eecbcaa1aa1f8c436adfb25b16f20ab3b2207604199fb4eea14e9f408a12930002"
+          "signature": "705a52ce9d3c5db21cf334fa8e5005105f5b6183df65c7b14572c350d6a75b39080f6a6554f5a9a030504f26d5a62fb5f5109c99625549713d6ce7ed7c06750a"
         },
         "mandate_checks": [
           {
@@ -1036,10 +1038,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "ecf72e8a-dd42-488a-a25c-7e7f67a4cb59",
-          "signed_at": 1787501591.4453464,
+          "record_id": "930c0d97-230f-4fb0-a5ff-abd375cab1fb",
+          "signed_at": 1787960025.3134844,
           "signer": "authority",
-          "signature": "c4906576d6e0e72c72bf988adf1c7c65674eab1e2a36ae9cb38cb6c0f3561a5ae5b73eeafdb9af12620db8f4da73746e6db847e668acbbf852f01c328e7e2504"
+          "signature": "d478c1de32955ec86cc75c24dd8b9400c8ed1751d17a196cffe4869472eb2f20da5f76dd116f1598ef5215b49b40e92aae12b6e07f0d483de510fb85e16dee05"
         },
         "mandate_checks": [
           {
@@ -1084,10 +1086,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "f5334877-81e0-4f9b-8246-9f16104adc25",
-          "signed_at": 1787501579.5093713,
+          "record_id": "b6c20142-3582-435d-9f02-94813b40525f",
+          "signed_at": 1787960015.042983,
           "signer": "authority",
-          "signature": "b5176441e5032451f27b44b91fd411b72d3c639bcd3b2ed116cd749008f04f821cdc4f5d791c89b0ef4c29e2cf6b02b8c3cd976f8d07140b3a27ef3a92489104"
+          "signature": "ffbd99d0c0eb29c2c422e3c82d3a290028ee74250cc8b1c533573fbdca2aa6fe9d22d8d18a566b96ee61695efdfbbcd380223feb8e51347ac3bda8f2eb6d3b0e"
         },
         "mandate_checks": [
           {
@@ -1131,10 +1133,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "acee7d91-26c0-4ee9-9fcc-45ce3843443f",
-          "signed_at": 1787501582.728675,
+          "record_id": "e30f1383-8a23-4ff1-98d5-8b803cea09fa",
+          "signed_at": 1787960020.4574864,
           "signer": "authority",
-          "signature": "b08ef0b3cba6441b575ce62465720fcadf09e5bbd9731de8dfffcd7cff74697c5a524061964c875d9d3568d38d846082628d93b52d486b56d843ee424dc32b0b"
+          "signature": "0ceb44df64cfab26c11b4962f3fea1437e76d86ead308f1ea4a590b70b42d0f394e3c57e92cb6d36a9f5ed5df87cf1e3578cd4ff3fac1fd4b7574616cd490c08"
         },
         "mandate_checks": [
           {
@@ -1179,10 +1181,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "4cd976eb-fb6e-40f0-93b5-deaaee4a43b4",
-          "signed_at": 1787501605.872924,
+          "record_id": "b92f6657-58bf-433b-b884-f210b5e39db2",
+          "signed_at": 1787960033.967233,
           "signer": "authority",
-          "signature": "a780dddb0401aca57e3cba2b25d8cedf35224f47fa506800d741e43ae2a34e199b3fba8cec4e27fb72eabf1f454555835da25b1937e9d1db298418e615f4b705"
+          "signature": "0763fdce5369004ccc8d70ff3936b73a3792008f44815edc5545729951579960b04d5b588b260fd0f74ac679d21fd47887aab9d68dd97a744b51c654f7d34f0f"
         },
         "mandate_checks": [
           {
@@ -1227,10 +1229,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "c45ace3f-0ce3-4c53-92a6-d152023c7f71",
-          "signed_at": 1787501604.7986093,
+          "record_id": "360a3076-2daf-4fc1-9bca-7c8f64a93834",
+          "signed_at": 1787960033.3864052,
           "signer": "authority",
-          "signature": "ffb64a2482570f9ac994f3610aae25e6937646ab28b5cfe838071e8c8a49b0ee7f92c44482dfc24238f1cfc972fad9cdfb88f728927014c195677401a752dd0b"
+          "signature": "2b225ac1e634d352ca1c5ef5fa84341f63aa7b33c1037f9af256c259e9186e75c7647feb315d70a978914248b35929689909fd248e925b65004191110bffee05"
         },
         "mandate_checks": [
           {
@@ -1274,10 +1276,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "92117433-b0d0-4637-a4b7-8d84c1979bb8",
-          "signed_at": 1787501581.6099918,
+          "record_id": "3080b209-7119-47cc-8851-3e7b1b1bb25c",
+          "signed_at": 1787960018.5933962,
           "signer": "authority",
-          "signature": "8a65b00bbb6497e12a7054d58bc4340077ab1899c233d04ab7f7d2e052624c5fb12628fe753ba33612ab71de031071a4efbd02841fe8af441a4aa05918502102"
+          "signature": "c525db9582ea1e9ddb50adcb48904b2edbcb1689e8d6f822049558bb16304953818783c47f270e6358dc1153b352f13b78585d3e9e20bf62ef2200ff5baba100"
         },
         "mandate_checks": [
           {
@@ -1321,10 +1323,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "107c2a74-4e11-44a0-9e0e-90857e6fd809",
-          "signed_at": 1787501593.158015,
+          "record_id": "179ce485-593b-49ee-b568-32ea859fb852",
+          "signed_at": 1787960026.3122692,
           "signer": "authority",
-          "signature": "a76c3225861a61dce0ec03344d59c1c1f5560b8d885e1ad03486c61ef43daf5bfddaaa1ef7c03c6a00a32415f12c5dc663e6783838c26d69827b67fe487ad60f"
+          "signature": "9fdc24db85c73556a5efe54e6b1738f3a0bd63c5170b3765805cdb80efa84dac2f0484eda0deec941c322fabeac980e0fe21827f8a8d9257159e5e7549309a04"
         },
         "mandate_checks": [
           {
@@ -1368,10 +1370,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "4fce1725-7648-4d9d-ba27-9b5e7bbfb0a1",
-          "signed_at": 1787501583.0259595,
+          "record_id": "d0fe6f37-9097-4229-b22f-5e73c6f52f36",
+          "signed_at": 1787960020.7036881,
           "signer": "authority",
-          "signature": "feb52956e30bd7a66082bd434a0b00c4bdf04d600d276598f74e3c49ac5db5a654e895d915597635986a3b257b945b5c0e22db5ac587a85420524e32b4614a0a"
+          "signature": "bb323a95234d75fbcc8b1588d40592137097c07de45535e66c1ee050347da9038e1be8d236626859c2c36265b89e983621faca37eac2c17eb1e266ba6663f30e"
         },
         "mandate_checks": [
           {
@@ -1416,10 +1418,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "6652529b-0fa3-406d-8fb8-f78939ca3b6e",
-          "signed_at": 1787501613.339367,
+          "record_id": "db18a2ba-e4f0-4188-82b6-13e2643102a9",
+          "signed_at": 1787960038.6115603,
           "signer": "authority",
-          "signature": "d8a7741af638915c7f518b0129de17175e4b3f929dd201fdf2d41540f95bf8d9ad5b264a169f1562dd1d16116642f82410d117f34d34c3be688f9b3a912e8401"
+          "signature": "824a496f7d9afb39f42098480cabe08bc7530ada2a31ad8aaf7913a56147fb1c51075bc0c2cdd6089dd0c3801027df01891d956ef20353d6727e1f4ea5b4130c"
         },
         "mandate_checks": [
           {
@@ -1464,10 +1466,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "455266c8-a13c-4a7a-8db4-c47dcf13c8eb",
-          "signed_at": 1787501605.2150044,
+          "record_id": "ccc7fc2f-9c47-4261-abcc-a8a9efdbe217",
+          "signed_at": 1787960033.6058633,
           "signer": "authority",
-          "signature": "a37ade2cf2b5cffe41ea41753b1edacffff1d429b75cd46f1c3c5983aa66135b5c895209097b10811f06d821c0c3744be7995d57a70dd46cbae1f40edf89e20a"
+          "signature": "d32ec4477eebff89fbea5d25f29f3ec393954adaac2cc31836ba6788dc3bdbd766c20b38c2527e3464a73e00611ae429870e68609ce90fcb73ef0b4ee5c45106"
         },
         "mandate_checks": [
           {
@@ -1511,10 +1513,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "94486848-97bf-4c54-9cd1-a4a441053dc7",
-          "signed_at": 1787501580.7996757,
+          "record_id": "538afe31-9c04-49f8-b11f-7a8a6806b1b4",
+          "signed_at": 1787960017.3793077,
           "signer": "authority",
-          "signature": "7165428a7cd18d1f4f87dd0b4262daadd6fb9400226997a07f3d28a344d6a5903047496072f3d58a8f520a7a04b9109526263fb07e553d98c1e2fa705466cf01"
+          "signature": "483be519d806a7f849f059f7abcf3e337e20a0115397e2e8b4e08681a1a62c1e66164b8e77c89b24f49ac347a5f36da2aefa357c92d99d4cd4b80897ca99cb0f"
         },
         "mandate_checks": [
           {
@@ -1558,10 +1560,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "fa48b253-0d2a-4079-be4e-ab1781a9b6be",
-          "signed_at": 1787501628.8328884,
+          "record_id": "20e48a63-b286-44ff-98e9-bf8ee91b4cf0",
+          "signed_at": 1787960050.0191662,
           "signer": "authority",
-          "signature": "e65c45e4805e5e00655f35bbe2f860820acbe5dfeee3bbb634dfa7dff6ab2300efae768ab2fa910794df322ab84c46437ed7e313c953e79e6dbfb228240feb0a"
+          "signature": "bf541090b58e122e1518a16e4bfcd0ad453ab9f8b58cef88b8ef02a03542d28ebe794adf49ddeaa1eb3ccf0d06110ece457ca78bdf00cfe374c349d1b5c6ce00"
         },
         "mandate_checks": [
           {
@@ -1605,10 +1607,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "ba411c81-0c5c-4d5b-8e02-7c8a44ae0cf5",
-          "signed_at": 1787501614.1474764,
+          "record_id": "2f177efa-e989-4d27-8b30-4d58b99abb61",
+          "signed_at": 1787960039.1522012,
           "signer": "authority",
-          "signature": "d06b68c7464ae7ba1545bb42768b2caf1bbb946233cdeddba9b1c7d74d9625b9e66c4f1172dfe413ba6a1b56e228dc6181ac66730cfee2152734de56a0c8f209"
+          "signature": "1f22e5104a73c4d7781c2f4ae70db272a3a14ee067ce43da24cad41ec355b7c59c12d4d7babf7d3509bc794dd07d1b0e7c4b00ef9f90d7f7570696caa7427d00"
         },
         "mandate_checks": [
           {
@@ -1652,10 +1654,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "b99ae7bc-65cf-44c8-8f5a-b90a42030ff8",
-          "signed_at": 1787501585.380221,
+          "record_id": "dce3b576-6239-44ba-8307-fd49f1be1628",
+          "signed_at": 1787960021.9126048,
           "signer": "authority",
-          "signature": "d416955a6fcf761b5dc06ea049a145300213fe73c769361b0b66ab89753ea273b1898dcaedb67bbe55921a0e6dabac644e8e1f534321ddec54d60c5a9c8b1100"
+          "signature": "981b56d82529381f337701eba401aa684ddf0ffda38eedb34201a36d3990db16cf768c20772c678846a3624913ea352ac390c32bc73a80381ac8722642112f07"
         },
         "mandate_checks": [
           {
@@ -1699,10 +1701,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "bf8458c0-9a8b-4d77-92ca-91bd3d8c704f",
-          "signed_at": 1787501592.0143807,
+          "record_id": "e074aeb6-1de8-467e-a602-9af58d4e43c9",
+          "signed_at": 1787960025.6239474,
           "signer": "authority",
-          "signature": "f1fab286fd784f4dd086bea65bd4d105126a22c9cecdee74b08eb7018afb810a61af597b40db3ad0f87f14b95b82f11e4fc01a413082765598a4b0bbbc2fcc08"
+          "signature": "0e09d53019385a9e9814942ac4fb469c55727abd5f35ddfa4301ba529d146ee7c310a7a24a5a4e40feca0a355c1152bf89485df2f0362d64851e8adf498f7504"
         },
         "mandate_checks": [
           {
@@ -1747,10 +1749,10 @@
             "detect: ai_generated_signal",
             "detect: pattern_similarity"
           ],
-          "record_id": "a6a53654-6318-4ba0-8b94-ee0b9eeacd81",
-          "signed_at": 1787501618.6044364,
+          "record_id": "cffba3bb-0c7e-43ef-afce-97f59194b38d",
+          "signed_at": 1787960041.8679872,
           "signer": "authority",
-          "signature": "905301cd1e84d00c14296882fd16f2e789f9a3afd17d0e3c6ecd389466a4c54e4abb4753c2bf43dd727e6ac17ed7d998855c4e24019d692e2c645e99ee79cb06"
+          "signature": "eda18992fa5e7fa6e3957ec1aa4fa215532935d38001578961fc48a1ec2aa3649bace308ee53d73118667bb380cbbd2b0baea77c5b196164d3e589d163a88a0c"
         },
         "mandate_checks": [
           {
@@ -1795,10 +1797,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "4860101c-7a54-4b8f-8ffe-db8de0d21571",
-          "signed_at": 1787501618.4066627,
+          "record_id": "66d271e7-ecb0-441e-883a-7a5b81145b45",
+          "signed_at": 1787960041.7399447,
           "signer": "authority",
-          "signature": "a14a11c36ccbbb23413a1f4c10548f21a4794c14d00645fd25e32265ee8450be30b974983f75c822cf4beb038b5d44d01024eefd5651ce8ab2991f92bab66c03"
+          "signature": "79a79268f0e43be25f4de01ae3767746f9f3e1b3c6f154c7b0a70fe33f13564027df391f95faa946dc02165ed9fdc7c1604d12e22d368431e686ba6931edca01"
         },
         "mandate_checks": [
           {
@@ -1842,10 +1844,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "78f28d28-0747-43ce-a93f-a5f4a4664692",
-          "signed_at": 1787501615.2722902,
+          "record_id": "d0af53ed-3a82-40bf-83a4-1c77c58b70e6",
+          "signed_at": 1787960039.8390496,
           "signer": "authority",
-          "signature": "9bc7c4a6e24e266f607c5d75692ea3d061cfe31cd79055c66ddb74904cf368727e91f55a89a5eba381620c8dcfb8c362c1b62ce96b0b09f62bf66dbc60130206"
+          "signature": "563ffdd92458cd38f5002781e33d2b60898b18cbd646b45f536aa9991f5a0fe4e744c0a595e492e73e5c93b413bb5e273c1d43753b99474cf7b47054f535c902"
         },
         "mandate_checks": [
           {
@@ -1889,10 +1891,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "bb6c92e1-c25c-4219-b7e6-ef5fbef9ba99",
-          "signed_at": 1787501580.9891646,
+          "record_id": "767e7494-2f69-4b12-8f37-5ed8ecdce7fb",
+          "signed_at": 1787960017.8924706,
           "signer": "authority",
-          "signature": "7b736a0f3d830f49f7f672d7bc29bdc3770cb3ad90872ef540ddec6a7117182b5ca97ad13943e16f6e644364241c922f496810b703028eb9b4f9b8e17f1d240f"
+          "signature": "47724b947a28fe596f8c5f53f16eebed98f1912169d154e4dee7b4e84c9b3f03a540920227a82154d4d94dc012ffb2760a959b78409876bf71688fef3ae43f0f"
         },
         "mandate_checks": [
           {
@@ -1937,10 +1939,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "be853934-232e-4dd2-995a-40163106feb8",
-          "signed_at": 1787501614.9245245,
+          "record_id": "87209123-b88d-4f7b-937d-bb63f553da0a",
+          "signed_at": 1787960039.5980592,
           "signer": "authority",
-          "signature": "4cf061b718d898335bf7b13df2c6930171522d0006a4560a277dc2dc8a83500666a02839e040d20500df2b035dbef6733ab61ce53c12ef5c12abced520575503"
+          "signature": "034ac8bdb99c63c875fa677916d20425f5fe495580d4c7d8d004c83292b8b0df827a8d16b57e31a873c107b4167854702743e950154615b0644bd52a818ad808"
         },
         "mandate_checks": [
           {
@@ -1985,10 +1987,10 @@
             "detect: ai_generated_signal",
             "detect: location_mismatch_km"
           ],
-          "record_id": "273c5e18-29b1-449b-9a3d-a15f2857d511",
-          "signed_at": 1787501615.4508555,
+          "record_id": "e6ede53f-2fe2-4486-8e16-36b6403435e9",
+          "signed_at": 1787960039.9529665,
           "signer": "authority",
-          "signature": "b3316ece61d13b70c14e8e243b501c2a096da0be1bd71397c0a1b4003882bbc85ca5e65897d0bb8b43239b4febef1b5a23841f11dbfdc3e4dced90a43f024b0a"
+          "signature": "fe45a2314c761cdd3eeeee3b8da45ab4043aaa8b74001acc62b08406a56dc708370af62a23d359e8303f9e557a4a64fdeb3aecaee040f7d3daf6768b16db4e00"
         },
         "mandate_checks": [
           {
@@ -2033,10 +2035,10 @@
             "detect: location_mismatch_km",
             "detect: pattern_similarity"
           ],
-          "record_id": "60685981-53fa-4ecb-9bdb-7751493be984",
-          "signed_at": 1787501603.3426838,
+          "record_id": "bface64a-0965-46ed-ad7a-daf28b4b8e11",
+          "signed_at": 1787960032.543861,
           "signer": "authority",
-          "signature": "e99dfb0deba7f373b086ddf0c87862e8fbcda7aa2a51d33c616873b77b2c7f25757e932d0d4bb148f3e271174b3103cf297b59dd7a81bd77a4fdece83cc08407"
+          "signature": "5f1e80675caa5166f03b5d8331b12988ddd254f72973fa38e7971b5f4b9eb06f24ec144f4dbf032ceaf6f85cbc29ed5e086e7eed3380edb4417f8758e38d9b01"
         },
         "mandate_checks": [
           {
@@ -2081,10 +2083,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "f3f3f43a-d4c0-484f-bf4f-a6054a04a520",
-          "signed_at": 1787501580.124067,
+          "record_id": "6ccabcf3-0742-4d18-8e02-2549e5c3c903",
+          "signed_at": 1787960016.1779258,
           "signer": "authority",
-          "signature": "e3cf2132ba379322d36d475328a5684cf2e6c0b68fbf64aff5a37b1b1ea72186b99672639ca3ab3d6dae13d37af787ede86bdf84f57e41be64ace4c517d0c704"
+          "signature": "9df46236c32205eb1f2c04cf42cebfdc0699b7ccd992fc75b35805a4f2ef53690dd66eecb2fe8b8f369dc877fea20c993541e1924e09c12edf465ba70f62b702"
         },
         "mandate_checks": [
           {
@@ -2128,10 +2130,10 @@
           "reasons": [
             "detect: no single dominant signal"
           ],
-          "record_id": "a51e3547-5595-41e9-9160-8af7c65b5007",
-          "signed_at": 1787501591.8822677,
+          "record_id": "fca071ec-3acd-418f-9f13-7e64be7f5c8b",
+          "signed_at": 1787960025.5455568,
           "signer": "authority",
-          "signature": "6a75186a5560078caccfb25fcbe4b108a07466d9a59fd445b17eb562befea56744e46e8fbcc36ebcec5cec7847103834857031d1734419a243cd1f8504dd3a04"
+          "signature": "cc8a5d37d48798fde2bfbdabee0b1ce3de4ccd24138c50dfb4562edd05a5cb5aca243ecfe399754f56f49860786f8fad6fa5db2dc2f68f9fd19402bae1f6c70a"
         },
         "mandate_checks": [
           {
@@ -2176,10 +2178,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "100ac334-ac43-4807-8b02-a8da7e19630d",
-          "signed_at": 1787501579.8907373,
+          "record_id": "00e25a53-02e5-44b3-bc83-b076087c9ca0",
+          "signed_at": 1787960015.8945642,
           "signer": "authority",
-          "signature": "1683239fe42b1b0a5e543422f625980bf4a81df248282fbcbfeae1d78ffef0be60cf56c2672b98fa6d320b1b7f14d2d25da029d7ff56a246b7beb00ae099d802"
+          "signature": "16e6e93f673b3d6c34b9bc531bb1991c8695489b43eb9167f30e485e8c1d78d53145f48df5be35dc54a1a0f4bef2a174c069ed03bf75ec0b7de0f6213a796705"
         },
         "mandate_checks": [
           {
@@ -2227,10 +2229,10 @@
             "detect: ai_generated_signal",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "e8f6ad20-bcff-479c-93b0-bce852ecfea5",
-          "signed_at": 1787501613.650762,
+          "record_id": "6fa69902-1a23-466b-934a-821d08413217",
+          "signed_at": 1787960038.8321455,
           "signer": "authority",
-          "signature": "97c17be3a12df847f40dbef464bb6cb2f5c145f1fe5439f0bd851c80bed6fc524d166bdaebaa62ab782e922cede16ad4f9dad698ea950452d3df3e26aee43804"
+          "signature": "0be41bbbd1097628fd429592e038d8f0889bcce595bd0e08699cbd477f53efcb04d0c53912f192d0ccd4a05edd9ff64f78e5a794736fd50429f28388f1728e03"
         },
         "mandate_checks": [
           {
@@ -2274,10 +2276,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "fbfb3e11-4435-4cf0-a7cf-01ff8dfd0c14",
-          "signed_at": 1787501585.976622,
+          "record_id": "625713f6-8e7f-4aec-8ff3-23598b6b7778",
+          "signed_at": 1787960022.2810893,
           "signer": "authority",
-          "signature": "8ae583814987345c28ccedf0610111099cea4e08f509792da543bda8f91a6867b9bc22c94c6cd95538b0ab1a1aadf304aa3725dde24d78421d7c76473f929603"
+          "signature": "4f52fa0bea9560f84cfa34266546cccb2d58d9769b64925f0a2a09e1010d6e12943f7e9203abf7e11b10bdf118e2d49ceeac1f1c18e34577ae2dd04c8c09cd04"
         },
         "mandate_checks": [
           {
@@ -2321,10 +2323,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "d21c9676-6f9e-4ea4-ad94-207691867713",
-          "signed_at": 1787501596.3859608,
+          "record_id": "1d516042-0651-42e4-87b9-d6ffb9bc72fb",
+          "signed_at": 1787960028.1589887,
           "signer": "authority",
-          "signature": "7f6327a233b5585a1e3616f676b89ee81395efe96f031a3c86c4f407db437c5ef0b5d99f6088ecf3f4661fb7833171674203ce834ba38eed6ba9b20eaf62970f"
+          "signature": "285b46d082cbcaccfb6e66e946ed4a155313884f5bc0216a8c121ccdec3d5aae1b61d8b53fd8f7b7f75f1c277c308f5d289a6ec8ff00b0c262dd9c44c551410d"
         },
         "mandate_checks": [
           {
@@ -2369,10 +2371,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "c034db85-1340-41c7-9cf2-8b6eb60b2d48",
-          "signed_at": 1787501604.8822541,
+          "record_id": "519ecf47-762a-4b85-be7f-866ad47b8a98",
+          "signed_at": 1787960033.424573,
           "signer": "authority",
-          "signature": "a0dd5b2e6141f578a0db0d3be64d6e6d6b49eaf585fe89f928541a77f2174b78d6abacde7c83282bb977de6e099da6b07bb01ac76d58d27bed18820dbf350603"
+          "signature": "8adda71137862790102c04cc6929b791d03752ac73c696ba7fee85558038642f63dd84d05d09e4d98695fbc018e3b86590d33e66e32016e660e5e8f0979bd908"
         },
         "mandate_checks": [
           {
@@ -2417,10 +2419,10 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "44c40db3-941e-4f87-a0d7-559ebf61db6b",
-          "signed_at": 1787501586.6912577,
+          "record_id": "8b341145-dd17-4d9b-9419-33a333ecc1e5",
+          "signed_at": 1787960022.6535954,
           "signer": "authority",
-          "signature": "5e782c908f56bb10e620fdfe4394f56ba9f6a03763d23a640e82cf6b61f4115e5bdd0e9e3b9dfc1d008b7bc9f679b68f6aa85eff48323eeac8bffdbc4480ef01"
+          "signature": "07564cbbddf27f2527fe442ad64796cab05583d7f5e3506748612f86a3f8c526fd534327e990ff07625fda9032439805d5de15b7e039e1826134b2b7f618f803"
         },
         "mandate_checks": [
           {
@@ -2464,10 +2466,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "58624fb0-c04f-4911-b07f-cd589d0072f1",
-          "signed_at": 1787501612.6687968,
+          "record_id": "3ac137b5-c4e5-44b7-ab3f-604227cb49a3",
+          "signed_at": 1787960038.2052622,
           "signer": "authority",
-          "signature": "8dcbc65bc31d97a3fc69b2d9f4d8e7e88c0589a6c683656839fd39df58775a6a7857c94c2d5532bd0febf08d0778222bf4f2574a2820434c08431c39b1ab2007"
+          "signature": "ef4c0090a8c4ae432205f98af228c03bfdc3e146240994697e3f79c6fb887fca92a236b2cbe00279f800244c567d317eac6c30e0343d3dd7ad06cbca09818200"
         },
         "mandate_checks": [
           {
@@ -2511,10 +2513,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "2faf2b3d-3c9c-478b-bea2-f7c2b2950914",
-          "signed_at": 1787501584.9716256,
+          "record_id": "b42ae34c-5815-4fa4-a0e8-73345ec0309d",
+          "signed_at": 1787960021.6789963,
           "signer": "authority",
-          "signature": "5768d126b9c50d947e3cd28b2ec43b87d65dce7c0e6b17d674ca1dade16dd6f2b0aa4366fd08c141d8d3d49e95a7a69f830061dd8389c162c0d9ed486bc66809"
+          "signature": "aac64adb4432d7dd1b6642c09a0219245eae511a3f18fa91dd3e20bbcc145023c398422615aaecb93c747fcdd0ccbca3e398a63e8eb9bbb014346525c4f3a700"
         },
         "mandate_checks": [
           {
@@ -2558,10 +2560,10 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "e174f65f-937e-4d72-8b5d-8a6582596074",
-          "signed_at": 1787501614.4923103,
+          "record_id": "8818ab0e-cdbe-409c-a293-8f87465b5223",
+          "signed_at": 1787960039.3603604,
           "signer": "authority",
-          "signature": "2830654b8b2128bfa3529ebf510b7eedc630ce28616fbb45b60ca28c5f4bd542da85e8f0021b54005de39406611bc1bf250f6a1981106810557368626acec306"
+          "signature": "f3f79402821188246b980d5f9c8fdfae42ecfc6d3f8c649112937b4ec3cd99471bdcf6a3b66c7e96d0b6d1d41a7252249fae9f5e38b08e6cc8ccad7b6e109109"
         },
         "mandate_checks": [
           {

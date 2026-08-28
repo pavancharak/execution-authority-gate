@@ -62,9 +62,8 @@ transaction; only visible when correlated across merchants.
 **Damage:** Reveals defenders' thresholds, exploited in a precisely sized
 charge that follows.
 **Agent:** `agent3_limit_prober`, runs after the detect layer's model is
-trained (a `probe_detector.py`-equivalent script, not yet ported into
-this repo) and submits real amounts from $10 to $10,000 through the
-actual model, no fabricated external API.
+trained (`generate/src/probe_agents.py`) and submits real amounts from
+$10 to $10,000 through the actual model, no fabricated external API.
 
 ## 6. AI Generated KYC Document Forgery, *simulated, real OpenAI calls (metadata only)*
 **Where:** Identity verification (KYC).
@@ -94,5 +93,6 @@ this attack stays an honest gap.
 
 Ported from the original mastercard/parmana lab's `docs/attacks.md`.
 Agent implementations live in `generate/src/fraud_agents.py`; the
-detect layer probing scripts for attacks #5 and #7 have not been ported
-into this repo yet.
+detect layer probing scripts for attacks #5 and #7 (limit probing and
+the feedback loop evasion test) are implemented in
+`generate/src/probe_agents.py`.
