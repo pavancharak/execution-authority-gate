@@ -88,8 +88,9 @@ def build():
     para(
         doc,
         "Parmana is a two layer payment fraud defense system built as a closed loop across "
-        "the challenge's three pillars: it identifies seven distinct GenAI era fraud attack "
-        "vectors targeting payments, generates realistic simulations of those attacks at scale "
+        "the challenge's three pillars: it identifies thirteen distinct GenAI era fraud attack "
+        "vectors targeting payments across card, wire/ACH, real time push payment, and agentic "
+        "commerce rails, generates realistic simulations of six of them at scale "
         "(including four attack types produced by real GPT-4o-mini calls, not templated text), "
         "and defends against them with a RandomForest classifier evaluated on a held out test "
         "set of 6,869 transactions at a realistic 2% fraud rate.",
@@ -110,13 +111,16 @@ def build():
     h1(doc, "Pillar 1: Identify. The Attack Taxonomy")
     para(
         doc,
-        "identify/attack-taxonomy.md documents seven distinct GenAI accelerated attack vectors "
-        "against payment systems, each grounded in a real point in the payment lifecycle "
-        "(onboarding, authorization, KYC, customer support) rather than a generic 'fraud' label. "
-        "Six of the seven are actively simulated by seven bounded agents in "
-        "generate/src/fraud_agents.py; the seventh (feedback loop poisoning of a retraining "
-        "pipeline) is documented as an honest, explicit known gap rather than claimed and left "
-        "unimplemented.",
+        "identify/attack-taxonomy.md documents thirteen distinct GenAI accelerated attack "
+        "vectors against payment systems, each grounded in a real point in the payment "
+        "lifecycle or a real payment rail (onboarding, authorization, KYC, customer support, "
+        "B2B wire/ACH, real time push payments, agentic commerce, dispute adjudication, long "
+        "horizon account lifecycle) rather than a generic 'fraud' label. Six are actively "
+        "simulated by seven bounded agents in generate/src/fraud_agents.py. The remaining "
+        "seven are documented as honest, explicit known gaps rather than claimed and left "
+        "unimplemented, chosen specifically to cover rails and surfaces the six simulated "
+        "agents don't touch, breadth across the payment ecosystem, not just depth on one "
+        "corner of it.",
     )
 
     attacks = [
@@ -149,6 +153,49 @@ def build():
          "so this attack is documented honestly as future work rather than claimed as tested. "
          "(agent7_feedback_loop generates real time evasion variants against the already trained "
          "model, which is related but distinct, it does not poison a retraining pipeline.)"),
+        ("8. AI Orchestrated Business Email Compromise / Vendor Payment Redirection",
+         "Accounts payable, B2B wire/ACH rails (known gap)",
+         "A compromised or spoofed vendor email plus an LLM drafting a convincing updated bank "
+         "details request matching the real vendor's tone and invoicing history. Wire/ACH have "
+         "no real time chargeback, so the loss is discovered only after the funds are gone. Out "
+         "of scope for this lab's agents, which target consumer/card rails, not vendor "
+         "correspondence."),
+        ("9. Authorized Push Payment Fraud via Voice Cloned Urgency Scams",
+         "Real time/instant push payment rails (known gap)",
+         "A cloned voice of a trusted contact plus manufactured urgency, so the customer "
+         "authorizes the transfer themselves. No stolen credential, no anomalous "
+         "authentication, so a shape based classifier like this lab's detect layer has no "
+         "signal to work with by construction, a real limitation worth naming."),
+        ("10. Agentic Commerce Hijack: Prompt Injection Against Autonomous Shopping Agents",
+         "AI shopping/checkout agents transacting on a customer's behalf (known gap)",
+         "Hidden instructions embedded in a malicious merchant page that an LLM driven "
+         "purchasing agent reads and acts on, using the customer's own real, authorized "
+         "credentials. The most 2026 specific vector in this taxonomy: it targets AI agents "
+         "transacting, not AI generating fraud content. This lab's mandate layer would still "
+         "catch some of these in practice (an unfamiliar merchant, an odd hour, over budget), "
+         "a partial mitigation even without a dedicated agent simulating the attack."),
+        ("11. Deepfake Liveness Bypass for Biometric KYC",
+         "Identity verification, biometric liveness checks (known gap)",
+         "Real time face swap or diffusion generated video that responds to a liveness "
+         "challenge (blink, turn head), defeating the exact signal modern liveness checks "
+         "rely on. More severe than attack #6 since it beats the strongest KYC defense in use, "
+         "not a weaker static one. agent4_kyc_forger generates identity metadata only, no "
+         "video, so this stays a distinct, unimplemented gap."),
+        ("12. AI Generated Fake Dispute Evidence (Chargeback / Refund Abuse)",
+         "Post transaction dispute and chargeback process (known gap)",
+         "A fabricated receipt, product photo, or support transcript used to win a dispute on "
+         "a transaction that was completely legitimate. The fraud happens entirely in "
+         "paperwork submitted after the fact, a stage most fraud detection never inspects. "
+         "Related to but distinct from attack #7: this targets the dispute reviewer, not the "
+         "fraud model's training data."),
+        ("13. Synthetic Identity Bust Out",
+         "Full account lifecycle, monetized in a single terminal event (known gap)",
+         "A fabricated identity (attack #1) used to build months of unremarkable transaction "
+         "history and a real credit line, then maxed out and abandoned. There is no anomaly "
+         "until the single terminal transaction, by which point months of history have "
+         "already vouched for the account. This lab's detect layer scores each transaction "
+         "independently, so a pattern spanning months is structurally outside what it can "
+         "see, a real limitation of that design."),
     ]
     for name, where, desc in attacks:
         p = doc.add_paragraph()
@@ -384,8 +431,9 @@ def build():
     para(
         doc,
         "Parmana treats identify, generate, and defend as one closed loop rather than three "
-        "independent deliverables: a real, GenAI grounded taxonomy of seven payment fraud "
-        "vectors drives realistic, at scale simulation (four of seven attack types via real "
+        "independent deliverables: a real, GenAI grounded taxonomy of thirteen payment fraud "
+        "vectors, spanning card, wire/ACH, real time push payment, and agentic commerce rails, "
+        "drives realistic, at scale simulation of six of them (three attack types via real "
         "GPT-4o-mini calls), which trains a detector that is then attacked by its own generator "
         "to find and report its remaining gaps. An independent, customer history derived "
         "mandate layer catches what the detector alone would miss, and every decision is "

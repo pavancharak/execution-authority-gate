@@ -66,7 +66,67 @@
     "what_attacker_needs": "Repeated small transactions plus false dispute/chargeback signals designed to teach the detector's retraining pipeline to treat fraud patterns as normal.",
     "why_hard_to_catch": "Attacks the training data, not the transaction. By the time it's visible, the model itself has drifted toward tolerating the fraud pattern.",
     "damage": "Long term degradation of detection accuracy; hardest to detect because the model's own confidence goes up, not down.",
-    "simulated_by": "not simulated in this lab (known gap). agent7_feedback_loop is related but distinct: it generates real-time evasion variants against the trained model, it does not poison a retraining pipeline",
+    "simulated_by": "not simulated in this lab (known gap). agent7_feedback_loop is related but distinct: it generates real time evasion variants against the trained model, it does not poison a retraining pipeline",
+    "real_llm_calls": false
+  },
+  {
+    "id": "vendor_bec",
+    "name": "AI Orchestrated Business Email Compromise / Vendor Payment Redirection",
+    "stage": "Accounts payable and vendor invoicing (B2B wire/ACH rails)",
+    "what_attacker_needs": "A compromised or spoofed vendor email account plus an LLM that drafts a convincing updated bank details request matching the real vendor's tone and invoicing history.",
+    "why_hard_to_catch": "Wire and ACH payments have no real time chargeback, so the redirection is only noticed after the funds are gone. GenAI mimics a specific vendor's writing style from leaked or scraped correspondence rather than a generic phishing template.",
+    "damage": "Direct, often unrecoverable, large dollar loss on B2B payment rails.",
+    "simulated_by": "not simulated in this lab (known gap). Out of scope for agents targeting consumer/card rails; would need vendor correspondence data this lab doesn't generate",
+    "real_llm_calls": false
+  },
+  {
+    "id": "app_fraud",
+    "name": "Authorized Push Payment Fraud via Voice Cloned Urgency Scams",
+    "stage": "Real time/instant push payment rails",
+    "what_attacker_needs": "A cloned or synthesized voice of a trusted contact (bank fraud department, family member) plus manufactured urgency to bypass the customer's own scrutiny.",
+    "why_hard_to_catch": "The customer authorizes the transfer themselves; no stolen credential, no anomalous authentication. Velocity and pattern similarity features don't fire because the transaction looks entirely intentional.",
+    "damage": "Instant, often irreversible transfer; push payment rails settle faster than dispute processes can intervene.",
+    "simulated_by": "not simulated in this lab (known gap). A shape based classifier scores transaction shape, not authorization intent, so this sits outside what it can see by construction",
+    "real_llm_calls": false
+  },
+  {
+    "id": "agentic_hijack",
+    "name": "Agentic Commerce Hijack: Prompt Injection Against Autonomous Shopping Agents",
+    "stage": "AI shopping/checkout agents transacting on a customer's behalf",
+    "what_attacker_needs": "A malicious merchant page or third party content embedding hidden instructions an LLM driven purchasing agent reads and acts on.",
+    "why_hard_to_catch": "The transaction is initiated by an agent the customer trusts, using real, authorized payment credentials. The compromise happens upstream, in what the agent was instructed to do, not in the payment itself.",
+    "damage": "Unauthorized purchases, shipping address redirection, or budget exhaustion via what looks like a normal agent initiated transaction.",
+    "simulated_by": "not simulated in this lab (known gap). The mandate layer's merchant whitelist, spending limit, and time restriction would still catch some of these in practice, a real if partial mitigation",
+    "real_llm_calls": false
+  },
+  {
+    "id": "liveness_deepfake",
+    "name": "Deepfake Liveness Bypass for Biometric KYC",
+    "stage": "Identity verification (biometric liveness checks)",
+    "what_attacker_needs": "Real time face swap or diffusion based video generation that can respond to a liveness challenge (blink, turn head) convincingly.",
+    "why_hard_to_catch": "Modern liveness checks exist specifically to defend against this; a high fidelity real time deepfake defeats the exact signal the check relies on.",
+    "damage": "Full KYC bypass for synthetic or stolen identities, more severe than static document forgery since it defeats the strongest KYC defense in use.",
+    "simulated_by": "not simulated in this lab (known gap). agent4_kyc_forger generates identity metadata only, no video, so this stays a distinct gap",
+    "real_llm_calls": false
+  },
+  {
+    "id": "dispute_forgery",
+    "name": "AI Generated Fake Dispute Evidence (Chargeback / Refund Abuse)",
+    "stage": "Post transaction dispute and chargeback process",
+    "what_attacker_needs": "An LLM or image model that fabricates convincing but fake evidence (a doctored receipt, a generated item photo, a fabricated support transcript) to win a dispute on a legitimate transaction.",
+    "why_hard_to_catch": "The underlying transaction was genuine; the fraud happens entirely in paperwork submitted afterward, a stage most fraud detection never inspects.",
+    "damage": "Direct merchant loss via friendly fraud at a scale automation makes newly cheap, plus network chargeback penalties.",
+    "simulated_by": "not simulated in this lab (known gap). Related to but distinct from model_poisoning: this targets the dispute adjudication process, not the fraud model's training signal",
+    "real_llm_calls": false
+  },
+  {
+    "id": "synthetic_bustout",
+    "name": "Synthetic Identity Bust Out",
+    "stage": "Full account lifecycle, monetized in a single terminal event",
+    "what_attacker_needs": "A fabricated identity used to build months of genuinely unremarkable transaction history and a real credit line, then maxed out and abandoned in one final burst.",
+    "why_hard_to_catch": "Every step before the bust out looks identical to genuine account seasoning. There is no anomaly to detect until the single terminal transaction, after months of history have already vouched for the account.",
+    "damage": "Full credit line loss, concentrated in a single terminal event after a long dormant period disproportionate to how the account looked day to day.",
+    "simulated_by": "not simulated in this lab (known gap). A per transaction classifier scoring each transaction independently cannot see a pattern spanning months, a real limitation of that design",
     "real_llm_calls": false
   }
 ]

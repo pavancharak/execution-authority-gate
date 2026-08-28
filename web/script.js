@@ -151,10 +151,13 @@ function renderAttacks(data) {
     })
     .join("");
 
+  const simulatedCount = attacks.filter((a) => a.real_llm_calls || !/known gap/i.test(a.simulated_by)).length;
+  const gapCount = attacks.length - simulatedCount;
+
   return `
     <div class="section">
       <h1>Attack taxonomy</h1>
-      <p>Seven ways AI commits payment fraud. Six are actively simulated by bounded agents in <code>generate/src/fraud_agents.py</code>; one (feedback loop poisoning) is an honest, documented gap.</p>
+      <p>${attacks.length} ways AI commits payment fraud. ${simulatedCount} are actively simulated by bounded agents in <code>generate/src/fraud_agents.py</code>; ${gapCount} are honest, documented gaps spanning rails and surfaces the simulated agents don't touch (B2B wire/ACH, real time push payments, agentic commerce, biometric liveness, post transaction disputes, and long horizon account fraud).</p>
     </div>
 
     ${

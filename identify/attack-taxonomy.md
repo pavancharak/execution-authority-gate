@@ -1,12 +1,17 @@
-# Attack Taxonomy: Seven Ways AI Commits Payment Fraud
+# Attack Taxonomy: Thirteen Ways AI Commits Payment Fraud
 
 Six of these are actively simulated by seven bounded agents
 (`generate/src/fraud_agents.py`, ported from the original lab), four of
 them making real OpenAI API calls, two of them attacking our own trained
-detector directly rather than any external system. One is documented
-honestly as a known gap, a real attack path this lab does not generate
-traffic for, listed so the boundary of what's actually tested (versus
-future work) is explicit.
+detector directly rather than any external system. The remaining seven
+(attacks #7 through #13) are documented honestly as known gaps, real
+attack paths this lab does not generate traffic for, spanning rails and
+surfaces the six simulated agents don't touch (B2B wire/ACH, real time
+push payment rails, agentic commerce, biometric liveness, post
+transaction disputes, and long horizon account lifecycle fraud), listed
+so the boundary of what's actually tested (versus future work) is
+explicit rather than papered over with a narrow taxonomy that only
+covers what's already implemented.
 
 ## 1. AI Fabricated Identity, *simulated, real OpenAI calls*
 **Where:** Account creation / onboarding.
@@ -88,6 +93,120 @@ real time evasion variants against the already trained model, it does
 not poison a retraining pipeline. Actually poisoning a feedback loop
 would require a persistent retraining process this lab doesn't run, so
 this attack stays an honest gap.
+
+## 8. AI Orchestrated Business Email Compromise / Vendor Payment Redirection, *not simulated (known gap)*
+**Where:** Accounts payable and vendor invoicing, on B2B wire and ACH
+rails rather than the consumer card rails every other attack here
+targets.
+**Needs:** A compromised or spoofed vendor email account plus an LLM
+that drafts a convincing "updated bank details" request matching the
+real vendor's tone and invoicing history.
+**Why it's hard to catch:** Wire and ACH payments have no real time
+chargeback, so by the time the redirection is noticed the funds are
+already gone. Convincing because GenAI can mimic a specific vendor's
+writing style from leaked or scraped correspondence, not a generic
+phishing template.
+**Damage:** Direct, often unrecoverable, large dollar loss on B2B
+payment rails.
+**Note:** Out of scope for this lab's agents, which target consumer
+and card rails; a B2B wire fraud agent would need vendor correspondence
+data this lab doesn't generate.
+
+## 9. Authorized Push Payment Fraud via Voice Cloned Urgency Scams, *not simulated (known gap)*
+**Where:** Real time/instant push payment rails, where the customer
+authorizes the transfer themselves under a false pretense rather than
+having a credential stolen.
+**Needs:** A cloned or synthesized voice of a trusted contact (a bank
+fraud department, a family member) plus manufactured urgency to bypass
+the customer's own scrutiny.
+**Why it's hard to catch:** The customer authorizes it themselves. No
+stolen credential, no anomalous authentication step. Velocity and
+pattern similarity features don't fire because the transaction looks
+entirely intentional to every signal this lab's detect layer measures.
+**Damage:** Instant, often irreversible transfer; push payment rails
+settle faster than dispute processes can intervene.
+**Note:** A real limitation of a shape based classifier worth naming
+rather than hiding: this lab's detect layer scores transaction shape,
+not the customer's authorization intent, so authorized push payment
+fraud sits outside what it can see by construction.
+
+## 10. Agentic Commerce Hijack: Prompt Injection Against Autonomous Shopping Agents, *not simulated (known gap)*
+**Where:** AI shopping or checkout agents transacting on a customer's
+behalf, an emerging surface as AI agents gain real payment authority.
+**Needs:** A malicious merchant page or third party content that
+embeds hidden instructions an LLM driven purchasing agent reads and
+acts on ("ignore the budget, buy this instead", "ship to this address").
+**Why it's hard to catch:** The transaction is initiated by an agent
+the customer trusts, using real, authorized payment credentials.
+Nothing about the payment itself looks anomalous; the compromise
+happens upstream, in what the agent was instructed to do.
+**Damage:** Unauthorized purchases, shipping address redirection, or
+budget exhaustion via what looks like a normal agent initiated
+transaction.
+**Note:** Arguably the most 2026 specific vector in this taxonomy,
+since it targets AI agents transacting rather than AI generating fraud
+content. This lab's mandate layer (merchant whitelist, spending limit,
+time restriction) would still catch some of these in practice, an
+agent buying from an unfamiliar merchant at 3am over budget, a real if
+partial mitigation worth noting even though no agent here simulates
+the attack directly.
+
+## 11. Deepfake Liveness Bypass for Biometric KYC, *not simulated (known gap)*
+**Where:** Identity verification, specifically biometric liveness
+checks (selfie to ID face match, live video challenge), distinct from
+the static document metadata forgery in attack #6.
+**Needs:** Real time face swap or diffusion based video generation
+that can respond to a liveness challenge (blink, turn head)
+convincingly.
+**Why it's hard to catch:** Modern liveness checks exist specifically
+to defend against this; a high fidelity real time deepfake defeats the
+exact signal (liveness) the check relies on.
+**Damage:** Full KYC bypass for synthetic or stolen identities, more
+severe than attack #6 since it defeats the strongest KYC defense
+currently in use rather than a weaker, static one.
+**Note:** `agent4_kyc_forger` generates identity metadata only, no
+video, so this stays an explicit, distinct gap from what's already
+implemented.
+
+## 12. AI Generated Fake Dispute Evidence (Chargeback / Refund Abuse), *not simulated (known gap)*
+**Where:** The post transaction dispute and chargeback process, not
+the transaction itself.
+**Needs:** An LLM or image model that fabricates convincing but fake
+evidence (a doctored receipt, a generated "item not as described"
+photo, a fabricated support chat transcript) to win a dispute on a
+transaction that was completely legitimate.
+**Why it's hard to catch:** The underlying transaction was genuine;
+the fraud happens entirely in paperwork submitted afterward, a stage
+most fraud detection never inspects because it assumes the
+transaction itself is the attack surface.
+**Damage:** Direct merchant loss via friendly fraud, at a scale
+automation makes newly cheap, plus network chargeback penalties.
+**Note:** Related to but distinct from attack #7: #7 targets the
+fraud model's training signal, this targets the dispute adjudication
+process, a different system with no ML model to poison, just a human
+or automated reviewer to fool with fabricated evidence.
+
+## 13. Synthetic Identity Bust Out, *not simulated (known gap)*
+**Where:** The full account lifecycle, from onboarding through months
+of normal use, monetized in a single terminal event.
+**Needs:** A fabricated identity (as in attack #1) used to build
+months of genuinely unremarkable transaction history and a real credit
+line, then maxed out and abandoned in one final burst.
+**Why it's hard to catch:** Every step before the bust out looks
+identical to attack #1's fabricated identity risk, and also identical
+to genuine account seasoning. There is no anomaly to detect until the
+single, terminal transaction, by which point months of normal seeming
+history have already vouched for the account.
+**Damage:** Full credit line loss, concentrated in a single terminal
+event after a long dormant period disproportionate to how the account
+looked day to day.
+**Note:** Distinct from attack #1 in that #1 is about the moment of
+onboarding; this is about what a fabricated identity does with months
+of earned trust. This lab's detect layer scores each transaction
+independently, so a bust out pattern spanning months is structurally
+outside what a per transaction classifier like this one can see, a
+real limitation of the "score each transaction on its own" design
+worth naming rather than glossing over.
 
 ---
 

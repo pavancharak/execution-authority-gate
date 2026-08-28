@@ -62,7 +62,7 @@ def test_build_writes_expected_shape(tmp_path, monkeypatch):
     data = json.loads(path.read_text())
 
     assert data["meta"]["title"] == "Parmana Authority Gate"
-    assert len(data["attacks"]) == 7  # from the real identify/attacks.json
+    assert len(data["attacks"]) == 13  # from the real identify/attacks.json
 
     assert data["simulation"]["good_transaction_count"] == 1
     assert data["simulation"]["attack_type_breakdown"] == {"pattern_copy": 2}
@@ -106,7 +106,7 @@ def test_committed_dashboard_json_has_the_shape_the_web_page_expects():
     for key in ("meta", "attacks", "simulation", "api_activity", "detect", "mandate", "pipeline", "verification"):
         assert key in data
 
-    assert len(data["attacks"]) == 7
+    assert len(data["attacks"]) == 13
     assert "top_signals" in data["detect"]["metrics"]
     assert set(data["mandate"]["block_attribution"].keys()) == {"detect_only", "mandate_only", "both"}
     assert set(data["pipeline"]["decision_counts"].keys()) == {"BLOCK", "FLAG", "ALLOW"}
