@@ -107,6 +107,9 @@ Its output becomes an input to the policy layer.
 
 # How It Works
 
+<img width="1507" height="641" alt="image" src="https://github.com/user-attachments/assets/7acd2bda-7d02-48c0-a467-34bbc6e50b6b" />
+
+
 ## 1. Detector Generates a Signal
 
 The AI detector analyzes the transaction and produces a probabilistic signal.
