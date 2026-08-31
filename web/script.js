@@ -1092,62 +1092,77 @@ function wireLiveTest(customersData) {
 const FAQ_ITEMS = [
   {
     q: "What makes this different from a typical fraud detection system?",
+    tldr: "Most tools stop at a risk score. This one also checks the customer's own real spending rules, and nothing is final until a separate signature confirms it.",
     a: "Most fraud tools stop at a risk score. This project adds a second, independent layer that checks the transaction against that specific customer's own history instead of a model's guess, and neither layer is treated as final until a separate authority signs the combined result. A model being confident is not the same as a transaction being authorized, and this project keeps those two ideas apart on purpose.",
   },
   {
     q: "What does this system actually allow that a fraud score alone does not?",
+    tldr: "Proof, after the fact, of exactly what was decided, by which checks, and that it wasn't quietly changed.",
     a: "It lets anyone, a judge, an auditor, another system, check afterward that a specific decision was really made, by which layers, and was not silently changed. A score alone cannot prove any of that. The signature and the mandate check are what turn a model's opinion into something you can point to later.",
   },
   {
     q: "Why does this fit naturally into agentic commerce?",
+    tldr: "When an AI is the one deciding to pay, \"was it allowed to?\" matters as much as \"does this look risky?\" — and only a rules check answers the first question.",
     a: "When an AI agent is the one deciding whether to complete a payment, the question stops being only whether a transaction looks like fraud and becomes whether that agent was actually authorized to do it. A risk score cannot answer the second question, because it is about permission, not detection. The mandate layer checks permission against the customer's real history, and the signature makes that permission check something the agent itself cannot forge or quietly skip, since it never holds the signing key.",
   },
   {
     q: "Could an AI agent fake or skip this check?",
+    tldr: "It can't fake the signature — it never holds the key. The only thing it could do is not call this system at all.",
     a: "Not the signature. Nothing calling this pipeline, agent or otherwise, has access to the private signing key, so it cannot produce a valid signed ALLOW on its own. The enforcement API also checks a caller token before acting on any decision and fails closed if that token is missing or wrong, so an agent cannot execute a decision it was never issued permission for. What it can still do is choose not to call the pipeline at all; putting this check at the actual execution point, not as an optional step an agent can decide to skip, is a system-integration decision outside this repo's scope.",
   },
   {
     q: "Does this replace a human reviewer?",
+    tldr: "No — flagged transactions still go to a person. This replaces blindly trusting one AI's score, not human judgment.",
     a: "No, and it is not trying to. FLAG decisions exist for exactly the cases where neither layer is confident enough to decide alone. What this project replaces is blind trust in a single model's score, not human judgment.",
   },
   {
     q: "Why is precision only around 28%?",
+    tldr: "Fraud is rare. Catching over 90% of a rare event means flagging a lot of borderline cases too, so more flags turn out to be false alarms.",
     a: "Fraud is rare, a few percent of transactions in this dataset. Catching over 90% of a rare event requires flagging aggressively, and that lowers precision. See the Detection tab for the full breakdown and the exact current numbers.",
   },
   {
     q: "Does a low precision flag mean legitimate transactions get blocked?",
+    tldr: "No. A flag by itself never blocks anything — the rules check also has to object.",
     a: "No. A detect layer flag alone does not block anything. The mandate layer also has to object before a transaction is BLOCKed. Try it yourself on the Live Test tab: a low risk transaction at an unfamiliar merchant still gets BLOCKed by the mandate layer alone.",
   },
   {
     q: "Are the numbers on this dashboard real?",
+    tldr: "Yes — every number here comes from actually running the code, not from hand-typed sample data.",
     a: "Yes. The transactions, the fraud rate, the detection metrics, and the signatures all come from this repo's own generation and pipeline code, including real OpenAI calls for several agents. Nothing here is hand authored sample data.",
   },
   {
     q: "What is the difference between Attack Walkthrough and Live Test?",
+    tldr: "Attack Walkthrough replays real past decisions. Live Test runs a brand-new one, right now, using whatever you type in.",
     a: "Attack Walkthrough shows five real, already signed decisions pulled from an actual past pipeline run, one per attack type. Live Test runs a brand new transaction through the real model and rule engine right now, using whatever you type in.",
   },
   {
     q: "Is the Live Test result actually computed live, or just looked up?",
+    tldr: "Computed live, every time — not looked up from a table.",
     a: "Computed live. The trained model scores it, the mandate rules check it against that customer's real history, and the result gets a fresh Ed25519 signature that is verified in the same request.",
   },
   {
     q: "Does this system actually stop a transaction from going through?",
+    tldr: "It produces the decision and would block a BLOCK from executing, but it isn't wired to a real payment processor yet, so no real money moves through it today.",
     a: "It produces a signed decision, ALLOW, FLAG, or BLOCK, then the enforcement API (sign/src/decision_executor.py) independently checks the caller's permission and the decision's signature before acting on it, blocking a BLOCK regardless of who asks. What it enforces against today is a no-op webhook, not a live payment processor, so no real money moves yet. Wiring that webhook to an actual payment rail is the remaining integration.",
   },
   {
     q: "Are signed decisions stored permanently?",
+    tldr: "Yes — the official record only ever adds new entries; it never erases or rewrites old ones.",
     a: "Enforcement decisions are: pipeline/audit/decisions.jsonl is an append only log, keyed on each decision's record_id, so a decision is written once and a replayed batch cannot duplicate an entry. The older pipeline_decisions.json snapshot is still written for backward compatibility, and that one does get overwritten on each pipeline run, it is not the durability guarantee.",
   },
   {
     q: "Who is allowed to trigger a decision or call the API?",
+    tldr: "Only someone with a valid, permission-limited access token. No token, no action — there's no default \"allow.\"",
     a: "The enforcement endpoint (POST /api/enforce/decisions) requires a signed caller token issued to a registered caller (payment-processor, fraud-analyst, audit-system in sign/src/caller_auth.py) and fails closed: a missing or invalid token gets a 401, not a default allow. A caller without permission for a decision's outcome, e.g. payment-processor attempting a BLOCK, gets that one decision rejected without affecting the rest of its batch. The read-only dashboard and demo routes (what this public page itself calls) are intentionally left open, since gating them wouldn't protect anything they don't already let the caller fully control.",
   },
   {
     q: "Why does the mandate layer use a customer's own history instead of one fixed rule for everyone?",
+    tldr: "One limit for everyone would be too loose for small spenders and too tight for big ones, so each customer gets their own, based on their own past behavior.",
     a: "One fixed spending limit would be too loose for small spenders and too tight for big ones. Deriving each customer's limit, merchants, hours, and daily count from their own past good transactions makes the check specific to them.",
   },
   {
     q: "What happens if I try a merchant or hour outside a customer's normal pattern on Live Test?",
+    tldr: "The rules check objects on its own, even when the AI's risk score is low.",
     a: "The mandate layer objects on that rule even when the detection score is low. That is the point: the two layers check different things, and either one objecting is enough to block the transaction.",
   },
 ];
@@ -1156,6 +1171,7 @@ function renderFAQ(data) {
   const items = FAQ_ITEMS.map(
     (item) => `<div class="card faq-item">
       <h3>${esc(item.q)}</h3>
+      <p class="faq-tldr"><strong>Short version:</strong> ${esc(item.tldr)}</p>
       <p>${esc(item.a)}</p>
     </div>`
   ).join("");

@@ -1126,3 +1126,13 @@ pre.envelope {
 }
 
 .faq-item p { margin: 0; }
+
+.faq-item .faq-tldr {
+  margin: 8px 0 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--surface-2, rgba(127, 127, 127, 0.08));
+  font-size: 13.5px;
+}
+
+.faq-item .faq-tldr strong { color: var(--text-primary); }
