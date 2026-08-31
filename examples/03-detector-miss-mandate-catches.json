@@ -1,0 +1,30 @@
+{
+  "example_id": "03-detector-miss-mandate-catches",
+  "title": "Detector Misses, Mandate Catches",
+  "description": "The detector produces an ALLOW signal with a low fraud score, but an account-level spending mandate is violated. The policy layer rejects the transaction.",
+  "account_context": {
+    "month_to_date_spending": 18000,
+    "transaction_amount": 4200,
+    "monthly_spending_limit": 20000,
+    "calculated_total": 22200
+  },
+  "inputs": {
+    "fraud_score": 0.24,
+    "detect_decision": "ALLOW",
+    "mandate_allowed": false,
+    "spending_limit": false,
+    "merchant_whitelist": true,
+    "time_restriction": true,
+    "velocity": true,
+    "amount": 4200
+  },
+  "policy": {
+    "policy_id": "transaction-authorization",
+    "policy_version": "1.0.0"
+  },
+  "expected": {
+    "action": "reject",
+    "matched_rule_id": "reject-mandate-violation",
+    "reason": "monthly spending limit exceeded"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "example_id": "02-high-risk-new-account",
+  "title": "High-Risk New Account",
+  "description": "A transaction where the detector flags the transaction and a deterministic mandate violation causes rejection.",
+  "inputs": {
+    "fraud_score": 0.68,
+    "detect_decision": "FLAG",
+    "mandate_allowed": false,
+    "spending_limit": true,
+    "merchant_whitelist": true,
+    "time_restriction": true,
+    "velocity": true,
+    "amount": 8500
+  },
+  "policy": {
+    "policy_id": "transaction-authorization",
+    "policy_version": "1.0.0"
+  },
+  "expected": {
+    "action": "reject",
+    "matched_rule_id": "reject-mandate-violation",
+    "reason": "one or more mandate rules were violated"
+  }
+}

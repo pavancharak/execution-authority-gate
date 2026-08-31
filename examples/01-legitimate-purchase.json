@@ -1,0 +1,24 @@
+{
+  "example_id": "01-legitimate-purchase",
+  "title": "Legitimate Purchase",
+  "description": "Low-risk transaction where the detector allows the transaction and all mandate checks pass.",
+  "inputs": {
+    "fraud_score": 0.12,
+    "detect_decision": "ALLOW",
+    "mandate_allowed": true,
+    "spending_limit": true,
+    "merchant_whitelist": true,
+    "time_restriction": true,
+    "velocity": true,
+    "amount": 450
+  },
+  "policy": {
+    "policy_id": "transaction-authorization",
+    "policy_version": "1.0.0"
+  },
+  "expected": {
+    "action": "approve",
+    "matched_rule_id": "approve-default",
+    "reason": "detect layer clear and all mandate rules passed"
+  }
+}
