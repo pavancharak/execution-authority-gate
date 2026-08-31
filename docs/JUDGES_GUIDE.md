@@ -1,10 +1,10 @@
-# Judges' Guide: Understanding Parmana Authority Gate
+# Judges' Guide: Understanding Execution Authority Gate
 
 ## Executive summary
 
 **What this is:** A two layer fraud defense system, a trained detector, an independent rule based mandate check, and Ed25519 cryptographic signing, for authorizing agentic payment execution safely. Built on a real, self generated dataset, including real OpenAI API calls for the identity, social engineering, and KYC generation agents.
 
-**Live dashboard:** https://parmana.fly.dev
+**Live dashboard:** https://execution-authority-gate.fly.dev
 
 This guide exists to answer the one question judges are most likely to ask when they see the numbers: *"Precision is only 21.1%, doesn't that mean 4 out of 5 flags are wrong?"* Yes, and that's explained below.
 
@@ -136,6 +136,6 @@ That's the recall and precision tradeoff in the other direction. Pushing recall 
 
 ## Live dashboard
 
-**URL:** https://parmana.fly.dev
+**URL:** https://execution-authority-gate.fly.dev
 
 The Detection tab shows the confusion matrix, stat tiles for precision, recall, and false positive rate (hover for the underlying counts), and feature importances live from the same `dashboard.json` referenced throughout this guide.

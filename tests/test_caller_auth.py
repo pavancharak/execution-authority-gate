@@ -38,7 +38,7 @@ def test_verify_token_rejects_tampered_payload(authenticator):
     token = authenticator.create_token("payment-processor")
     payload_b64, _, signature = token.rpartition(".")
 
-    # Attacker swaps in a different (also validly-shaped) payload while
+    # Attacker swaps in a different payload, still validly shaped, while
     # keeping the original signature.
     forged_payload = caller_auth._b64encode(b'{"caller_id":"fraud-analyst","permissions":["ALLOW","FLAG","BLOCK"],"rate_limit":200,"issued_at":0,"expires_at":9999999999}')
     forged_token = f"{forged_payload}.{signature}"

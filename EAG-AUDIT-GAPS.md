@@ -134,7 +134,7 @@ from?" cannot be answered from this repo's persisted artifacts alone.
 **Gap:** This repo is a decision layer for fraud detection and authorization. It has
 no execution capability and no evidence of a real handoff to one: no outbound
 HTTP call, no message queue publish, no webhook, no database write to an external
-system of record. If Parmana needs the gate to actually stop money from moving
+system of record. If Execution Authority Gate needs to actually stop money from moving
 (not just produce a correctly signed opinion that money *should* be stopped), that
 integration does not exist yet and would need to be built from scratch.
 
@@ -256,7 +256,7 @@ genuine decision made across two layers (`detect` + `mandate`) combined so eithe
 force a BLOCK (`run_pipeline.py:54-63`), and real Ed25519 signing and verification
 with correct key separation and tamper evidence for the fields that are actually
 inside the signed envelope (empirically confirmed). What's missing for
-trustworthy authorization at Parmana: (1) decision records that are durable, that only
+trustworthy authorization at Execution Authority Gate: (1) decision records that are durable, that only
 append, and that are tracked in git or stored externally. Today it's one overwritable, git
 ignored local JSON file, with the signing keys themselves also git ignored and
 regenerated per environment; (2) signed evidentiary detail. Only `fraud_score`

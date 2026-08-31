@@ -1,13 +1,13 @@
-# Parmana Authority Gate: Hybrid Fraud Defense
+# Execution Authority Gate: Hybrid Fraud Defense
 
-**Live dashboard: [parmana.fly.dev](https://parmana.fly.dev)**
+**Live dashboard: [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev)**
 
 A two layer payment fraud defense system combining:
 - **Detection Layer** (RandomForest, pattern recognition)
 - **Mandate Layer** (deterministic authorization rules)
 - **Signing Layer** (Ed25519 cryptographic proof)
-- **Caller Scoping** (HMAC-authenticated callers, permission-scoped by decision type)
-- **Execution Layer** (signed decisions execution-ready for a payment processor webhook, fail-closed + idempotent)
+- **Caller Scoping** (callers authenticated with HMAC, permission scoped by decision type)
+- **Execution Layer** (signed decisions ready for execution by a payment processor webhook, fail closed and idempotent)
 
 ## Architecture
 
@@ -20,9 +20,9 @@ Mandate (Rule based authorization)
     ↓
 Signing (Ed25519, cryptographic proof; caller identity embedded in the signed envelope)
     ↓
-Audit Trail (append-only, git-committed, independently re-verifiable)
+Audit Trail (append only, committed to git, independently verifiable again anytime)
     ↓
-Execution (caller-authenticated, signature-checked, idempotent handoff to a payment processor webhook)
+Execution (caller authenticated, signature checked, idempotent handoff to a payment processor webhook)
 ```
 
 ## Quick Start
@@ -65,7 +65,7 @@ Either one objecting is enough to block it. Then, whatever the outcome, a third 
 
 ## Try It Live
 
-The dashboard opens on the Live Test tab by default at [parmana.fly.dev](https://parmana.fly.dev). You do not need to read any numbers first. Just submit a transaction and watch the real pipeline run.
+The dashboard opens on the Live Test tab by default at [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev). You do not need to read any numbers first. Just submit a transaction and watch the real pipeline run.
 
 Pick one of six sample customers from the dropdown. Each one has a mandate built from their own real transaction history: a spending limit, a list of merchants they normally use, a window of hours they normally transact in, and a daily transaction limit.
 
@@ -104,7 +104,7 @@ The detect layer's **precision is 21.1%**: of the 582 transactions it flags (459
 
 - **Fraud is rare** (138 of 6,869 test set transactions, ~2%). Tuning a classifier to catch 89.1% of that rare an event requires flagging aggressively. It is the same tradeoff airport security makes to catch most weapons at the cost of screening plenty of harmless bags. Recall and precision pull against each other; you cannot maximize both when the positive class is this sparse.
 - **Precision measures the detect layer alone**, in isolation, on the held out test set. It is *not* the system's real world false accusation rate. A detect layer flag doesn't block anything by itself. It still has to clear the independent, rule based **mandate** layer (spending limits, merchant whitelist, time of day, velocity) before a transaction is denied, and every final decision, ALLOW or BLOCK, is signed and independently verifiable.
-- The confusion matrix behind these numbers: of 6,731 legitimate test transactions, 6,272 passed and 459 were flagged; of 138 fraud transactions, 123 were caught and 15 were missed. (`web/data/dashboard.json` → `detect.metrics.confusion_matrix`, also rendered live on the [dashboard](https://parmana.fly.dev)'s Detection tab.)
+- The confusion matrix behind these numbers: of 6,731 legitimate test transactions, 6,272 passed and 459 were flagged; of 138 fraud transactions, 123 were caught and 15 were missed. (`web/data/dashboard.json` → `detect.metrics.confusion_matrix`, also rendered live on the [dashboard](https://execution-authority-gate.fly.dev)'s Detection tab.)
 
 See [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md) for the full walkthrough, including why a detector with low precision and high recall is standard practice in fraud detection rather than a flaw.
 
@@ -114,10 +114,10 @@ Numbers vary run to run: agents 1, 2, 4, and 7 call the real OpenAI API at tempe
 
 ## Production Deployment and Execution Integration
 
-Decisions are execution-ready, not merely advisory: `sign/src/decision_executor.py`
+Decisions are ready for execution, not merely advisory: `sign/src/decision_executor.py`
 validates a signed decision's signature and the calling identity's
 permission before dispatching it to a `payment_processor_webhook`
-(ALLOW → settle, FLAG → step-up auth, BLOCK → deny), with idempotency so
+(ALLOW → settle, FLAG → step up auth, BLOCK → deny), with idempotency so
 the same decision is never executed twice, exposed over HTTP at
 `POST /api/enforce/decisions` (`web/server.py`, requires a caller token
 from `POST /api/callers/token`, see `sign/src/caller_auth.py`). This repo
@@ -125,18 +125,18 @@ ships no real payment processor integration; the shipped webhook stub
 simulates and labels its own output accordingly. See
 [`docs/PRODUCTION_DEPLOYMENT.md`](docs/PRODUCTION_DEPLOYMENT.md) for the
 full deployment guide (latency budget, scalability, key management,
-regulatory mapping, and a 15-point integration checklist), and
+regulatory mapping, and a 15 point integration checklist), and
 [`CLAIMS.md`](CLAIMS.md) for every metric in this README traced to a
 file:line and a runnable verification command.
 
-Decisions are also durable and caller-scoped now, closing two of the
+Decisions are also durable and caller scoped now, closing two of the
 gaps `EAG-AUDIT-GAPS.md` documented: every decision is appended,
-never overwritten, to `pipeline/audit/decisions.jsonl` (git-committed,
-independently re-verifiable via `pipeline/src/audit_trail.py`), and can
+never overwritten, to `pipeline/audit/decisions.jsonl` (committed to git,
+independently verifiable again anytime via `pipeline/src/audit_trail.py`), and can
 carry the requesting caller's identity inside the signed envelope itself
 (`pipeline/src/run_pipeline.py --caller-id`, `sign/src/caller_auth.py`'s
 scoped permissions). See `ARCHITECTURE.md`'s "Gaps closed since the
-audit" section for the complete, code-cited account of what changed.
+audit" section for the complete account of what changed, cited to the code.
 
 ## Testing
 
@@ -145,7 +145,7 @@ pip install -r requirements.txt
 pytest tests/ -v
 ```
 
-85 hermetic tests run in a few seconds, no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), the append-only audit trail, caller authentication and permission scoping, the decision executor's fail-closed/idempotency guarantees, and a scenario proving end to end that the mandate layer catches fraud the detector alone would miss.
+85 hermetic tests run in a few seconds, no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), the append only audit trail, caller authentication and permission scoping, the decision executor's fail closed and idempotency guarantees, and a scenario proving end to end that the mandate layer catches fraud the detector alone would miss.
 
 3 more tests cover agents 1, 2, 4, and 7 (the ones that call the real OpenAI API) and are skipped by default:
 
@@ -166,7 +166,7 @@ ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
 
 ## Deployment
 
-Live at [parmana.fly.dev](https://parmana.fly.dev), deployed via `flyctl deploy` from this repo. The deployed container runs `web/server.py` (a small Flask static server with a `/api/status` health check) and serves the committed `web/data/dashboard.json` as is. The pipeline doesn't run inside the container, so the live numbers stay fixed to whatever was last committed until someone regenerates and recommits that file.
+Live at [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev), deployed via `flyctl deploy` from this repo. The deployed container runs `web/server.py` (a small Flask static server with a `/api/status` health check) and serves the committed `web/data/dashboard.json` as is. The pipeline doesn't run inside the container, so the live numbers stay fixed to whatever was last committed until someone regenerates and recommits that file.
 
 To redeploy after code changes:
 ```bash
@@ -175,4 +175,4 @@ flyctl deploy
 
 ## The Pitch
 
-"Parmana Authority Gate: Fraud detection + mandate enforcement + cryptographic signing + external authority. Real OpenAI generation proves robustness. Every decision verifiable, none can be changed."
+"Execution Authority Gate: Fraud detection + mandate enforcement + cryptographic signing + external authority. Real OpenAI generation proves robustness. Every decision verifiable, none can be changed."

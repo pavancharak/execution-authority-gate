@@ -92,16 +92,17 @@ a { color: var(--series-1); }
 }
 
 .brand-mark {
-  width: 28px;
   height: 28px;
+  padding: 0 7px;
   border-radius: 7px;
   background: var(--series-1);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 800;
+  letter-spacing: 0.03em;
 }
 
 .tabs {
@@ -619,6 +620,237 @@ pre.envelope {
 .outcome-banner h2 { margin: 0; font-size: 20px; letter-spacing: 0.02em; }
 .outcome-why { margin: 10px 0 4px; font-size: 14px; color: var(--text-primary); }
 .outcome-action { margin: 0; font-size: 12.5px; color: var(--text-muted); }
+
+/* ---------- Overview landing page ---------- */
+
+.hero {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 56px 12px 48px;
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.hero-headline {
+  font-family: ui-serif, Georgia, "Palatino Linotype", serif;
+  font-size: 40px;
+  line-height: 1.15;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+}
+
+.hero-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+.hero-cta { font-size: 14px; padding: 12px 24px; }
+
+.landing-section {
+  max-width: 760px;
+  margin: 0 auto 56px;
+  padding: 0 12px;
+}
+
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.landing-section h2 { font-size: 24px; margin: 0 0 14px; }
+
+.landing-list {
+  margin: 16px 0 0;
+  padding-left: 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.criteria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.criteria-card { display: flex; flex-direction: column; gap: 6px; }
+
+.criteria-number {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--series-1);
+  letter-spacing: 0.04em;
+}
+
+.criteria-title { text-transform: none; letter-spacing: normal; font-size: 15px; color: var(--text-primary); margin: 0; }
+.criteria-desc { margin: 0 0 4px; font-size: 13.5px; }
+
+.link-btn {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--series-1);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-align: left;
+}
+
+.link-btn:hover { opacity: 0.8; }
+
+.criteria-links { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+
+.github-link {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.github-link::after {
+  content: "↗";
+  margin-left: 3px;
+  font-weight: 400;
+}
+
+.quick-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+
+.quick-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.quick-step-n {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--series-1);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-links { margin: 16px 0 0; font-size: 13.5px; color: var(--text-muted); }
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin-top: 8px;
+}
+
+.trust-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.trust-title::before {
+  content: "✓";
+  color: var(--status-good);
+  margin-right: 6px;
+  font-weight: 800;
+}
+
+.trust-item p { margin: 0; font-size: 13px; }
+
+.footer-cta {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 12px 64px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-cta h2 { font-size: 22px; margin: 0 0 18px; }
+.footer-links { margin: 18px 0 0; font-size: 13.5px; color: var(--text-muted); }
+.footer-note { margin: 20px 0 0; font-size: 12px; color: var(--text-muted); }
+
+@media (max-width: 720px) {
+  .hero-headline { font-size: 30px; }
+  .criteria-grid { grid-template-columns: 1fr; }
+  .trust-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Architecture diagram (Overview hero) ---------- */
+
+.arch-section { max-width: 980px; }
+
+.arch-diagram-wrap {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px 4px;
+  margin-bottom: 24px;
+}
+
+.arch-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.diag-box { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+.diag-box-accent { stroke: var(--series-1); stroke-width: 2; fill: color-mix(in srgb, var(--series-1) 8%, var(--surface-2)); }
+
+.diag-title { fill: var(--text-primary); font-size: 15px; font-weight: 700; }
+.diag-sub { fill: var(--text-muted); font-size: 10.5px; }
+.diag-caption { fill: var(--text-secondary); font-size: 13px; font-style: italic; }
+
+.diag-arrow { fill: none; stroke: var(--text-muted); stroke-width: 1.5; }
+.diag-arrow-branch { stroke: var(--series-1); }
+.diag-arrowhead { fill: var(--text-muted); }
+
+.arch-callouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.arch-callout-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--series-1);
+  margin-bottom: 6px;
+}
+
+.arch-callout p { margin: 0; font-size: 13.5px; }
 
 /* ---------- FAQ ---------- */
 

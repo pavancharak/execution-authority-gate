@@ -1,7 +1,7 @@
 """
-Tests for pipeline/src/audit_trail.py: the append-only decision log
-that replaces the overwrite-on-every-run pipeline_decisions.json
-(see EAG-AUDIT-GAPS.md section 1).
+Tests for pipeline/src/audit_trail.py: the append only decision log
+that replaces pipeline_decisions.json, which used to be overwritten on
+every run (see EAG-AUDIT-GAPS.md section 1).
 """
 
 import json
@@ -48,7 +48,7 @@ def test_append_decision_is_idempotent_on_record_id(tmp_path, isolated_sign_env)
 
 
 def test_append_is_never_a_rewrite(tmp_path, isolated_sign_env):
-    """Appending entry B must not touch entry A's already-written line:
+    """Appending entry B must not touch the line entry A already wrote:
     this is what makes the trail durable across pipeline runs, unlike
     decision_log.write_log's full path.write_text() overwrite."""
     auth, _verify = isolated_sign_env
@@ -111,9 +111,9 @@ def test_verify_all_confirms_every_real_signature(tmp_path, isolated_sign_env):
 
 
 def test_verify_all_catches_a_tampered_entry_written_directly_to_disk(tmp_path, isolated_sign_env):
-    """Simulates an attacker editing the on-disk trail directly (not
+    """Simulates an attacker editing the trail on disk directly (not
     through append_decision). verify_all must catch it the same way a
-    judge re-verifying the file later would."""
+    judge verifying the file again later would."""
     auth, _verify = isolated_sign_env
     trail = audit_trail.AuditTrail(tmp_path / "decisions.jsonl")
     entry = _entry(auth, transaction_id="tx_a")

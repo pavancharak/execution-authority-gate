@@ -20,7 +20,7 @@ handoff must have regardless of which processor sits behind it:
     the decision's record_id, the same id sign/src/authority_signer.py
     assigns once at signing time)
   - log every execution attempt, allowed or rejected, to an
-    append-only trail (see pipeline/src/audit_trail.py for the sibling
+    append only trail (see pipeline/src/audit_trail.py for the sibling
     decision trail this mirrors)
 """
 
@@ -46,7 +46,7 @@ ACTION_FOR_DECISION = {
 
 
 class ExecutionLog:
-    """Append-only JSONL log of execution attempts, mirroring
+    """Append only JSONL log of execution attempts, mirroring
     pipeline/src/audit_trail.py's AuditTrail. Kept as a separate file
     (executions.jsonl, not decisions.jsonl) because it records a
     different fact: not "this decision was made" but "this decision was

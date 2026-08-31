@@ -55,17 +55,17 @@ Transaction
 
 There is no enforcement or execution step after signing that talks to a
 *real* payment processor: this repo has no such integration, and does
-not move real money. What does exist now is an execution-ready handoff:
+not move real money. What does exist now is a handoff that is ready for execution:
 `sign/src/decision_executor.py`'s `DecisionExecutor.enforce_decision`
 takes a signed decision and a `payment_processor_webhook` callable,
 verifies the signature (fail closed on tampering), checks the calling
 identity's permission for that decision type (see Gap: Caller Scoping
 below), enforces idempotency (a `record_id` is never executed twice),
-and logs every attempt, allowed or rejected, to an append-only execution
+and logs every attempt, allowed or rejected, to an append only execution
 log. `web/server.py`'s `POST /api/enforce/decisions` exposes this over
 HTTP for a real downstream integration to call. The shipped webhook
 (`noop_webhook`) simulates and labels its own output `"simulated": true`,
-so the honest claim is "execution-ready for external enforcement," not
+so the honest claim is "ready for execution by external enforcement," not
 "enforced." See `docs/PRODUCTION_DEPLOYMENT.md` for what a real
 integration needs. See EAG-AUDIT-GAPS.md, section 3, for the audit that
 found no such layer existed before this was built.
@@ -119,23 +119,23 @@ additive and covered by its own tests:
   `pipeline/audit/decisions.jsonl`, idempotent on `record_id`, never
   rewritten. Unlike the old `pipeline/decisions/pipeline_decisions.json`
   (still written, for backward compatibility, but no longer the primary
-  record), this file is not git-ignored and is committed. `AuditTrail.verify_all()`
-  walks the whole trail and re-verifies every signature.
+  record), this file is not git ignored and is committed. `AuditTrail.verify_all()`
+  walks the whole trail and verifies every signature again.
 - **Key durability** (audit section 1): `sign/tokens/authority_public_key.pem`
   and `sign/tokens/reviewer_public_key.pem` are now committed to git
   (see `.gitignore`'s explicit exceptions). A signature produced in one
   environment can now be verified from a fresh checkout of this repo.
-  Private keys remain git-ignored and regenerated per environment, that
+  Private keys remain git ignored and regenerated per environment, that
   part is intentional (see `docs/PRODUCTION_DEPLOYMENT.md`'s Key
-  Management section for what a real HSM/KMS-backed deployment needs
-  instead).
+  Management section for what a real deployment backed by an HSM or KMS
+  needs instead).
 - **Execution integration** (audit section 3): see the Decision Flow
   section above. `sign/src/decision_executor.py` and
   `POST /api/enforce/decisions`.
 - **Caller scoping** (audit section 4): `sign/src/caller_auth.py` adds
-  HMAC-signed caller tokens with scoped permissions
+  caller tokens signed with HMAC and scoped permissions
   (`payment-processor`: ALLOW/FLAG only; `fraud-analyst`: all three;
-  `audit-system`: read-only). `pipeline/src/run_pipeline.py --caller-id`
+  `audit-system`: read only). `pipeline/src/run_pipeline.py --caller-id`
   threads a caller identity into `sign_pipeline_decision`, where it is
   embedded **inside** the signed envelope (`caller_id` field), so it's
   just as tamper evident as `final_decision`. `web/server.py`'s
@@ -147,7 +147,7 @@ section 2, transaction amount/merchant/hour still live in the unsigned
 `ground_truth` sibling field, not inside the signed envelope) and a real
 payment processor integration (the executor's webhook contract exists;
 no real processor is wired up, by design, this repo does not claim to
-move money). See `CLAIMS.md` for the full evidence-backed claim list and
+move money). See `CLAIMS.md` for the full claim list, each backed by evidence, and
 `docs/PRODUCTION_DEPLOYMENT.md` for what production deployment would
 still require.
 

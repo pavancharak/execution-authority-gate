@@ -61,7 +61,7 @@ def test_build_writes_expected_shape(tmp_path, monkeypatch):
     assert path.exists()
     data = json.loads(path.read_text())
 
-    assert data["meta"]["title"] == "Parmana Authority Gate"
+    assert data["meta"]["title"] == "Execution Authority Gate"
     assert len(data["attacks"]) == 13  # from the real identify/attacks.json
 
     assert data["simulation"]["good_transaction_count"] == 1

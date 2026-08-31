@@ -6,9 +6,10 @@ this repo: every signed decision's `signer` field is hardcoded to
 "authority", and there is no concept of who (which system, which
 person) asked for a decision, or what they're allowed to do with it.
 
-This module fixes that with a small, dependency-free, JWT-like token:
-a caller identity (caller_id, scoped permissions, rate limit, expiry)
-is signed with HMAC-SHA256 using a secret held only by this authority.
+This module fixes that with a small token, with no dependencies, that
+works like a JWT: a caller identity (caller_id, scoped permissions,
+rate limit, expiry) is signed with HMAC SHA256 using a secret held
+only by this authority.
 Anyone holding a valid token can prove which caller they are; nobody
 can mint a token for a caller they aren't, or grant themselves a
 permission they weren't issued.
@@ -18,8 +19,8 @@ Ed25519 keys, which sign the *content* of a decision so anyone with the
 public key can verify it was untampered. Caller tokens answer a
 different question: "is this caller who they claim to be, and what are
 they allowed to do with a decision, once it exists." Mixing the two
-would let a caller's own key double as the decision-signing key, which
-is exactly the kind of self-authorization EAG-AUDIT-GAPS.md section 4
+would let a caller's own key double as the key that signs decisions,
+which is exactly the kind of self authorization EAG-AUDIT-GAPS.md section 4
 flags as absent (a caller should never be able to also be the
 authority).
 """
@@ -69,12 +70,12 @@ class CallerIdentity:
 
 # Predefined callers and what they're allowed to execute. A caller not
 # listed here cannot be issued a token at all (see
-# CallerAuthenticator.create_token). "READ" grants read-only access to
-# decisions/audit trail but never lets a caller execute anything.
+# CallerAuthenticator.create_token). "READ" grants read only access to
+# the decisions and audit trail but never lets a caller execute anything.
 PREDEFINED_CALLERS = {
     "payment-processor": {
         "permissions": ["ALLOW", "FLAG"],  # cannot execute BLOCK: a payment
-        # processor settles or steps-up; it does not get to unilaterally
+        # processor settles or steps up; it does not get to unilaterally
         # deny a transaction the authority didn't already deny.
         "rate_limit": 1000,
     },
@@ -84,7 +85,7 @@ PREDEFINED_CALLERS = {
         "rate_limit": 200,
     },
     "audit-system": {
-        "permissions": ["READ"],  # read-only: can list/inspect decisions,
+        "permissions": ["READ"],  # read only: can list or inspect decisions,
         # can never execute one.
         "rate_limit": 5000,
     },
@@ -111,7 +112,7 @@ def _b64decode(data: str) -> bytes:
 
 
 class CallerAuthenticator:
-    """Issues and verifies HMAC-signed caller tokens. The secret never
+    """Issues and verifies caller tokens signed with HMAC. The secret never
     leaves this class (or the file it's persisted to); a token proves
     only that whoever produced it had access to that secret at issuance
     time, i.e. this authenticator, or another instance pointed at the
@@ -154,8 +155,8 @@ class CallerAuthenticator:
     def verify_token(self, token: str) -> Optional[CallerIdentity]:
         """Return a CallerIdentity if the token's signature is valid and
         it has not expired, else None. Never raises on malformed input;
-        an untrusted caller-supplied string should never crash the
-        verifier."""
+        an untrusted string supplied by the caller should never crash
+        the verifier."""
         if not token or "." not in token:
             return None
         payload_b64, _, signature = token.rpartition(".")
@@ -191,6 +192,6 @@ class CallerAuthenticator:
         return decision_type in caller.permissions
 
 
-# Module-level authenticator shared by the pipeline and web layers, the
+# Module level authenticator shared by the pipeline and web layers, the
 # same pattern authority_signer.py uses for AUTHORITY/REVIEWER.
 AUTHENTICATOR = CallerAuthenticator()

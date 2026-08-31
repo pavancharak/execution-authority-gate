@@ -73,7 +73,7 @@ def build(
 
     dashboard = {
         "meta": {
-            "title": "Parmana Authority Gate",
+            "title": "Execution Authority Gate",
             "generated_at": datetime.now(timezone.utc).isoformat(),
         },
         "attacks": _load_attacks(),

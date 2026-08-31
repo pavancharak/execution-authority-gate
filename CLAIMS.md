@@ -25,13 +25,13 @@ CLAIM: 21.1% precision (of 582 flagged transactions, ~1 in 5 is actually fraud)
 EVIDENCE: `web/data/dashboard.json` → `detect.metrics.precision`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json')); print(d['detect']['metrics']['precision'])"`
 
-CLAIM: Confusion matrix: TN 6,272 / FP 459 / FN 15 / TP 123 (held-out test split)
+CLAIM: Confusion matrix: TN 6,272 / FP 459 / FN 15 / TP 123 (held out test split)
 EVIDENCE: `web/data/dashboard.json` → `detect.metrics.confusion_matrix`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json')); print(d['detect']['metrics']['confusion_matrix'])"`
 
 CLAIM: 13 distinct attack vectors identified, 6 actively simulated, 7 documented as known gaps
 EVIDENCE: `identify/attack-taxonomy.md` (13 numbered sections, each labeled *simulated* or a known gap); `generate/src/fraud_agents.py` implements the 6 simulated (7 bounded agents, since agents 3 and 7 both attack the trained detector rather than generating new transaction types)
-VERIFY: `grep -c "^## " identify/attack-taxonomy.md` → 13 section headers; read the *simulated*/known-gap label on each
+VERIFY: `grep -c "^## " identify/attack-taxonomy.md` → 13 section headers; read the *simulated*/known gap label on each
 
 CLAIM: 22,895 total transactions at a 2.00% fraud rate (22,436 legitimate + 459 fraudulent)
 EVIDENCE: `web/data/dashboard.json` → `simulation.good_transaction_count`, `simulation.fraud_transaction_count`
@@ -41,59 +41,59 @@ CLAIM: Fraud spread across 5 labeled attack types: fake_identity 112, social_eng
 EVIDENCE: `web/data/dashboard.json` → `simulation.attack_type_breakdown`
 VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['simulation']['attack_type_breakdown'])"`
 
-CLAIM: 4 of 7 agents (fake identity, social engineering, KYC forgery, feedback-loop evasion) make real, non-deterministic OpenAI API calls at temperature=0.9
-EVIDENCE: `generate/src/llm_client.py` (the `temperature=0.9` client every real-call agent shares); `generate/src/fraud_agents.py` (agents 1, 2, 4 construct calls through it); `generate/src/probe_agents.py` (agent 7's evasion-variant suggestion does the same)
+CLAIM: 4 of 7 agents (fake identity, social engineering, KYC forgery, feedback loop evasion) make real, non deterministic OpenAI API calls at temperature=0.9
+EVIDENCE: `generate/src/llm_client.py` (the `temperature=0.9` client every agent making a real call shares); `generate/src/fraud_agents.py` (agents 1, 2, 4 construct calls through it); `generate/src/probe_agents.py` (agent 7's evasion variant suggestion does the same)
 VERIFY: `grep -n "temperature" generate/src/llm_client.py`
 
 CLAIM: Real OpenAI cost for the committed run: 24 calls, ~$0.03 total
 EVIDENCE: `web/data/dashboard.json` → `api_activity.summary`
 VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['api_activity']['summary'])"`
 
-CLAIM: 6,869 pipeline decisions on the held-out test split: 441 BLOCK / 146 FLAG / 6,282 ALLOW
+CLAIM: 6,869 pipeline decisions on the held out test split: 441 BLOCK / 146 FLAG / 6,282 ALLOW
 EVIDENCE: `pipeline/audit/decisions.jsonl` (one line per decision, 6,869 lines); `web/data/dashboard.json` → `pipeline.decision_counts`
 VERIFY: `wc -l pipeline/audit/decisions.jsonl` and `python -c "import json; print(json.load(open('web/data/dashboard.json'))['pipeline']['decision_counts'])"`
 
 CLAIM: Mandate layer caught 8 real fraud transactions the detector alone scored as low risk
-EVIDENCE: `web/data/dashboard.json` → `pipeline.block_attribution.mandate_only`
-VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['pipeline']['block_attribution'])"`
+EVIDENCE: `web/data/dashboard.json` → `mandate.block_attribution.mandate_only`
+VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['mandate']['block_attribution'])"`
 
 CLAIM: All 6,869 signed decisions verify independently against the committed public key
 EVIDENCE: `sign/tokens/authority_public_key.pem` (committed to git); `pipeline/audit/decisions.jsonl`; `pipeline/src/audit_trail.py::AuditTrail.verify_all`
 VERIFY: `python -c "import sys; sys.path[0:0]=['pipeline/src','sign/src']; import audit_trail; print(audit_trail.AuditTrail().verify_all())"` → `{'total': 6869, 'verified': 6869, 'all_verified': True, 'failed_record_ids': []}`
 
-CLAIM: Adversarial robustness: agent 7 evaded detection in 1 of 18 evasion-variant attempts against the trained model
-EVIDENCE: `generate/data/probe_report.json` (agent 7's variant-by-variant results); `identify/attack-taxonomy.md` section 7's narrative
+CLAIM: Adversarial robustness: agent 7 evaded detection in 1 of 18 evasion variant attempts against the trained model
+EVIDENCE: `generate/data/probe_report.json` (agent 7's results, variant by variant); `identify/attack-taxonomy.md` section 7's narrative
 VERIFY: `python -c "import json; r=json.load(open('generate/data/probe_report.json')); print(r['feedback_loop'])"` (field names as written by `generate/src/probe_agents.py`)
 
 ---
 
 ## Gaps built this session (see `EAG-AUDIT-GAPS.md` for the audit that motivated each)
 
-CLAIM: Decisions are durable, append-only, and never silently overwritten
+CLAIM: Decisions are durable, append only, and never silently overwritten
 EVIDENCE: `pipeline/src/audit_trail.py::AuditTrail.append_decision` (writes one JSONL line per call, idempotent on `record_id`, never rewrites existing lines); committed at `pipeline/audit/decisions.jsonl`
 VERIFY: `tests/test_audit_trail.py::test_append_is_never_a_rewrite`, `::test_append_decision_is_idempotent_on_record_id`
 
 CLAIM: Public keys are committed to git; verification works from a fresh checkout without regenerating anything
-EVIDENCE: `sign/tokens/authority_public_key.pem`, `sign/tokens/reviewer_public_key.pem` (tracked in git, see `.gitignore`'s explicit exceptions to the `sign/tokens/*.pem` ignore pattern); private keys (`sign/tokens/keys/`) remain git-ignored
+EVIDENCE: `sign/tokens/authority_public_key.pem`, `sign/tokens/reviewer_public_key.pem` (tracked in git, see `.gitignore`'s explicit exceptions to the `sign/tokens/*.pem` ignore pattern); private keys (`sign/tokens/keys/`) remain git ignored
 VERIFY: `git ls-files sign/tokens/*.pem` lists both public keys; `git check-ignore sign/tokens/keys/authority_private.pem` confirms the private key is still ignored
 
 CLAIM: Signed decisions carry the requesting caller's identity inside the signed envelope
 EVIDENCE: `sign/src/authority_signer.py::sign_pipeline_decision`'s `caller_id` parameter, embedded in the dict that gets signed (not a sibling field); `pipeline/src/run_pipeline.py`'s `--caller-id` CLI flag threads it through
-VERIFY: `python pipeline/src/run_pipeline.py --caller-id fraud-analyst` then inspect any line of `pipeline/audit/decisions.jsonl` for a non-null `decision.caller_id`
+VERIFY: `python pipeline/src/run_pipeline.py --caller-id fraud-analyst` then inspect any line of `pipeline/audit/decisions.jsonl` for a `decision.caller_id` that is not null
 
-CLAIM: Callers are authenticated and permission-scoped; a payment processor cannot execute a BLOCK decision
+CLAIM: Callers are authenticated and permission scoped; a payment processor cannot execute a BLOCK decision
 EVIDENCE: `sign/src/caller_auth.py::PREDEFINED_CALLERS` (`payment-processor` scoped to `["ALLOW", "FLAG"]`, `fraud-analyst` to all three, `audit-system` to `["READ"]` only); `CallerAuthenticator.can_execute`
 VERIFY: `tests/test_caller_auth.py::test_payment_processor_can_execute_allow_and_flag_not_block`, `::test_audit_system_is_read_only`
 
-CLAIM: Signed decisions can be executed against a payment processor webhook, with fail-closed signature verification and idempotency
-EVIDENCE: `sign/src/decision_executor.py::DecisionExecutor.enforce_decision` (verifies signature before dispatch, rejects on failure, tracks `record_id` to prevent double-execution)
+CLAIM: Signed decisions can be executed against a payment processor webhook, with fail closed signature verification and idempotency
+EVIDENCE: `sign/src/decision_executor.py::DecisionExecutor.enforce_decision` (verifies signature before dispatch, rejects on failure, tracks `record_id` so the same decision is never executed twice)
 VERIFY: `tests/test_executor.py::test_tampered_signature_is_rejected_and_never_reaches_webhook`, `::test_same_decision_is_never_executed_twice`
 
 CLAIM: 31 new test cases added this session (19+ target), all passing, all hermetic
 EVIDENCE: `tests/test_audit_trail.py` (9), `tests/test_caller_auth.py` (13), `tests/test_executor.py` (9)
 VERIFY: `pytest tests/test_audit_trail.py tests/test_caller_auth.py tests/test_executor.py -v`
 
-CLAIM: Full suite (54 pre-existing + 31 new = 85 hermetic tests, plus 3 skipped-by-default live-API tests) passes with zero failures
+CLAIM: Full suite (54 already existing plus 31 new, 85 hermetic tests total, plus 3 live API tests skipped by default) passes with zero failures
 EVIDENCE: full run output, captured this session
 VERIFY: `pytest tests/ -v` → `85 passed, 3 skipped`
 
@@ -104,11 +104,11 @@ VERIFY: `pytest tests/ -v` → `85 passed, 3 skipped`
 - Not a payment processor. Nothing in this repo moves real money;
   `sign/src/decision_executor.py`'s shipped `noop_webhook` explicitly
   simulates and labels its own output `"simulated": True`.
-- Not production-deployed. `parmana.fly.dev` serves the static,
+- Not deployed to production. `execution-authority-gate.fly.dev` serves the static,
   committed `web/data/dashboard.json`; the pipeline does not run inside
   the deployed container (see README.md's Deployment section).
 - Not a claim that 89.1%/6.8% are fixed constants: they come from a
-  non-deterministic data generation process (real OpenAI calls at
+  non deterministic data generation process (real OpenAI calls at
   temperature=0.9) and will shift slightly on every regeneration, by
   design (see README.md's Robustness section).
 - Not a claim that the mandate layer's derived limits (`monthly_limit_usd

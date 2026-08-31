@@ -96,14 +96,101 @@ function badge(decision) {
   return `<span class="badge ${cls}">${esc(decision)}</span>`;
 }
 
+/** The one diagram that actually shows the mechanism: a transaction
+ * forks into two independent checks (a statistical model and a rule
+ * check against the customer's own history), either of which can
+ * force a BLOCK on its own, before anything is signed, logged, or
+ * handed off for execution. This is the whole architectural
+ * differentiator in one picture, not a decorative flowchart. Styled
+ * entirely through CSS classes (diag-*) defined in style.css against
+ * this site's existing theme tokens, so it stays legible in light and
+ * dark mode with no inline colors. */
+function renderArchDiagram() {
+  return `
+  <svg class="arch-diagram" viewBox="0 0 1000 300" role="img" aria-label="Architecture: a transaction forks into an independent detect layer and mandate layer, either of which can force a block; the combined decision is then signed, logged to an append only audit trail, and handed off for execution.">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" class="diag-arrowhead"></path>
+      </marker>
+    </defs>
+
+    <text x="500" y="24" class="diag-caption" text-anchor="middle">One transaction. Two checks that do not trust each other. Neither alone can allow it.</text>
+
+    <path d="M70,150 H120 Q140,150 140,130 V90 Q140,70 160,70 H160" class="diag-arrow" marker-end="url(#arrow)"></path>
+    <path d="M70,150 H120 Q140,150 140,170 V210 Q140,230 160,230 H160" class="diag-arrow" marker-end="url(#arrow)"></path>
+    <path d="M330,70 H390 Q410,70 410,90 V130 Q410,150 420,150" class="diag-arrow" marker-end="url(#arrow)"></path>
+    <path d="M330,230 H390 Q410,230 410,210 V170 Q410,150 420,150" class="diag-arrow" marker-end="url(#arrow)"></path>
+    <path d="M580,150 H630" class="diag-arrow" marker-end="url(#arrow)"></path>
+    <path d="M770,150 H830" class="diag-arrow" marker-end="url(#arrow)"></path>
+    <path d="M700,180 V220" class="diag-arrow diag-arrow-branch" marker-end="url(#arrow)"></path>
+
+    <rect x="10" y="125" width="60" height="50" rx="8" class="diag-box"></rect>
+    <text x="40" y="155" class="diag-title" text-anchor="middle">Tx</text>
+
+    <rect x="160" y="40" width="170" height="60" rx="8" class="diag-box"></rect>
+    <text x="245" y="65" class="diag-title" text-anchor="middle">Detect</text>
+    <text x="245" y="84" class="diag-sub" text-anchor="middle">RandomForest fraud score</text>
+
+    <rect x="160" y="200" width="170" height="60" rx="8" class="diag-box diag-box-accent"></rect>
+    <text x="245" y="225" class="diag-title" text-anchor="middle">Mandate</text>
+    <text x="245" y="244" class="diag-sub" text-anchor="middle">customer's own history</text>
+
+    <rect x="420" y="120" width="160" height="60" rx="8" class="diag-box"></rect>
+    <text x="500" y="145" class="diag-title" text-anchor="middle">Combine</text>
+    <text x="500" y="164" class="diag-sub" text-anchor="middle">either objects, BLOCK</text>
+
+    <rect x="630" y="120" width="140" height="60" rx="8" class="diag-box diag-box-accent"></rect>
+    <text x="700" y="145" class="diag-title" text-anchor="middle">Sign</text>
+    <text x="700" y="164" class="diag-sub" text-anchor="middle">Ed25519</text>
+
+    <rect x="630" y="220" width="140" height="50" rx="8" class="diag-box diag-box-accent"></rect>
+    <text x="700" y="241" class="diag-title" text-anchor="middle">Audit</text>
+    <text x="700" y="259" class="diag-sub" text-anchor="middle">append only</text>
+
+    <rect x="830" y="120" width="160" height="60" rx="8" class="diag-box"></rect>
+    <text x="910" y="145" class="diag-title" text-anchor="middle">Execute</text>
+    <text x="910" y="164" class="diag-sub" text-anchor="middle">caller scoped</text>
+  </svg>`;
+}
+
+const GITHUB_REPO = "https://github.com/pavancharak/execution-authority-gate";
+
+function goToTabLink(tab, label) {
+  return `<button type="button" class="link-btn" data-goto-tab="${esc(tab)}">${esc(label)}</button>`;
+}
+
+/** Opens the real source on GitHub in a new tab, distinct from the
+ * data-goto-tab links elsewhere on this page: this one leaves the app
+ * and shows the actual code the tab's numbers come from, not just the
+ * tab itself. */
+function githubLink(path, label) {
+  const href = path ? `${GITHUB_REPO}/blob/main/${path}` : GITHUB_REPO;
+  return `<a class="link-btn github-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
+}
+
+function criteriaCard(number, title, description, tab, linkLabel, githubPath, githubLabel) {
+  return `<div class="card criteria-card">
+    <div class="criteria-number">${number}</div>
+    <h3 class="criteria-title">${esc(title)}</h3>
+    <p class="criteria-desc">${description}</p>
+    <div class="criteria-links">
+      ${goToTabLink(tab, linkLabel)}
+      ${githubLink(githubPath, githubLabel)}
+    </div>
+  </div>`;
+}
+
 function renderOverview(data) {
   const sim = data.simulation;
   const detect = data.detect.metrics;
   const pipeline = data.pipeline;
   const verification = data.verification;
   const api = data.api_activity.summary;
+  const attacks = data.attacks || [];
 
   const totalTx = sim.good_transaction_count + sim.fraud_transaction_count;
+  const fraudRate = sim.fraud_transaction_count / totalTx;
+  const simulatedCount = attacks.filter((a) => a.real_llm_calls || !/known gap/i.test(a.simulated_by)).length;
 
   const decisionRows = ["BLOCK", "FLAG", "ALLOW"].map((d) => ({
     name: d,
@@ -113,48 +200,157 @@ function renderOverview(data) {
   }));
 
   return `
-    <div class="section">
-      <h1>Parmana Authority Gate</h1>
-      <p>Two layer fraud defense: a transaction is only allowed through when the <strong>detect</strong> layer scores it as low risk <em>and</em> the <strong>mandate</strong> layer confirms it's actually authorized against the customer's own history. Every final decision is signed by an external authority before it counts.</p>
+    <div class="hero">
+      <div class="hero-eyebrow">Mastercard Innovation Challenge, AI Defense Lab 2026</div>
+      <h1 class="hero-headline">Execution Authority Gate</h1>
+      <p class="hero-sub">A payment fraud defense system with cryptographic accountability. Every transaction is detected, checked against an authorization mandate, signed, and logged, before it counts as a decision.</p>
+      <button type="button" class="btn-primary hero-cta" data-goto-tab="live-test">Explore the system</button>
     </div>
 
-    <div class="section">
-      <h2>This run</h2>
-      <div class="stat-row">
-        ${statTile("Transactions processed", totalTx.toLocaleString())}
-        ${statTile("Fraud caught", fmtPct(detect.fraud_caught_rate), "good")}
-        ${statTile("False positive rate", fmtPct(detect.false_positive_rate))}
-        ${statTile("Decisions signed", pipeline.total.toLocaleString())}
-        ${statTile(
-          "Signatures verified",
-          `${verification.verified}/${verification.total}`,
-          verification.all_verified ? "good" : "critical"
+    <div class="section landing-section arch-section">
+      <div class="arch-diagram-wrap">${renderArchDiagram()}</div>
+      <div class="arch-callouts">
+        <div class="arch-callout">
+          <div class="arch-callout-label">What is different</div>
+          <p>Two independent layers, not one model wearing two hats. A statistical fraud score and a rule check against the customer's own real history both have to agree before a transaction is allowed. Either one can force a block alone.</p>
+        </div>
+        <div class="arch-callout">
+          <div class="arch-callout-label">Why it is different</div>
+          <p>A model can be confidently wrong. In this run, the mandate layer caught ${data.mandate.block_attribution.mandate_only} real fraud transactions the detector alone scored as low risk, evidence the second layer earns its place rather than duplicating the first.</p>
+        </div>
+        <div class="arch-callout">
+          <div class="arch-callout-label">What it enables</div>
+          <p>When an AI agent initiates a payment, a model's confidence is not authorization. Every decision here is signed, scoped to the caller who may act on it, and logged to an append only trail, so an agent can propose a transaction but never grant itself permission to execute it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section landing-section">
+      <div class="section-eyebrow">The challenge</div>
+      <h2>What you are evaluating</h2>
+      <p>This is a fraud defense system built for Mastercard's AI Defense Lab. It identifies AI generated payment fraud, runs real time detection, enforces authorization rules independent of that detection, cryptographically signs every decision, and keeps a durable, append only audit trail. Everything here is live: every number below comes from this repository's own committed run, not a mockup.</p>
+      <ul class="landing-list">
+        <li>${attacks.length} documented attack types, ${simulatedCount} actively simulated</li>
+        <li>${totalTx.toLocaleString()} transactions at a realistic ${fmtPct(fraudRate)} fraud rate</li>
+        <li>${fmtPct(detect.fraud_caught_rate)} fraud caught by the trained detector</li>
+        <li>An independent mandate layer, derived from each customer's own history</li>
+        <li>${pipeline.total.toLocaleString()} decisions signed with Ed25519, ${verification.verified}/${verification.total} verified independently</li>
+      </ul>
+    </div>
+
+    <div class="section landing-section">
+      <div class="section-eyebrow">How this is evaluated</div>
+      <h2>Five criteria, five places to check them</h2>
+      <div class="criteria-grid">
+        ${criteriaCard(
+          "01",
+          "Diversity of attacks identified",
+          `${attacks.length} documented GenAI payment fraud attack types, spanning card, wire, real time, and agentic commerce rails.`,
+          "attacks",
+          "See the attack taxonomy",
+          "identify/attack-taxonomy.md",
+          "View source"
+        )}
+        ${criteriaCard(
+          "02",
+          "Fidelity of attacks in simulation",
+          `Real OpenAI API calls generate the fraud examples, at a realistic ${fmtPct(fraudRate)} base rate, not a hand authored sample.`,
+          "live-test",
+          "Try a live example",
+          "generate/src/fraud_agents.py",
+          "View source"
+        )}
+        ${criteriaCard(
+          "03",
+          "Detection algorithm efficacy",
+          `${fmtPct(detect.fraud_caught_rate)} catch rate, ${fmtPct(detect.false_positive_rate)} false positive rate, full confusion matrix and reasoning for both.`,
+          "detect",
+          "View detection metrics",
+          "detect/src/detector.py",
+          "View source"
+        )}
+        ${criteriaCard(
+          "04",
+          "Novelty of the overall solution",
+          "Detection and authorization are independent layers, neither can force an allow alone, and every decision is signed, caller scoped, and execution ready.",
+          "mandate",
+          "See the mandate layer",
+          "ARCHITECTURE.md",
+          "View source"
+        )}
+        ${criteriaCard(
+          "05",
+          "Real world feasibility",
+          "A latency budget under 200ms, a path to 100M transactions a day, and a compliance mapping to PCI DSS, RBI, and GDPR.",
+          "proof",
+          "See the proof and docs",
+          "docs/PRODUCTION_DEPLOYMENT.md",
+          "View source"
         )}
       </div>
     </div>
 
-    <div class="section">
+    <div class="section landing-section">
+      <div class="section-eyebrow">Quick start</div>
+      <h2>Two minutes, start to finish</h2>
+      <div class="quick-steps">
+        <div class="quick-step"><span class="quick-step-n">1</span><span>Open the <strong>Live Test</strong> tab.</span></div>
+        <div class="quick-step"><span class="quick-step-n">2</span><span>Click the <strong>Normal transaction</strong> example button.</span></div>
+        <div class="quick-step"><span class="quick-step-n">3</span><span>Read the decision, detect, then mandate, then sign, then the final outcome.</span></div>
+        <div class="quick-step"><span class="quick-step-n">4</span><span>Click <strong>Flagged</strong>, then <strong>Blocked</strong>, and compare what changed.</span></div>
+        <div class="quick-step"><span class="quick-step-n">5</span><span>Try your own amount, merchant, hour, and AI signal.</span></div>
+      </div>
+      <p class="quick-links">Then explore: ${goToTabLink("attacks", "Attacks")} &middot; ${goToTabLink("detect", "Detection")} &middot; ${goToTabLink("proof", "Proof")} &middot; ${goToTabLink("faq", "FAQ")} &middot; ${githubLink(null, "View source on GitHub")}</p>
+    </div>
+
+    <div class="section landing-section">
+      <div class="section-eyebrow">Credibility</div>
+      <h2>Real data, real crypto, honest numbers</h2>
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-title">Real data</div>
+          <p>${totalTx.toLocaleString()} live transactions (${sim.fraud_transaction_count.toLocaleString()} fraud) at a realistic ${fmtPct(fraudRate)} base rate, not a curated demo set.</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-title">Real AI models</div>
+          <p>${
+            api.total_calls > 0
+              ? `${api.total_calls} real OpenAI GPT-4o-mini calls, ${fmtCost(api.total_cost_usd)} total cost, generating four of the seven simulated attack types.`
+              : "OpenAI GPT-4o-mini calls generate four of the seven simulated attack types. Run the generate layer with an API key to populate this run's activity."
+          }</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-title">Real cryptography</div>
+          <p>Ed25519 signatures on every decision. ${verification.verified.toLocaleString()} of ${verification.total.toLocaleString()} verify independently against a public key committed to git.</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-title">Honest metrics</div>
+          <p>${fmtPct(detect.fraud_caught_rate)} catch rate with a ${fmtPct(detect.false_positive_rate)} false positive rate, and the Detection tab explains why that tradeoff is expected, not hidden.</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-title">Regulatory mapping</div>
+          <p>PCI DSS, RBI (India), and GDPR considerations documented in the production deployment guide, not asserted without support.</p>
+        </div>
+        <div class="trust-item">
+          <div class="trust-title">Complete documentation</div>
+          <p>CLAIMS.md traces every metric to a file and a runnable command. The production guide includes a fifteen point integration checklist.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section landing-section">
       <div class="card">
-        <h3>Final decisions</h3>
+        <h3>Final decisions, this run</h3>
         ${barChart(decisionRows)}
         ${legend(decisionRows.map((r) => ({ label: r.name, colorVar: r.colorVar })))}
       </div>
     </div>
 
-    <div class="section">
-      <div class="card">
-        <h3>Generation layer, OpenAI API activity</h3>
-        ${
-          api.total_calls > 0
-            ? `<div class="stat-row">
-                ${statTile("Calls", api.total_calls.toLocaleString())}
-                ${statTile("Tokens", api.total_tokens.toLocaleString())}
-                ${statTile("Cost", fmtCost(api.total_cost_usd))}
-                ${statTile("Avg latency", `${api.avg_latency_ms}ms`)}
-              </div>`
-            : `<p>No API calls recorded yet. Agents 1, 2, 4, and 7 call the real OpenAI API. Set <code>OPENAI_API_KEY</code> in a repo root <code>.env</code> and run the generate layer to populate this.</p>`
-        }
-      </div>
+    <div class="footer-cta">
+      <h2>Ready to evaluate</h2>
+      <button type="button" class="btn-primary" data-goto-tab="live-test">Start with Live Test</button>
+      <p class="footer-links">Or jump to: ${goToTabLink("attacks", "Attacks")} &middot; ${goToTabLink("detect", "Detection")} &middot; ${goToTabLink("proof", "Proof")} &middot; ${goToTabLink("faq", "FAQ")} &middot; ${githubLink(null, "GitHub repo")}</p>
+      <p class="footer-note">Built for the Mastercard Innovation Challenge, AI Defense Lab 2026.</p>
     </div>
   `;
 }
@@ -381,12 +577,13 @@ function renderMandate(data) {
 
 const OUTCOME_ICON = { ALLOW: "✓", FLAG: "⚠", BLOCK: "✕" };
 
-/** A judge-friendly, plain-language summary of why the final decision
- * came out the way it did, computed entirely from real fields already
- * present on the signed decision (fraud_score, detect_decision,
- * mandate_allowed, violated_mandate_rules) plus the mandate rule
- * labels. No new backend data, just a clearer presentation of what
- * Step 4 of renderDecisionCard already says in prose. */
+/** A summary of why the final decision came out the way it did, written
+ * in plain language a judge can follow, computed entirely from real
+ * fields already present on the signed decision (fraud_score,
+ * detect_decision, mandate_allowed, violated_mandate_rules) plus the
+ * mandate rule labels. No new backend data, just a clearer
+ * presentation of what Step 4 of renderDecisionCard already says in
+ * prose. */
 function renderOutcomeBanner(decision, mandateChecks) {
   const ruleLabels = {
     spending_limit: "Spending limit",
@@ -408,7 +605,7 @@ function renderOutcomeBanner(decision, mandateChecks) {
       why = `The detection model scored this ${decision.fraud_score.toFixed(2)} (high risk) and blocked it, even though the mandate layer had no objection.`;
     }
   } else if (final === "FLAG") {
-    why = `The detection model is unsure (score ${decision.fraud_score.toFixed(2)}, between the ALLOW and BLOCK thresholds) and the mandate layer has no objection. Flagged for manual review, not auto-blocked.`;
+    why = `The detection model is unsure (score ${decision.fraud_score.toFixed(2)}, between the ALLOW and BLOCK thresholds) and the mandate layer has no objection. Flagged for manual review, not blocked automatically.`;
   } else {
     why = `The detection model scored this ${decision.fraud_score.toFixed(2)} (low risk) and every mandate rule passed. Both layers agree.`;
   }
@@ -595,7 +792,7 @@ function renderLiveTest(data, customersData) {
     <div class="section">
       <div class="card">
         <h3>Try an example</h3>
-        <p class="form-hint" style="margin:0 0 12px">Click one to auto-fill the form below and run it immediately. Each one is a real, verified input, not a mockup.</p>
+        <p class="form-hint" style="margin:0 0 12px">Click one to fill in the form below automatically and run it immediately. Each one is a real, verified input, not a mockup.</p>
         <div class="quick-start-row">
           <button type="button" class="quick-start-btn allow" data-example="normal">
             <span class="qs-outcome">ALLOW</span>
@@ -941,7 +1138,7 @@ async function main() {
   panels["live-test"] = renderLiveTest(data, customersData);
 
   const order = ["overview", "attacks", "walkthrough", "detect", "mandate", "live-test", "proof", "faq"];
-  const DEFAULT_TAB = "live-test";
+  const DEFAULT_TAB = "overview";
   app.innerHTML = order
     .map((name) => `<div class="panel${name === DEFAULT_TAB ? " active" : ""}" data-panel="${name}">${panels[name]}</div>`)
     .join("");
@@ -949,21 +1146,30 @@ async function main() {
   wireWalkthrough(scenarios);
   wireLiveTest(customersData);
 
-  function goToTab(tab) {
-    const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-    if (!btn) return;
-    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.dataset.panel === tab));
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }
-
   document.getElementById("tabs").addEventListener("click", (e) => {
     const btn = e.target.closest(".tab-btn");
     if (!btn) return;
     goToTab(btn.dataset.tab);
   });
 
+  // Event delegation so any element rendered anywhere, including inside
+  // dynamically rebuilt panels like Overview, can link to another tab
+  // just by carrying data-goto-tab, no rewiring needed on every render.
+  app.addEventListener("click", (e) => {
+    const link = e.target.closest("[data-goto-tab]");
+    if (!link) return;
+    goToTab(link.dataset.gotoTab);
+  });
+
   wireOnboarding(goToTab);
+}
+
+function goToTab(tab) {
+  const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+  if (!btn) return;
+  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
+  document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.dataset.panel === tab));
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 const ONBOARDING_KEY = "judge_onboarding_dismissed_at";

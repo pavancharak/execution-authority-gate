@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parmana Authority Gate</title>
+<title>Execution Authority Gate</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="modal-backdrop" id="onboarding-backdrop" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
-    <h2 id="onboarding-title">Welcome to Parmana Authority Gate</h2>
+    <h2 id="onboarding-title">Welcome to Execution Authority Gate</h2>
     <p>This is a fraud defense system with four pillars:</p>
     <ol class="modal-list">
-      <li><strong>Attacks</strong> &mdash; 13 GenAI payment fraud types identified, 6 actively simulated</li>
-      <li><strong>Live Test</strong> &mdash; try the real decision pipeline with example customers</li>
-      <li><strong>Detection</strong> &mdash; see how the fraud detector scores transactions</li>
-      <li><strong>FAQ</strong> &mdash; honest answers, including what this system doesn't do yet</li>
+      <li><strong>Attacks:</strong> 13 GenAI payment fraud types identified, 6 actively simulated</li>
+      <li><strong>Live Test:</strong> try the real decision pipeline with example customers</li>
+      <li><strong>Detection:</strong> see how the fraud detector scores transactions</li>
+      <li><strong>FAQ:</strong> honest answers, including what this system doesn't do yet</li>
     </ol>
     <p><strong>Quick start:</strong> go to Live Test &rarr; pick a customer &rarr; click one of the three example buttons at the top &rarr; watch the pipeline run.</p>
     <p class="modal-tip">Tip: try the "Normal" example first, then change one field at a time (an odd hour, an unfamiliar merchant, a larger amount) to see which layer objects and why.</p>
@@ -29,18 +29,18 @@
 
 <header class="topbar">
   <div class="brand">
-    <span class="brand-mark">P</span>
-    <span>Parmana Authority Gate</span>
+    <span class="brand-mark">EAG</span>
+    <span>Execution Authority Gate</span>
   </div>
   <nav class="tabs" id="tabs">
-    <button class="tab-btn" data-tab="overview">Overview</button>
-    <button class="tab-btn" data-tab="attacks">Attacks</button>
-    <button class="tab-btn" data-tab="walkthrough">Attack Walkthrough</button>
-    <button class="tab-btn" data-tab="detect">Detection</button>
-    <button class="tab-btn" data-tab="mandate">Mandate</button>
-    <button class="tab-btn active" data-tab="live-test">Live Test</button>
-    <button class="tab-btn" data-tab="proof">Proof</button>
-    <button class="tab-btn" data-tab="faq">FAQ</button>
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="attacks" hidden>Attacks</button>
+    <button class="tab-btn" data-tab="walkthrough" hidden>Attack Walkthrough</button>
+    <button class="tab-btn" data-tab="detect" hidden>Detection</button>
+    <button class="tab-btn" data-tab="mandate" hidden>Mandate</button>
+    <button class="tab-btn" data-tab="live-test" hidden>Live Test</button>
+    <button class="tab-btn" data-tab="proof" hidden>Proof</button>
+    <button class="tab-btn" data-tab="faq" hidden>FAQ</button>
   </nav>
 </header>
 

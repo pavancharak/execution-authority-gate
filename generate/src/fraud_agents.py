@@ -105,7 +105,7 @@ def _tx_id(prefix):
 def _batched(total_n, batch_size, generate_batch):
     """Call generate_batch(count) repeatedly in chunks instead of one giant
     request. A single call asking for hundreds of items risks the model's
-    response getting cut off mid-JSON and failing to parse; batches of 25
+    response getting cut off partway through the JSON and failing to parse; batches of 25
     stay comfortably inside the output limit regardless of how verbose
     each item's schema is."""
     items = []

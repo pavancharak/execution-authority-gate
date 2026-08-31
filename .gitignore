@@ -229,7 +229,7 @@ pipeline/decisions/
 # produced by one environment must be verifiable from a fresh checkout,
 # which requires the verifying public key to be durable, not regenerated
 # per environment. Private keys (sign/tokens/keys/, including the caller
-# auth HMAC secret) and per-agent token/log artifacts stay ignored.
+# auth HMAC secret) and per agent token/log artifacts stay ignored.
 sign/tokens/*.pem
 !sign/tokens/authority_public_key.pem
 !sign/tokens/reviewer_public_key.pem

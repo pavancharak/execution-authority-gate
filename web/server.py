@@ -14,9 +14,9 @@ pipeline isn't run inside the container.
 EAG-AUDIT-GAPS.md sections 3-4): caller token issuance and signed
 decision execution. They are the only routes gated by @require_auth.
 The existing dashboard/demo routes below are intentionally left
-unauthenticated: they're what the public live demo at parmana.fly.dev
+unauthenticated: they're what the public live demo at execution-authority-gate.fly.dev
 serves to an anonymous browser, and gating them would break that demo
-without actually protecting anything (they're read-only or run the
+without actually protecting anything (they're read only or run the
 pipeline against inputs the caller already fully controls).
 """
 
@@ -92,7 +92,7 @@ def issue_caller_token():
 def enforce_decisions(caller):
     """Execute a batch of signed decisions (see
     sign/src/decision_executor.py). Body: {"decisions": [<signed decision>, ...]}.
-    Every decision is independently signature-checked and permission-checked
+    Every decision is independently checked for a valid signature and permission
     against the caller before any action is taken; a caller without
     permission for a given decision's final_decision (e.g.
     payment-processor attempting a BLOCK) gets a REJECTED result for
@@ -100,7 +100,7 @@ def enforce_decisions(caller):
     body = request.get_json(silent=True) or {}
     decisions = body.get("decisions")
     if not isinstance(decisions, list) or not decisions:
-        return jsonify({"error": "decisions must be a non-empty list"}), 400
+        return jsonify({"error": "decisions must be a list with at least one entry"}), 400
 
     executor = decision_executor.DecisionExecutor()
     results = [

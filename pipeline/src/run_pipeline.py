@@ -177,7 +177,7 @@ def main(argv=None):
 
     trail = audit_trail.AuditTrail()
     appended = trail.append_many(entries)
-    print(f"      appended {appended} new decisions to append-only audit trail: {trail.path}")
+    print(f"      appended {appended} new decisions to append only audit trail: {trail.path}")
 
     verified_count = sum(1 for e in entries if verify.verify_record(dict(e["decision"]), "authority"))
     print(f"\nVerification: {verified_count}/{len(entries)} signatures verify independently (public key check only)")

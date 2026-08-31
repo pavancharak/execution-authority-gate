@@ -1,5 +1,5 @@
 """
-Durable, append-only decision log.
+Durable, append only decision log.
 
 pipeline/src/decision_log.py writes pipeline_decisions.json as a single
 JSON array via a full path.write_text() on every run, so a second
@@ -24,13 +24,13 @@ AUDIT_PATH = AUDIT_DIR / "decisions.jsonl"
 
 
 class AuditTrail:
-    """Append-only JSONL decision log.
+    """Append only JSONL decision log.
 
     Idempotency is keyed on the signed decision's `record_id` (assigned
     once, at signing time, by authority_signer.Signer.sign_record). The
     same record_id is never appended twice, so replaying a batch, or
-    re-running a step that already wrote its result, cannot duplicate
-    an entry.
+    running a step again after it already wrote its result, cannot
+    duplicate an entry.
     """
 
     def __init__(self, path: Path = AUDIT_PATH):
@@ -64,7 +64,7 @@ class AuditTrail:
         """Append one signed decision entry (the same shape run_pipeline.py
         builds: {"decision": {...signed...}, "mandate_checks": [...],
         "ground_truth": {...}}). Returns True if it was newly appended,
-        False if this record_id was already present (idempotent no-op)."""
+        False if this record_id was already present (an idempotent no op)."""
         record_id = self._record_id(entry)
         if record_id in self.known_ids():
             return False
@@ -73,7 +73,7 @@ class AuditTrail:
         return True
 
     def append_many(self, entries) -> int:
-        """Append a batch, skipping any already-known record_id. Returns
+        """Append a batch, skipping any record_id already known. Returns
         the count of entries actually appended."""
         existing = self.known_ids()
         appended = 0
@@ -89,9 +89,10 @@ class AuditTrail:
 
     def get_decision(self, record_id: str):
         """Return the entry with this record_id, or None. The trail is
-        append-only, so the LAST matching line wins (there should only
+        append only, so the LAST matching line wins (there should only
         ever be one, given append_decision's idempotency, but a reader
-        should not assume a hand-edited file preserves that)."""
+        should not assume a file someone edited by hand preserves
+        that)."""
         found = None
         with self.path.open("r", encoding="utf-8") as f:
             for line in f:

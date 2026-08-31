@@ -1,4 +1,4 @@
-app = "parmana"
+app = "execution-authority-gate"
 primary_region = "iad"
 
 [build]
