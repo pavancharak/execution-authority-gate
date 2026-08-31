@@ -1,0 +1,65 @@
+{
+  "policyId": "transaction-authorization",
+  "policyVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "description": "Default transaction authorization policy: reproduces this repo's original combine_decision logic as data instead of hardcoded control flow. Either the detect layer flagging BLOCK, or any mandate rule failing, rejects the transaction outright. A detect FLAG with a clean mandate requires step-up review. Everything else is approved.",
+
+  "signalsSchema": {
+    "fraud_score": "number",
+    "detect_decision": "string",
+    "mandate_allowed": "boolean",
+    "spending_limit": "boolean",
+    "merchant_whitelist": "boolean",
+    "time_restriction": "boolean",
+    "velocity": "boolean",
+    "amount": "number"
+  },
+
+  "rules": [
+    {
+      "id": "reject-detect-block",
+      "condition": {
+        "fact": "detect_decision",
+        "operator": "eq",
+        "value": "BLOCK"
+      },
+      "outcome": {
+        "action": "reject",
+        "reason": "detect layer flagged this transaction BLOCK"
+      }
+    },
+    {
+      "id": "reject-mandate-violation",
+      "condition": {
+        "fact": "mandate_allowed",
+        "operator": "is_false"
+      },
+      "outcome": {
+        "action": "reject",
+        "reason": "one or more mandate rules were violated"
+      }
+    },
+    {
+      "id": "require-override-detect-flag",
+      "condition": {
+        "fact": "detect_decision",
+        "operator": "eq",
+        "value": "FLAG"
+      },
+      "outcome": {
+        "action": "require_override",
+        "reason": "detect layer is unsure and the mandate raised no objection; step-up review required"
+      }
+    },
+    {
+      "id": "approve-default",
+      "condition": {
+        "always": true
+      },
+      "outcome": {
+        "action": "approve",
+        "reason": "detect layer clear and all mandate rules passed"
+      }
+    }
+  ]
+}

@@ -42,7 +42,8 @@ Execution Authority Gate makes fraud detection, authorization, and cryptographic
 **What this project is:**
 - A **Detection Layer** (`detect/`): RandomForest classifier, six features, scores fraud probability.
 - A **Mandate Layer** (`mandate/`): deterministic rules derived from each customer's own transaction history.
-- A **Signing Layer** (`sign/`): Ed25519 signatures over every final decision, with caller identity embedded in the signed envelope.
+- A **Policy Layer** (`policy/`): a declarative, versioned rule engine that turns detect + mandate output into a final decision — the shipped default reproduces the original combine logic exactly, as data instead of code; a different policy document can be swapped in without touching detect or mandate at all.
+- A **Signing Layer** (`sign/`): Ed25519 signatures over every final decision, with caller identity and the policy that produced the decision embedded in the signed envelope.
 - An **Audit Trail** (`pipeline/audit/decisions.jsonl`): append only, committed to git, independently re-verifiable at any time.
 - An **Execution Layer** (`sign/src/decision_executor.py`): signed decisions ready for handoff to a payment processor webhook, fail closed and idempotent.
 
@@ -96,14 +97,31 @@ Why this matters:
                  └──────────────────┬────────────────────┘
                                      ▼
                     ┌─────────────────────────────────┐
+                    │          POLICY                  │
+                    │  policy/src/policy_engine.py      │
+                    │                                    │
+                    │  detect_decision, mandate_allowed,  │
+                    │  and every mandate rule's pass/fail  │
+                    │  become named signals, evaluated       │
+                    │  against a declarative, versioned       │
+                    │  policy document (first match wins)     │
+                    │                                    │
+                    │  Output: APPROVE | REQUIRE_OVERRIDE |  │
+                    │  REJECT + which rule matched            │
+                    │  Shipped default reproduces the          │
+                    │  original combine rule exactly            │
+                    └────────────────┬────────────────────┘
+                                     ▼
+                    ┌─────────────────────────────────┐
                     │         COMBINE                  │
                     │  pipeline/src/run_pipeline.py     │
                     │  combine_decision()                │
                     │                                    │
-                    │  detect BLOCK, or any mandate       │
-                    │  rule violated      → BLOCK         │
-                    │  detect FLAG, mandate clean → FLAG  │
-                    │  otherwise           → ALLOW         │
+                    │  thin adapter over the policy        │
+                    │  result above:                        │
+                    │  REJECT           → BLOCK              │
+                    │  REQUIRE_OVERRIDE → FLAG                │
+                    │  APPROVE          → ALLOW                │
                     └────────────────┬────────────────────┘
                                      ▼
                     ┌─────────────────────────────────┐
@@ -113,7 +131,9 @@ Why this matters:
                     │  Ed25519 over transaction_id,       │
                     │  fraud_score, detect_decision,       │
                     │  mandate_allowed, violated_rules,     │
-                    │  final_decision, reasons, caller_id   │
+                    │  final_decision, reasons, caller_id,   │
+                    │  policy_id, policy_version,             │
+                    │  matched_rule_id                         │
                     │  Neither layer above holds this key   │
                     └────────────────┬────────────────────┘
                                      ▼
@@ -142,19 +162,35 @@ Why this matters:
 
 ## 4. Decision Flow
 
-### `combine_decision` — the only rule that matters
+### `combine_decision` — now a thin adapter over the policy layer
 
 ```python
 # pipeline/src/run_pipeline.py
-def combine_decision(detect_decision, mandate_result):
-    if detect_decision == "BLOCK" or not mandate_result["mandate_allowed"]:
-        return "BLOCK"
-    if detect_decision == "FLAG":
-        return "FLAG"
-    return "ALLOW"
+def combine_decision(detect_decision, mandate_result, fraud_score=None, amount=None, policy=None):
+    result = decide(detect_decision, mandate_result, fraud_score=fraud_score, amount=amount, policy=policy)
+    return _OUTCOME_TO_DECISION[result["outcome"]]  # REJECT->BLOCK, REQUIRE_OVERRIDE->FLAG, APPROVE->ALLOW
 ```
 
-BLOCK wins over everything. A clean mandate never downgrades a detect BLOCK, and a clean detect score never upgrades a mandate violation past BLOCK.
+Same function, same call signature as before, same default behavior: BLOCK wins over everything, a clean mandate never downgrades a detect BLOCK, and a clean detect score never upgrades a mandate violation past BLOCK. What changed is *how* that decision gets made — `decide()` builds a signals dict (`detect_decision`, `mandate_allowed`, one boolean per mandate rule) and evaluates it against `policy/policies/transaction-authorization/1.0.0/policy.json`, a declarative rule document, instead of the if/else this function used to contain directly.
+
+### Same signals, different policy, different decision
+
+The whole reason this is a policy *document* and not just a refactor: the same detect + mandate output can be evaluated against a different, business-authored policy to get a different decision — auditably, since the policy that fired is itself signed into the record (`policy_id`, `policy_version`, `matched_rule_id`).
+
+```python
+# policy/src/policy_engine.py
+from policy_engine import evaluate_policy
+
+signals = {"detect_decision": "FLAG", "mandate_allowed": True, "fraud_score": 0.62}
+
+# The shipped default: FLAG + clean mandate requires step-up review.
+evaluate_policy(default_policy, signals)["outcome"]   # "REQUIRE_OVERRIDE"
+
+# A stricter, hand-authored policy that treats any FLAG as a reject.
+evaluate_policy(strict_policy, signals)["outcome"]     # "REJECT"
+```
+
+See `tests/test_policy_engine.py::test_same_signals_different_policy_different_outcome` for the full runnable version of this example, and `pipeline/src/run_pipeline.py --policy-id`/`--policy-version` to run the whole pipeline against a different policy document.
 
 ### Three scenario walkthroughs
 
@@ -240,14 +276,17 @@ result = check_mandate(
 # }
 ```
 
-### Combine and sign
+### Evaluate policy and sign
 
 ```python
 # pipeline/src/run_pipeline.py + sign/src/authority_signer.py
-from run_pipeline import combine_decision
+from run_pipeline import decide
 from authority_signer import sign_pipeline_decision
 
-final_decision = combine_decision(detect_decision, result)
+# decide() builds the signals dict and evaluates it against the
+# shipped default policy (or pass policy=<a different document>).
+policy_result = decide(detect_decision, result, fraud_score=fraud_score, amount=transaction["amount"])
+final_decision = {"REJECT": "BLOCK", "REQUIRE_OVERRIDE": "FLAG", "APPROVE": "ALLOW"}[policy_result["outcome"]]
 
 signed = sign_pipeline_decision(
     transaction_id=transaction["transaction_id"],
@@ -257,9 +296,13 @@ signed = sign_pipeline_decision(
     violated_mandate_rules=result["violated_rules"],
     final_decision=final_decision,
     reasons=["mandate: spending_limit"],
+    policy_id=policy_result["policy_id"],
+    policy_version=policy_result["policy_version"],
+    matched_rule_id=policy_result["matched_rule_id"],
 )
 # signed["signature"] is a 128-hex-char Ed25519 signature over the
-# canonical JSON encoding of the fields above.
+# canonical JSON encoding of the fields above -- including which policy
+# and which rule produced final_decision, so that's tamper evident too.
 ```
 
 ### Verify a signed decision independently
@@ -460,7 +503,7 @@ pip install -r requirements.txt
 pytest tests/ -v
 ```
 
-89 hermetic tests run in a few seconds, no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), the append only audit trail, caller authentication and permission scoping, the decision executor's fail closed and idempotency guarantees, and a scenario proving end to end that the mandate layer catches fraud the detector alone would miss.
+136 hermetic tests run in a few seconds, no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `policy`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), the append only audit trail, caller authentication and permission scoping, the decision executor's fail closed and idempotency guarantees, the policy engine's operators/validation/first-match-wins semantics, and a scenario proving end to end that the mandate layer catches fraud the detector alone would miss.
 
 4 more tests cover agents 1, 2, 4, and 9 (the ones that call the real OpenAI API) and are skipped by default:
 
@@ -476,6 +519,7 @@ ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
 - **generate/**: 7 fraud agents + orchestration (`run_simulation.py`, `probe_agents.py`); agents 1, 2, 4, 7 call the real OpenAI API
 - **detect/**: RandomForest fraud detector
 - **mandate/**: Authorization rule checker
+- **policy/**: Declarative policy engine (`src/`) + versioned policy documents (`policies/<policy-id>/<version>/policy.json`)
 - **sign/**: Ed25519 signing + verification + caller auth + decision execution
 - **pipeline/**: Orchestration of all layers, audit trail
 - **web/**: Interactive dashboard, plus an Attack Walkthrough (real precomputed decisions) and a Live Test Harness (runs a submitted transaction through the real pipeline on demand, needs `python web/server.py`, not the static `http.server`). See [Try It Live](#8-try-it-live) above.

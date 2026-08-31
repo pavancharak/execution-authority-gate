@@ -1,17 +1,26 @@
 """
 Entry point: python run_pipeline.py
 
-Orchestrates all four layers end to end:
+Orchestrates all five layers end to end:
 
   1. DETECT: train the RandomForest model, score each held out test
      transaction, propose BLOCK/FLAG/ALLOW.
   2. MANDATE: derive each customer's mandate from their own good
      transaction history, check the transaction against it.
-  3. COMBINE: a transaction is only ALLOWed if detect says ALLOW *and*
-     mandate says allowed. Either layer objecting is enough to BLOCK.
-     Neither layer's proposal is final on its own.
-  4. SIGN: the authority signs the combined decision. Nothing above
-     is enforceable until this step.
+  3. POLICY: detect's decision and every mandate rule's pass/fail become
+     named signals evaluated against a declarative policy document (see
+     policy/src/policy_engine.py). The shipped default policy
+     (policy/policies/transaction-authorization/1.0.0/policy.json)
+     reproduces the original rule exactly: a transaction is only ALLOWed
+     if detect says ALLOW *and* every mandate rule passed. Either
+     objecting is enough to BLOCK. A different --policy-id/--policy-version
+     can be swapped in to get a different decision from the same signals.
+  4. COMBINE: combine_decision() is a thin, behavior-preserving adapter
+     over the policy layer above -- same function, same signature, now
+     backed by data instead of hardcoded control flow.
+  5. SIGN: the authority signs the final decision, including which
+     policy and rule produced it. Nothing above is enforceable until
+     this step.
 
 Reads transaction data from ../../generate/data/, trains and saves the
 detect layer model to ../../detect/models/, and writes the signed
@@ -27,7 +36,7 @@ SRC_DIR = Path(__file__).resolve().parent
 PIPELINE_ROOT = SRC_DIR.parent
 REPO_ROOT = PIPELINE_ROOT.parent
 
-for _layer in ("detect", "mandate", "sign", "generate"):
+for _layer in ("detect", "mandate", "sign", "generate", "policy"):
     _layer_src = REPO_ROOT / _layer / "src"
     if str(_layer_src) not in sys.path:
         sys.path.insert(0, str(_layer_src))
@@ -41,8 +50,20 @@ import decision_log  # noqa: E402
 import dashboard_builder  # noqa: E402
 import audit_trail  # noqa: E402
 import caller_auth  # noqa: E402
+import policy_engine  # noqa: E402
+import policy_loader  # noqa: E402
 
 DATA_DIR = REPO_ROOT / "generate" / "data"
+
+DEFAULT_POLICY_ID = "transaction-authorization"
+DEFAULT_POLICY_VERSION = "1.0.0"
+DEFAULT_POLICY = policy_loader.load_policy(DEFAULT_POLICY_ID, DEFAULT_POLICY_VERSION)
+
+_OUTCOME_TO_DECISION = {
+    policy_engine.APPROVE: "ALLOW",
+    policy_engine.REQUIRE_OVERRIDE: "FLAG",
+    policy_engine.REJECT: "BLOCK",
+}
 
 
 def load(name):
@@ -54,16 +75,52 @@ def load(name):
     return json.loads(path.read_text())
 
 
-def combine_decision(detect_decision, mandate_result):
+def build_policy_signals(detect_decision, mandate_result, fraud_score=None, amount=None):
+    """Reshape what detect and mandate already computed into the flat
+    signal bag a policy document evaluates against. No new computation:
+    every mandate rule's pass/fail (mandate_result["checks"]) becomes its
+    own named boolean signal, exactly like detect_decision and
+    mandate_allowed -- the policy engine treats all of them the same way,
+    it has no built-in notion of "detector" vs "mandate"."""
+    signals = {
+        "detect_decision": detect_decision,
+        "mandate_allowed": mandate_result["mandate_allowed"],
+    }
+    for check in mandate_result.get("checks", []):
+        signals[check["rule"]] = check["passed"]
+    if fraud_score is not None:
+        signals["fraud_score"] = fraud_score
+    if amount is not None:
+        signals["amount"] = amount
+    return signals
+
+
+def decide(detect_decision, mandate_result, fraud_score=None, amount=None, policy=None):
+    """Evaluate the given policy (default: DEFAULT_POLICY) against the
+    signals built from this transaction's detect + mandate results.
+    Returns the full policy_engine.evaluate_policy result, including
+    policy_id/policy_version/matched_rule_id -- everything the sign layer
+    needs to make the policy that produced this decision tamper evident
+    too, not just the decision itself."""
+    signals = build_policy_signals(detect_decision, mandate_result, fraud_score=fraud_score, amount=amount)
+    return policy_engine.evaluate_policy(policy or DEFAULT_POLICY, signals)
+
+
+def combine_decision(detect_decision, mandate_result, fraud_score=None, amount=None, policy=None):
     """BLOCK wins over everything: either layer objecting blocks the
     transaction. FLAG only happens when detect is unsure AND mandate has
     no objection. A clean mandate doesn't downgrade a detect BLOCK, and
-    a clean detect score doesn't upgrade a mandate violation past BLOCK."""
-    if detect_decision == "BLOCK" or not mandate_result["mandate_allowed"]:
-        return "BLOCK"
-    if detect_decision == "FLAG":
-        return "FLAG"
-    return "ALLOW"
+    a clean detect score doesn't upgrade a mandate violation past BLOCK.
+
+    This is now a thin adapter over the policy layer (policy/src/policy_engine.py):
+    the shipped DEFAULT_POLICY re-encodes exactly this behavior as data
+    instead of the if/else this function used to contain directly. Same
+    signature, same return values as before -- swap in a different
+    `policy` document and the same detect/mandate signals can produce a
+    different decision, which is the point (see decide() above for the
+    full policy result, including which rule matched and why)."""
+    result = decide(detect_decision, mandate_result, fraud_score=fraud_score, amount=amount, policy=policy)
+    return _OUTCOME_TO_DECISION[result["outcome"]]
 
 
 def parse_args(argv=None):
@@ -78,6 +135,20 @@ def parse_args(argv=None):
             "same as before this flag existed."
         ),
     )
+    parser.add_argument(
+        "--policy-id",
+        default=DEFAULT_POLICY_ID,
+        help=(
+            "Policy document to evaluate every transaction against (see "
+            "policy/policies/<policy-id>/<policy-version>/policy.json). "
+            f"Defaults to {DEFAULT_POLICY_ID!r}."
+        ),
+    )
+    parser.add_argument(
+        "--policy-version",
+        default=DEFAULT_POLICY_VERSION,
+        help=f"Version of --policy-id to load. Defaults to {DEFAULT_POLICY_VERSION!r}.",
+    )
     return parser.parse_args(argv)
 
 
@@ -90,8 +161,14 @@ def main(argv=None):
             f"{sorted(caller_auth.AUTHENTICATOR._registry)}"
         )
 
+    if args.policy_id == DEFAULT_POLICY_ID and args.policy_version == DEFAULT_POLICY_VERSION:
+        selected_policy = DEFAULT_POLICY
+    else:
+        selected_policy = policy_loader.load_policy(args.policy_id, args.policy_version)
+
     print("=" * 70)
-    print("PIPELINE: Detect -> Mandate -> Sign")
+    print("PIPELINE: Detect -> Mandate -> Policy -> Sign")
+    print(f"Policy: {selected_policy['policyId']}@{selected_policy['policyVersion']}")
     if caller_id:
         print(f"Caller: {caller_id}")
     print("=" * 70)
@@ -135,7 +212,14 @@ def main(argv=None):
         tx_today = tx_count_today.get(cust_id, 0)
         mandate_result = mc.check_mandate(tx, mandate, month_to_date_total=mtd_total, tx_count_today=tx_today)
 
-        final_decision = combine_decision(detect_decision, mandate_result)
+        policy_result = decide(
+            detect_decision,
+            mandate_result,
+            fraud_score=score,
+            amount=tx["amount"],
+            policy=selected_policy,
+        )
+        final_decision = _OUTCOME_TO_DECISION[policy_result["outcome"]]
 
         # A blocked transaction shouldn't count against the customer's
         # budget or daily count. It never actually went through.
@@ -153,6 +237,9 @@ def main(argv=None):
             final_decision,
             reasons,
             caller_id=caller_id,
+            policy_id=policy_result["policy_id"],
+            policy_version=policy_result["policy_version"],
+            matched_rule_id=policy_result["matched_rule_id"],
         )
         entries.append(
             {

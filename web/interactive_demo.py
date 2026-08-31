@@ -4,10 +4,10 @@ Backend for the dashboard's interactive demo: the Attack Walkthrough tab
 Harness tab (runs a real transaction through the actual detect to
 mandate to sign pipeline, on demand, in this process).
 
-Loads the same detect/mandate/sign modules the offline pipeline
+Loads the same detect/mandate/policy/sign modules the offline pipeline
 (pipeline/src/run_pipeline.py) uses, so a live evaluation here is the
-real thing, not a simulation. Same trained model, same rule engine,
-same authority keypair.
+real thing, not a simulation. Same trained model, same mandate rules,
+same shipped policy document, same authority keypair.
 """
 
 import json
@@ -18,7 +18,7 @@ from threading import Lock
 WEB_DIR = Path(__file__).resolve().parent
 REPO_ROOT = WEB_DIR.parent
 
-for _layer in ("detect", "mandate", "sign"):
+for _layer in ("detect", "mandate", "sign", "policy"):
     _layer_src = REPO_ROOT / _layer / "src"
     if str(_layer_src) not in sys.path:
         sys.path.insert(0, str(_layer_src))
@@ -27,6 +27,19 @@ import detector as det  # noqa: E402
 import mandate_checker as mc  # noqa: E402
 import authority_signer as auth  # noqa: E402
 import signature_verifier as verify  # noqa: E402
+import policy_engine  # noqa: E402
+import policy_loader  # noqa: E402
+
+# Same shipped policy document and engine pipeline/src/run_pipeline.py
+# evaluates against, loaded independently here so the live demo doesn't
+# have to import the offline pipeline's heavier module (data file
+# resolution, llm_client, etc.) just to reach the policy layer.
+_POLICY = policy_loader.load_policy("transaction-authorization", "1.0.0")
+_OUTCOME_TO_DECISION = {
+    policy_engine.APPROVE: "ALLOW",
+    policy_engine.REQUIRE_OVERRIDE: "FLAG",
+    policy_engine.REJECT: "BLOCK",
+}
 
 SCENARIOS_PATH = WEB_DIR / "data" / "attack_scenarios.json"
 DEMO_CUSTOMERS_PATH = WEB_DIR / "data" / "demo_customers.json"
@@ -165,12 +178,16 @@ def evaluate_transaction(customer_id, amount, merchant, hour_of_day, ai_generate
     mandate = customer["mandate"]
     mandate_result = mc.check_mandate(tx, mandate, month_to_date_total=0.0, tx_count_today=0)
 
-    if detect_decision == "BLOCK" or not mandate_result["mandate_allowed"]:
-        final_decision = "BLOCK"
-    elif detect_decision == "FLAG":
-        final_decision = "FLAG"
-    else:
-        final_decision = "ALLOW"
+    signals = {
+        "detect_decision": detect_decision,
+        "mandate_allowed": mandate_result["mandate_allowed"],
+        "fraud_score": score,
+        "amount": amount,
+    }
+    for check in mandate_result["checks"]:
+        signals[check["rule"]] = check["passed"]
+    policy_result = policy_engine.evaluate_policy(_POLICY, signals)
+    final_decision = _OUTCOME_TO_DECISION[policy_result["outcome"]]
 
     reasons = [f"detect: {r}" for r in detect_reasons] + [f"mandate: {r}" for r in mandate_result["violated_rules"]]
     signed = auth.sign_pipeline_decision(
@@ -181,6 +198,9 @@ def evaluate_transaction(customer_id, amount, merchant, hour_of_day, ai_generate
         mandate_result["violated_rules"],
         final_decision,
         reasons,
+        policy_id=policy_result["policy_id"],
+        policy_version=policy_result["policy_version"],
+        matched_rule_id=policy_result["matched_rule_id"],
     )
     verified = verify.verify_record(dict(signed), "authority")
 

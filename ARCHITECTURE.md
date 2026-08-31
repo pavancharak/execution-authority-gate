@@ -1,4 +1,4 @@
-# Architecture: Detect, Mandate, Sign
+# Architecture: Detect, Mandate, Policy, Sign
 
 ## Layer 1: Generate
 
@@ -20,12 +20,25 @@ Deterministic rule checker (mandate/src/mandate_checker.py) verifies authorizati
 - Time based restriction
 - Velocity check
 
+## Layer 3.5: Policy
+
+Everything the detect and mandate layers produced — `detect_decision`, `mandate_allowed`, and each individual mandate rule's pass/fail — becomes a named signal in a flat dict, evaluated against a declarative, versioned policy document (`policy/src/policy_engine.py`). The engine has no built-in notion of "detector" vs "mandate": a fraud score and a spending-limit check are both just signals a policy author can reference. Rules are ordered, first match wins, and a signal missing from the input never satisfies a rule (checked by presence, not truthiness, so a present-but-`False` signal is still evaluated correctly).
+
+The shipped default (`policy/policies/transaction-authorization/1.0.0/policy.json`) is a literal, faithful re-encoding of this repo's original combine rule, expressed as data instead of Python control flow:
+
+1. `reject-detect-block` — detect says BLOCK → reject
+2. `reject-mandate-violation` — any mandate rule failed → reject
+3. `require-override-detect-flag` — detect says FLAG and mandate is clean → require step-up review
+4. `approve-default` — otherwise → approve
+
+`pipeline/src/run_pipeline.py::combine_decision` is now a thin, behavior-preserving adapter over this engine (`REJECT→BLOCK`, `REQUIRE_OVERRIDE→FLAG`, `APPROVE→ALLOW`) — same function, same signature, same default behavior, now backed by an inspectable, swappable document instead of hardcoded if/else. A different `--policy-id`/`--policy-version` can be evaluated against the exact same detect+mandate signals to get a different, but equally auditable, decision — see `policy/src/policy_engine.py`'s docstring and `tests/test_policy_engine.py::test_same_signals_different_policy_different_outcome` for a concrete example. Structural validation of a policy document (unique rule ids, well-formed conditions, a valid regex for `matches`, etc.) happens once at load time, in `policy/src/policy_validator.py`, before a policy is ever evaluated.
+
 ## Layer 4: Sign
 
 Every final decision, ALLOW, FLAG, and BLOCK alike, is signed with Ed25519 (sign/src/authority_signer.py) by an external authority identity. Neither the detector nor the mandate checker holds that private key, so neither can forge or self approve a decision.
 
 **What this actually guarantees:**
-- The signed fields (`transaction_id`, `fraud_score`, `detect_decision`, `mandate_allowed`, `violated_mandate_rules`, `final_decision`, `reasons`, and the signing timestamp) cannot be altered afterward without invalidating the signature. Verified empirically in EAG-AUDIT-GAPS.md.
+- The signed fields (`transaction_id`, `fraud_score`, `detect_decision`, `mandate_allowed`, `violated_mandate_rules`, `final_decision`, `reasons`, `policy_id`, `policy_version`, `matched_rule_id`, and the signing timestamp) cannot be altered afterward without invalidating the signature. Verified empirically in EAG-AUDIT-GAPS.md.
 - A separate REVIEWER key signs human overrides, so an override can never be mistaken for, or forged as, an authority decision.
 - Signing is not enforcement. It makes the combined decision provable and tamper evident after the fact. It does not by itself stop money from moving; this repo has no execution or enforcement integration. See "Known limits" below.
 
@@ -38,16 +51,23 @@ Transaction
          decision_for_score(fraud_score) -> BLOCK | FLAG | ALLOW
     ↓
 [MANDATE] mandate_checker.check_mandate(tx, customer_mandate)
-          -> mandate_allowed (True/False), violated_rules
+          -> mandate_allowed (True/False), violated_rules, per-rule checks
+    ↓
+[POLICY] signals = {detect_decision, mandate_allowed, <per-rule booleans>, ...}
+         policy_engine.evaluate_policy(policy, signals)
+         -> outcome: APPROVE | REQUIRE_OVERRIDE | REJECT, matched_rule_id
+         (shipped default policy: detect BLOCK, or any mandate rule
+         violated -> REJECT; detect FLAG and mandate clean ->
+         REQUIRE_OVERRIDE; otherwise -> APPROVE)
     ↓
 [COMBINE] combine_decision(detect_decision, mandate_result)
-          detect BLOCK, or any mandate rule violated  -> final = BLOCK
-          detect FLAG and mandate clean                -> final = FLAG
-          otherwise                                     -> final = ALLOW
+          thin adapter over the policy result above:
+          REJECT -> BLOCK, REQUIRE_OVERRIDE -> FLAG, APPROVE -> ALLOW
     ↓
 [SIGN] authority_signer.sign_pipeline_decision(...)
        Ed25519 signature over transaction_id, fraud_score, detect_decision,
-       mandate_allowed, violated_mandate_rules, final_decision, reasons
+       mandate_allowed, violated_mandate_rules, final_decision, reasons,
+       policy_id, policy_version, matched_rule_id
     ↓
 [LOG] decision_log.write_log(...) -> pipeline/decisions/pipeline_decisions.json
 [DASHBOARD] dashboard_builder.build(...) -> web/data/dashboard.json
@@ -97,6 +117,9 @@ A real signed pipeline decision, field names exactly as `sign/src/authority_sign
   "violated_mandate_rules": ["spending_limit", "time_restriction"],
   "final_decision": "BLOCK",
   "reasons": ["detect: pattern_similarity", "mandate: spending_limit", "mandate: time_restriction"],
+  "policy_id": "transaction-authorization",
+  "policy_version": "1.0.0",
+  "matched_rule_id": "reject-mandate-violation",
   "record_id": "b3b0b8f2-2f31-4b0a-9b8e-3f6b6b0a1c02",
   "signed_at": 1755963600.0,
   "signer": "authority",

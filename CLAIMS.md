@@ -93,9 +93,29 @@ CLAIM: 36 new test cases added this session (19+ target), all passing, all herme
 EVIDENCE: `tests/test_audit_trail.py` (9), `tests/test_caller_auth.py` (13), `tests/test_executor.py` (9), `tests/test_generate.py` additions for the bust out agent and mandate limit math (5, four hermetic plus one opt in live API test for the vendor BEC agent)
 VERIFY: `pytest tests/test_audit_trail.py tests/test_caller_auth.py tests/test_executor.py tests/test_generate.py -v`
 
-CLAIM: Full suite (93 tests total: 89 hermetic passing, 4 live API tests skipped by default) passes with zero failures
-EVIDENCE: full run output, captured this session
-VERIFY: `pytest tests/ -v` → `89 passed, 4 skipped`
+CLAIM: Full suite (140 tests total: 136 hermetic passing, 4 live API tests skipped by default) passes with zero failures
+EVIDENCE: full run output, captured across sessions as tests were added (see the policy layer claims below for the 47 added alongside `policy/`)
+VERIFY: `pytest tests/ -v` → `136 passed, 4 skipped`
+
+---
+
+## Policy layer (added in a later session)
+
+CLAIM: Detect and mandate output are combined by a declarative, data-driven policy engine, not hardcoded Python control flow, and the shipped default reproduces the original `combine_decision` behavior exactly (zero change to `web/data/dashboard.json`'s metrics when regenerated)
+EVIDENCE: `policy/src/policy_engine.py::evaluate_policy` (ordered rules, first match wins, over a signals dict built by `pipeline/src/run_pipeline.py::build_policy_signals`); shipped policy `policy/policies/transaction-authorization/1.0.0/policy.json`; `pipeline/src/run_pipeline.py::combine_decision` is now a thin adapter over it (same name, same call signature, same default behavior)
+VERIFY: `tests/test_policy_engine.py::test_shipped_default_policy_reproduces_the_original_combine_rule`; regenerate the dashboard with `python pipeline/src/run_pipeline.py` and diff `detect.metrics` in `web/data/dashboard.json` against the committed version — unchanged
+
+CLAIM: The same detect + mandate signals, evaluated against two different policy documents, produce two different, equally auditable decisions
+EVIDENCE: `policy/src/policy_engine.py::evaluate_policy` takes the policy document as a parameter, not a hardcoded default; `pipeline/src/run_pipeline.py --policy-id`/`--policy-version` swaps the whole pipeline to a different policy
+VERIFY: `tests/test_policy_engine.py::test_same_signals_different_policy_different_outcome`
+
+CLAIM: Which policy and which specific rule produced a decision is itself signed, tamper evident, inside the same envelope as the decision
+EVIDENCE: `sign/src/authority_signer.py::sign_pipeline_decision`'s `policy_id`/`policy_version`/`matched_rule_id` parameters, embedded in the dict that gets signed (same pattern already used for `caller_id`)
+VERIFY: run `python pipeline/src/run_pipeline.py` and inspect any line of `pipeline/audit/decisions.jsonl` for a non-null `decision.policy_id` and `decision.matched_rule_id`
+
+CLAIM: 47 new test cases added for the policy layer, all hermetic, all passing
+EVIDENCE: `tests/test_operator_evaluator.py` (26), `tests/test_policy_engine.py` (9), `tests/test_policy_validator.py` (12)
+VERIFY: `pytest tests/test_operator_evaluator.py tests/test_policy_engine.py tests/test_policy_validator.py -v`
 
 ---
 
@@ -119,3 +139,13 @@ VERIFY: `pytest tests/ -v` → `89 passed, 4 skipped`
 - Not a claim that the execution layer (`sign/src/decision_executor.py`)
   has been tested against a real payment processor's API; it is tested
   against a hermetic stub webhook (see `tests/test_executor.py`).
+- Not a claim that the policy layer (`policy/`) supports multi-tenant
+  routing across many policies at once, or that a `REQUIRE_OVERRIDE`
+  outcome triggers any new human-approval workflow. It evaluates one
+  policy document per pipeline run (`--policy-id`/`--policy-version`
+  selects which), and `REQUIRE_OVERRIDE` maps to this repo's existing
+  `FLAG` semantics, already routed to `step_up_auth` by
+  `sign/src/decision_executor.py`. The shipped default policy also
+  never lets a business-authored rule override a detect BLOCK or a
+  mandate violation; a looser policy is only reachable by explicitly
+  authoring and swapping in a different, version-controlled document.

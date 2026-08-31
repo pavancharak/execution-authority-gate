@@ -157,6 +157,9 @@ def sign_pipeline_decision(
     final_decision: str,
     reasons: list,
     caller_id: str = None,
+    policy_id: str = None,
+    policy_version: str = None,
+    matched_rule_id: str = None,
 ) -> dict:
     """AUTHORITY signs the pipeline's combined decision: detect layer
     score/decision AND mandate layer result, folded into one final
@@ -169,7 +172,14 @@ def sign_pipeline_decision(
     pass one; when present it is embedded INSIDE the signed envelope
     (not a sibling field), so it is just as tamper evident as
     final_decision itself, an attacker cannot silently reattribute a
-    decision to a different caller after signing."""
+    decision to a different caller after signing.
+
+    policy_id/policy_version/matched_rule_id identify which policy
+    document (see policy/src/policy_engine.py) and which of its rules
+    produced final_decision. Optional and default to None for the same
+    backward compatibility reason as caller_id; when present they are
+    embedded inside the signed envelope, so a decision can't be silently
+    reattributed to a different policy after the fact either."""
     return AUTHORITY.sign_record(
         {
             "record_type": "pipeline_decision",
@@ -181,5 +191,8 @@ def sign_pipeline_decision(
             "final_decision": final_decision,
             "reasons": reasons,
             "caller_id": caller_id,
+            "policy_id": policy_id,
+            "policy_version": policy_version,
+            "matched_rule_id": matched_rule_id,
         }
     )

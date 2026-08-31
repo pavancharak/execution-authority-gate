@@ -14,7 +14,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-for _layer in ("detect", "mandate", "sign", "generate", "pipeline"):
+for _layer in ("detect", "mandate", "sign", "generate", "policy", "pipeline"):
     _layer_src = REPO_ROOT / _layer / "src"
     if str(_layer_src) not in sys.path:
         sys.path.insert(0, str(_layer_src))
