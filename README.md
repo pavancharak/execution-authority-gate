@@ -1,5 +1,8 @@
 # Execution Authority Gate: Hybrid Fraud Defense
 
+[![Tests](https://github.com/pavancharak/execution-authority-gate/actions/workflows/tests.yml/badge.svg)](https://github.com/pavancharak/execution-authority-gate/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **Live dashboard: [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev)**
 
 A two layer payment fraud defense system combining:
@@ -176,3 +179,7 @@ flyctl deploy
 ## The Pitch
 
 "Execution Authority Gate: Fraud detection + mandate enforcement + cryptographic signing + external authority. Real OpenAI generation proves robustness. Every decision verifiable, none can be changed."
+
+## License
+
+MIT, see [LICENSE](LICENSE).
