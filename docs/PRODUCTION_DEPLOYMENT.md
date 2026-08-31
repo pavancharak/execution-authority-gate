@@ -191,19 +191,20 @@ implementation is JSONL only, see "Audit trail" below).
 
 ## Limitations & Mitigations
 
-- **6.8% false positive rate**: a FLAG from the detect layer does not
+- **6.3% false positive rate**: a FLAG from the detect layer does not
   auto block; `pipeline/src/run_pipeline.py::combine_decision` only
   escalates FLAG to BLOCK if the mandate layer also objects, and
   `sign/src/decision_executor.py`'s `ACTION_FOR_DECISION` maps FLAG to
   `step_up_auth`, not `deny`. A legitimate customer hitting a false
   positive is asked to step up authentication, not turned away.
-- **10.9% false negative rate** (`1 - fraud_caught_rate`): an accepted
+- **7.8% false negative rate** (`1 - fraud_caught_rate`): an accepted
   tradeoff at this recall/precision operating point (see README.md's
-  "Why precision is 21.1%" section for the full reasoning). Mitigated,
-  not eliminated, by the independent mandate layer, which caught 8 real
-  fraud transactions the detector alone scored as low risk in the
-  committed run (`web/data/dashboard.json` → block attribution →
-  `mandate_only`).
+  "Why precision is around 28%" section for the full reasoning).
+  Mitigated, not eliminated, by the independent mandate layer, which
+  caught 26 real fraud transactions the detector alone scored as low
+  risk in the committed run (`web/data/dashboard.json` → block
+  attribution → `mandate_only`), most of it the synthetic identity bust
+  out attack.
 - **Model drift**: `detect/models/detector.pkl` is trained once, at
   pipeline run time, on a fixed dataset. Production needs a scheduled
   retraining pipeline (monthly is a reasonable starting cadence) using

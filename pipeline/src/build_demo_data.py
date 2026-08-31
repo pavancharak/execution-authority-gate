@@ -52,6 +52,8 @@ PREFERRED_DECISION = {
     "kyc_synthetic": "BLOCK",
     "pattern_copy": "ALLOW",
     "form_break": "BLOCK",
+    "synthetic_bustout": "BLOCK",
+    "vendor_bec": "BLOCK",
 }
 
 RULE_LABELS = {

@@ -1,17 +1,17 @@
 # Attack Taxonomy: Thirteen Ways AI Commits Payment Fraud
 
-Six of these are actively simulated by seven bounded agents
-(`generate/src/fraud_agents.py`, ported from the original lab), four of
+Eight of these are actively simulated by nine bounded agents
+(`generate/src/fraud_agents.py`, ported from the original lab), five of
 them making real OpenAI API calls, two of them attacking our own trained
-detector directly rather than any external system. The remaining seven
-(attacks #7 through #13) are documented honestly as known gaps, real
-attack paths this lab does not generate traffic for, spanning rails and
-surfaces the six simulated agents don't touch (B2B wire/ACH, real time
+detector directly rather than any external system. The remaining five
+(attacks #7, #9, #10, #11, and #12) are documented honestly as known
+gaps, real attack paths this lab does not generate traffic for, spanning
+rails and surfaces the eight simulated agents don't touch (real time
 push payment rails, agentic commerce, biometric liveness, post
-transaction disputes, and long horizon account lifecycle fraud), listed
-so the boundary of what's actually tested (versus future work) is
-explicit rather than papered over with a narrow taxonomy that only
-covers what's already implemented.
+transaction disputes, and model retraining feedback loops), listed so
+the boundary of what's actually tested (versus future work) is explicit
+rather than papered over with a narrow taxonomy that only covers what's
+already implemented.
 
 ## 1. AI Fabricated Identity, *simulated, real OpenAI calls*
 **Where:** Account creation / onboarding.
@@ -94,7 +94,7 @@ not poison a retraining pipeline. Actually poisoning a feedback loop
 would require a persistent retraining process this lab doesn't run, so
 this attack stays an honest gap.
 
-## 8. AI Orchestrated Business Email Compromise / Vendor Payment Redirection, *not simulated (known gap)*
+## 8. AI Orchestrated Business Email Compromise / Vendor Payment Redirection, *simulated, real OpenAI calls*
 **Where:** Accounts payable and vendor invoicing, on B2B wire and ACH
 rails rather than the consumer card rails every other attack here
 targets.
@@ -108,9 +108,15 @@ writing style from leaked or scraped correspondence, not a generic
 phishing template.
 **Damage:** Direct, often unrecoverable, large dollar loss on B2B
 payment rails.
-**Note:** Out of scope for this lab's agents, which target consumer
-and card rails; a B2B wire fraud agent would need vendor correspondence
-data this lab doesn't generate.
+**Note:** GPT-4o-mini generates the redirection narrative
+(`agent9_vendor_bec`, real OpenAI calls), then a transaction to a new,
+never before used payee is built from it. A real simplification stated
+plainly: this lab's agents target consumer and card rails, so the
+result is represented through the same transaction schema every other
+attack uses rather than a full B2B wire/invoice data model. What it
+demonstrates is that the same detect plus mandate mechanism generalizes
+to "a large payment to a payee never used before, requested under
+manufactured urgency," not full B2B wire rail fidelity.
 
 ## 9. Authorized Push Payment Fraud via Voice Cloned Urgency Scams, *not simulated (known gap)*
 **Where:** Real time/instant push payment rails, where the customer
@@ -186,7 +192,7 @@ fraud model's training signal, this targets the dispute adjudication
 process, a different system with no ML model to poison, just a human
 or automated reviewer to fool with fabricated evidence.
 
-## 13. Synthetic Identity Bust Out, *not simulated (known gap)*
+## 13. Synthetic Identity Bust Out, *simulated, local/statistical*
 **Where:** The full account lifecycle, from onboarding through months
 of normal use, monetized in a single terminal event.
 **Needs:** A fabricated identity (as in attack #1) used to build
@@ -200,13 +206,22 @@ history have already vouched for the account.
 **Damage:** Full credit line loss, concentrated in a single terminal
 event after a long dormant period disproportionate to how the account
 looked day to day.
-**Note:** Distinct from attack #1 in that #1 is about the moment of
-onboarding; this is about what a fabricated identity does with months
-of earned trust. This lab's detect layer scores each transaction
-independently, so a bust out pattern spanning months is structurally
-outside what a per transaction classifier like this one can see, a
-real limitation of the "score each transaction on its own" design
-worth naming rather than glossing over.
+**Note:** `agent8_bustout` reuses a real generated customer's own
+transaction history, so the months of earned trust are a genuine
+generated history, not a fabricated one, then emits one terminal
+transaction well above that customer's own derived mandate limit
+(the same `avg_amount * count * 1.5` formula
+`mandate_checker.derive_mandate_from_history` uses to set it), while
+keeping every other feature, merchant, hour, and shape, at that
+customer's own typical values. This isolates the effect to the
+`spending_limit` mandate rule specifically rather than a generic
+anomaly a shape based classifier would flag on its own, and is the
+concrete demonstration of why the detect layer alone cannot see this
+attack: it scores each transaction independently, so a pattern
+spanning months is structurally outside what it can see, exactly the
+limitation this attack is named for. The mandate layer, checking
+against that customer's own real history rather than a fresh score,
+is what actually catches it.
 
 ---
 

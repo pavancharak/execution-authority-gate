@@ -6,64 +6,64 @@ document exists because `EAG-AUDIT-GAPS.md` found that `ARCHITECTURE.md`
 had, at one point, asserted an enforcement step no code implemented. The
 standard here is the same one that audit applied: documentation is not
 evidence, code and its output are. Numbers below are from the committed
-run behind `web/data/dashboard.json` (generated 2026-08-31, see its
-`meta.generated_at`); rerunning `pipeline/src/run_pipeline.py` regenerates
-them and they will move slightly (see README.md's Robustness section for
-why that's by design).
+run behind `web/data/dashboard.json` (generated 2026-08-31T02:48:25Z, see
+its `meta.generated_at`); rerunning `pipeline/src/run_pipeline.py`
+regenerates them and they will move slightly (see README.md's Robustness
+section for why that's by design).
 
 ---
 
-CLAIM: 89.13% fraud catch rate (recall)
+CLAIM: 92.22% fraud catch rate (recall)
 EVIDENCE: `web/data/dashboard.json` → `detect.metrics.fraud_caught_rate`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json')); print(d['detect']['metrics']['fraud_caught_rate'])"`
 
-CLAIM: 6.82% false positive rate
+CLAIM: 6.28% false positive rate
 EVIDENCE: `web/data/dashboard.json` → `detect.metrics.false_positive_rate`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json')); print(d['detect']['metrics']['false_positive_rate'])"`
 
-CLAIM: 21.1% precision (of 582 flagged transactions, ~1 in 5 is actually fraud)
+CLAIM: 28.18% precision (of 589 flagged transactions, a little over 1 in 4 is actually fraud)
 EVIDENCE: `web/data/dashboard.json` → `detect.metrics.precision`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json')); print(d['detect']['metrics']['precision'])"`
 
-CLAIM: Confusion matrix: TN 6,272 / FP 459 / FN 15 / TP 123 (held out test split)
+CLAIM: Confusion matrix: TN 6,309 / FP 423 / FN 14 / TP 166 (held out test split)
 EVIDENCE: `web/data/dashboard.json` → `detect.metrics.confusion_matrix`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json')); print(d['detect']['metrics']['confusion_matrix'])"`
 
-CLAIM: 13 distinct attack vectors identified, 6 actively simulated, 7 documented as known gaps
-EVIDENCE: `identify/attack-taxonomy.md` (13 numbered sections, each labeled *simulated* or a known gap); `generate/src/fraud_agents.py` implements the 6 simulated (7 bounded agents, since agents 3 and 7 both attack the trained detector rather than generating new transaction types)
+CLAIM: 13 distinct attack vectors identified, 8 actively simulated, 5 documented as known gaps
+EVIDENCE: `identify/attack-taxonomy.md` (13 numbered sections, each labeled *simulated* or a known gap); `generate/src/fraud_agents.py` implements the 8 simulated (9 bounded agents, since agents 3 and 7 both attack the trained detector rather than generating new transaction types)
 VERIFY: `grep -c "^## " identify/attack-taxonomy.md` → 13 section headers; read the *simulated*/known gap label on each
 
-CLAIM: 22,895 total transactions at a 2.00% fraud rate (22,436 legitimate + 459 fraudulent)
+CLAIM: 23,037 total transactions at a 2.61% fraud rate (22,436 legitimate + 601 fraudulent)
 EVIDENCE: `web/data/dashboard.json` → `simulation.good_transaction_count`, `simulation.fraud_transaction_count`
 VERIFY: `python -c "import json; d=json.load(open('web/data/dashboard.json'))['simulation']; print(d['good_transaction_count'], d['fraud_transaction_count'], d['fraud_transaction_count']/(d['good_transaction_count']+d['fraud_transaction_count']))"`
 
-CLAIM: Fraud spread across 5 labeled attack types: fake_identity 112, social_engineering 47, kyc_synthetic 100, pattern_copy 100, form_break 100
+CLAIM: Fraud spread across 7 labeled attack types: fake_identity 112, social_engineering 52, kyc_synthetic 100, pattern_copy 100, form_break 100, synthetic_bustout 100, vendor_bec 37
 EVIDENCE: `web/data/dashboard.json` → `simulation.attack_type_breakdown`
 VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['simulation']['attack_type_breakdown'])"`
 
-CLAIM: 4 of 7 agents (fake identity, social engineering, KYC forgery, feedback loop evasion) make real, non deterministic OpenAI API calls at temperature=0.9
-EVIDENCE: `generate/src/llm_client.py` (the `temperature=0.9` client every agent making a real call shares); `generate/src/fraud_agents.py` (agents 1, 2, 4 construct calls through it); `generate/src/probe_agents.py` (agent 7's evasion variant suggestion does the same)
+CLAIM: 5 of 9 agents (fake identity, social engineering, KYC forgery, feedback loop evasion, vendor BEC) make real, non deterministic OpenAI API calls at temperature=0.9
+EVIDENCE: `generate/src/llm_client.py` (the `temperature=0.9` client every agent making a real call shares); `generate/src/fraud_agents.py` (agents 1, 2, 4, 9 construct calls through it); `generate/src/probe_agents.py` (agent 7's evasion variant suggestion does the same)
 VERIFY: `grep -n "temperature" generate/src/llm_client.py`
 
-CLAIM: Real OpenAI cost for the committed run: 24 calls, ~$0.03 total
+CLAIM: Real OpenAI cost for the committed run: 27 calls, ~$0.037 total
 EVIDENCE: `web/data/dashboard.json` → `api_activity.summary`
 VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['api_activity']['summary'])"`
 
-CLAIM: 6,869 pipeline decisions on the held out test split: 441 BLOCK / 146 FLAG / 6,282 ALLOW
-EVIDENCE: `pipeline/audit/decisions.jsonl` (one line per decision, 6,869 lines); `web/data/dashboard.json` → `pipeline.decision_counts`
-VERIFY: `wc -l pipeline/audit/decisions.jsonl` and `python -c "import json; print(json.load(open('web/data/dashboard.json'))['pipeline']['decision_counts'])"`
+CLAIM: 6,912 pipeline decisions on the held out test split: 446 BLOCK / 150 FLAG / 6,316 ALLOW
+EVIDENCE: `web/data/dashboard.json` → `pipeline.decision_counts`
+VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['pipeline']['decision_counts'])"`
 
-CLAIM: Mandate layer caught 8 real fraud transactions the detector alone scored as low risk
+CLAIM: Mandate layer caught 26 real fraud transactions the detector alone scored as low risk, most of it the new synthetic identity bust out attack
 EVIDENCE: `web/data/dashboard.json` → `mandate.block_attribution.mandate_only`
 VERIFY: `python -c "import json; print(json.load(open('web/data/dashboard.json'))['mandate']['block_attribution'])"`
 
-CLAIM: All 6,869 signed decisions verify independently against the committed public key
-EVIDENCE: `sign/tokens/authority_public_key.pem` (committed to git); `pipeline/audit/decisions.jsonl`; `pipeline/src/audit_trail.py::AuditTrail.verify_all`
-VERIFY: `python -c "import sys; sys.path[0:0]=['pipeline/src','sign/src']; import audit_trail; print(audit_trail.AuditTrail().verify_all())"` → `{'total': 6869, 'verified': 6869, 'all_verified': True, 'failed_record_ids': []}`
+CLAIM: The append only audit trail durably holds both this run's 6,912 decisions and the prior run's 6,869, 13,781 lines total, all independently verified, none overwritten across two separate, independent pipeline runs
+EVIDENCE: `pipeline/audit/decisions.jsonl` (one line per decision, appended, never rewritten, see `pipeline/src/audit_trail.py::AuditTrail.append_decision`)
+VERIFY: `wc -l pipeline/audit/decisions.jsonl` and `python -c "import sys; sys.path[0:0]=['pipeline/src','sign/src']; import audit_trail; print(audit_trail.AuditTrail().verify_all())"` → `{'total': 13781, 'verified': 13781, 'all_verified': True, 'failed_record_ids': []}`
 
-CLAIM: Adversarial robustness: agent 7 evaded detection in 1 of 18 evasion variant attempts against the trained model
-EVIDENCE: `generate/data/probe_report.json` (agent 7's results, variant by variant); `identify/attack-taxonomy.md` section 7's narrative
-VERIFY: `python -c "import json; r=json.load(open('generate/data/probe_report.json')); print(r['feedback_loop'])"` (field names as written by `generate/src/probe_agents.py`)
+CLAIM: Adversarial robustness: agent 7 evaded detection in 10 of 18 evasion variant attempts against the trained model, worse than an earlier run (1 of 18), likely because `amount` became the model's second most important signal once the new large amount attacks were added
+EVIDENCE: `generate/data/probe_report.json` (agent 7's results, variant by variant); `web/data/dashboard.json` → `detect.metrics.top_signals`; `identify/attack-taxonomy.md` section 7's narrative
+VERIFY: `python -c "import json; r=json.load(open('generate/data/probe_report.json')); print(r['feedback_loop']['variants_tested'], r['feedback_loop']['variants_evaded'])"` and `python -c "import json; print(json.load(open('web/data/dashboard.json'))['detect']['metrics']['top_signals'])"`
 
 ---
 
@@ -89,13 +89,13 @@ CLAIM: Signed decisions can be executed against a payment processor webhook, wit
 EVIDENCE: `sign/src/decision_executor.py::DecisionExecutor.enforce_decision` (verifies signature before dispatch, rejects on failure, tracks `record_id` so the same decision is never executed twice)
 VERIFY: `tests/test_executor.py::test_tampered_signature_is_rejected_and_never_reaches_webhook`, `::test_same_decision_is_never_executed_twice`
 
-CLAIM: 31 new test cases added this session (19+ target), all passing, all hermetic
-EVIDENCE: `tests/test_audit_trail.py` (9), `tests/test_caller_auth.py` (13), `tests/test_executor.py` (9)
-VERIFY: `pytest tests/test_audit_trail.py tests/test_caller_auth.py tests/test_executor.py -v`
+CLAIM: 36 new test cases added this session (19+ target), all passing, all hermetic except one opt in live API test
+EVIDENCE: `tests/test_audit_trail.py` (9), `tests/test_caller_auth.py` (13), `tests/test_executor.py` (9), `tests/test_generate.py` additions for the bust out agent and mandate limit math (5, four hermetic plus one opt in live API test for the vendor BEC agent)
+VERIFY: `pytest tests/test_audit_trail.py tests/test_caller_auth.py tests/test_executor.py tests/test_generate.py -v`
 
-CLAIM: Full suite (54 already existing plus 31 new, 85 hermetic tests total, plus 3 live API tests skipped by default) passes with zero failures
+CLAIM: Full suite (93 tests total: 89 hermetic passing, 4 live API tests skipped by default) passes with zero failures
 EVIDENCE: full run output, captured this session
-VERIFY: `pytest tests/ -v` → `85 passed, 3 skipped`
+VERIFY: `pytest tests/ -v` → `89 passed, 4 skipped`
 
 ---
 
@@ -107,7 +107,7 @@ VERIFY: `pytest tests/ -v` → `85 passed, 3 skipped`
 - Not deployed to production. `execution-authority-gate.fly.dev` serves the static,
   committed `web/data/dashboard.json`; the pipeline does not run inside
   the deployed container (see README.md's Deployment section).
-- Not a claim that 89.1%/6.8% are fixed constants: they come from a
+- Not a claim that 92.2%/6.3% are fixed constants: they come from a
   non deterministic data generation process (real OpenAI calls at
   temperature=0.9) and will shift slightly on every regeneration, by
   design (see README.md's Robustness section).

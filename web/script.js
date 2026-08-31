@@ -1046,8 +1046,8 @@ const FAQ_ITEMS = [
     a: "No, and it is not trying to. FLAG decisions exist for exactly the cases where neither layer is confident enough to decide alone. What this project replaces is blind trust in a single model's score, not human judgment.",
   },
   {
-    q: "Why is precision only 21.1%?",
-    a: "Fraud is rare, about 2% of transactions in this dataset. Catching 89.1% of a rare event requires flagging aggressively, and that lowers precision. See the Detection tab for the full breakdown.",
+    q: "Why is precision only around 28%?",
+    a: "Fraud is rare, a few percent of transactions in this dataset. Catching over 90% of a rare event requires flagging aggressively, and that lowers precision. See the Detection tab for the full breakdown and the exact current numbers.",
   },
   {
     q: "Does a low precision flag mean legitimate transactions get blocked?",

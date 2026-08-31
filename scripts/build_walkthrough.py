@@ -90,10 +90,10 @@ def build():
         "Execution Authority Gate is a two layer payment fraud defense system built as a closed loop across "
         "the challenge's three pillars: it identifies thirteen distinct GenAI era fraud attack "
         "vectors targeting payments across card, wire/ACH, real time push payment, and agentic "
-        "commerce rails, generates realistic simulations of six of them at scale "
-        "(including four attack types produced by real GPT-4o-mini calls, not templated text), "
+        "commerce rails, generates realistic simulations of eight of them at scale "
+        "(including five attack types produced by real GPT-4o-mini calls, not templated text), "
         "and defends against them with a RandomForest classifier evaluated on a held out test "
-        "set of 6,869 transactions at a realistic 2% fraud rate.",
+        "set of 6,912 transactions at a realistic, low single digit fraud rate.",
     )
     para(
         doc,
@@ -115,10 +115,10 @@ def build():
         "vectors against payment systems, each grounded in a real point in the payment "
         "lifecycle or a real payment rail (onboarding, authorization, KYC, customer support, "
         "B2B wire/ACH, real time push payments, agentic commerce, dispute adjudication, long "
-        "horizon account lifecycle) rather than a generic 'fraud' label. Six are actively "
-        "simulated by seven bounded agents in generate/src/fraud_agents.py. The remaining "
-        "seven are documented as honest, explicit known gaps rather than claimed and left "
-        "unimplemented, chosen specifically to cover rails and surfaces the six simulated "
+        "horizon account lifecycle) rather than a generic 'fraud' label. Eight are actively "
+        "simulated by nine bounded agents in generate/src/fraud_agents.py. The remaining "
+        "five are documented as honest, explicit known gaps rather than claimed and left "
+        "unimplemented, chosen specifically to cover rails and surfaces the eight simulated "
         "agents don't touch, breadth across the payment ecosystem, not just depth on one "
         "corner of it.",
     )
@@ -154,12 +154,14 @@ def build():
          "(agent7_feedback_loop generates real time evasion variants against the already trained "
          "model, which is related but distinct, it does not poison a retraining pipeline.)"),
         ("8. AI Orchestrated Business Email Compromise / Vendor Payment Redirection",
-         "Accounts payable, B2B wire/ACH rails (known gap)",
+         "Accounts payable, B2B wire/ACH rails",
          "A compromised or spoofed vendor email plus an LLM drafting a convincing updated bank "
          "details request matching the real vendor's tone and invoicing history. Wire/ACH have "
-         "no real time chargeback, so the loss is discovered only after the funds are gone. Out "
-         "of scope for this lab's agents, which target consumer/card rails, not vendor "
-         "correspondence."),
+         "no real time chargeback, so the loss is discovered only after the funds are gone. "
+         "GPT-4o-mini generates the redirection narrative and a payment to a never before used "
+         "payee follows, represented through this lab's existing consumer style transaction "
+         "schema rather than a full B2B wire/invoice data model, a real simplification stated "
+         "plainly. (agent9_vendor_bec, real OpenAI calls)"),
         ("9. Authorized Push Payment Fraud via Voice Cloned Urgency Scams",
          "Real time/instant push payment rails (known gap)",
          "A cloned voice of a trusted contact plus manufactured urgency, so the customer "
@@ -189,13 +191,16 @@ def build():
          "Related to but distinct from attack #7: this targets the dispute reviewer, not the "
          "fraud model's training data."),
         ("13. Synthetic Identity Bust Out",
-         "Full account lifecycle, monetized in a single terminal event (known gap)",
+         "Full account lifecycle, monetized in a single terminal event",
          "A fabricated identity (attack #1) used to build months of unremarkable transaction "
          "history and a real credit line, then maxed out and abandoned. There is no anomaly "
          "until the single terminal transaction, by which point months of history have "
          "already vouched for the account. This lab's detect layer scores each transaction "
-         "independently, so a pattern spanning months is structurally outside what it can "
-         "see, a real limitation of that design."),
+         "independently, so a pattern spanning months is structurally outside what it can see, "
+         "a real limitation of that design, and exactly why agent8_bustout reuses a real "
+         "generated customer's own history, then emits one terminal transaction above that "
+         "customer's own derived mandate limit: the mandate layer, not the detect layer, is "
+         "what actually catches it. (agent8_bustout, local/statistical)"),
     ]
     for name, where, desc in attacks:
         p = doc.add_paragraph()
@@ -207,13 +212,14 @@ def build():
     h1(doc, "Pillar 2: Generate. Simulating Attacks at Scale, with Fidelity")
     para(
         doc,
-        "generate/src/run_simulation.py orchestrates seven bounded agents. Four of them "
-        "(fake identity, social engineering, KYC forgery, and the feedback loop evasion probe) "
-        "make real GPT-4o-mini calls at temperature=0.9, producing genuinely non deterministic "
-        "fraud variation rather than a fixed template repeated with noise. The remaining three "
-        "(pattern replication, form fuzzing, limit probing) are local/statistical by design, "
-        "since their realism comes from matching a real distribution or a real threshold search, "
-        "not from generative text.",
+        "generate/src/run_simulation.py orchestrates nine bounded agents. Five of them "
+        "(fake identity, social engineering, KYC forgery, vendor BEC, and the feedback loop "
+        "evasion probe) make real GPT-4o-mini calls at temperature=0.9, producing genuinely "
+        "non deterministic fraud variation rather than a fixed template repeated with noise. "
+        "The remaining four (pattern replication, form fuzzing, limit probing, synthetic "
+        "identity bust out) are local/statistical by design, since their realism comes from "
+        "matching a real distribution, a real threshold search, or a real customer's own "
+        "generated history, not from generative text.",
     )
     sim = dash["simulation"]
     total_tx = sim["good_transaction_count"] + sim["fraud_transaction_count"]
@@ -221,25 +227,26 @@ def build():
     para(
         doc,
         f"The committed run behind web/data/dashboard.json is fully self generated by this "
-        f"repo's own generate/ layer, using 24 real OpenAI calls (~$0.03 total): "
+        f"repo's own generate/ layer, using 27 real OpenAI calls (~$0.037 total): "
         f"{total_tx:,} transactions at a realistic {fraud_rate:.2%} fraud rate "
         f"({sim['good_transaction_count']:,} legitimate + {sim['fraud_transaction_count']:,} "
         "fraudulent). The legitimate pool is scaled up with free local generation specifically "
         "so the fraud rate can stay realistic without shrinking the fraud sample to statistical "
-        "noise, 459 fraud examples means the held out test split alone has 138 fraud cases to "
-        "evaluate detection against.",
+        "noise, 601 fraud examples means the held out test split alone has about 180 fraud cases "
+        "to evaluate detection against.",
     )
     para(
         doc,
-        "Fraud spreads across the five attack types that produce labeled transactions: "
-        "fake_identity (112), social_engineering (47), kyc_synthetic (100), pattern_copy (100), "
-        "form_break (100). Attacks #5 and #7 (limit probing, feedback loop evasion) probe the "
-        "trained model directly rather than generating labeled transactions, so they sit outside "
-        "this breakdown by design, see generate/src/probe_agents.py.",
+        "Fraud spreads across the seven attack types that produce labeled transactions: "
+        "fake_identity (112), social_engineering (52), kyc_synthetic (100), pattern_copy (100), "
+        "form_break (100), synthetic_bustout (100), vendor_bec (37). Attacks #5 and #7 (limit "
+        "probing, feedback loop evasion) probe the trained model directly rather than "
+        "generating labeled transactions, so they sit outside this breakdown by design, see "
+        "generate/src/probe_agents.py.",
     )
     para(
         doc,
-        "Numbers are deliberately not frozen to one lucky run: because agents 1, 2, 4, and 7 "
+        "Numbers are deliberately not frozen to one lucky run: because agents 1, 2, 4, 7, and 9 "
         "call the real OpenAI API at temperature=0.9, rerunning generate/src/run_simulation.py "
         "with a fresh OPENAI_API_KEY produces different fraud examples and slightly different "
         "metrics each time. That variance is the point, it demonstrates the detector holds up "
@@ -257,7 +264,7 @@ def build():
         "realistic ~2% fraud imbalance rather than collapsing to the majority class.",
     )
 
-    para(doc, "Detection metrics, held out test set (6,869 transactions, 138 fraud):", bold=True)
+    para(doc, "Detection metrics, held out test set (6,912 transactions, 180 fraud):", bold=True)
     cm = live["confusion_matrix"]
     table = doc.add_table(rows=7, cols=2)
     table.style = "Light Grid Accent 1"
@@ -269,7 +276,7 @@ def build():
         ("Precision", f"{live['precision']:.2%}"),
         ("F1 score", f"{live['f1']:.4f}"),
         ("ROC AUC", f"{live['roc_auc']:.4f}"),
-        ("Top signal", "log_seconds_since_prev_tx, pattern_similarity, ai_generated_signal"),
+        ("Top signal", "log_seconds_since_prev_tx, amount, pattern_similarity"),
     ]
     for i, (k, v) in enumerate(rows_data):
         table.rows[i].cells[0].text = k
@@ -278,23 +285,27 @@ def build():
     doc.add_paragraph()
     para(
         doc,
-        "Why precision is 21%, and why that is expected, not a flaw: fraud is rare in this "
-        "dataset (~2%). Tuning a classifier to catch 89% of a rare event requires flagging "
-        "aggressively, and recall/precision trade off against each other at that base rate, the "
-        "same tradeoff airport security makes to catch most weapons at the cost of screening "
-        "many harmless bags. Precision measured on the detect layer in isolation is not the "
-        "system's real world false accusation rate: a detect layer flag does not block anything "
-        "by itself. It still has to clear the independent, rule based mandate layer before a "
-        "transaction is denied, and every final decision is signed and independently verifiable. "
-        "See docs/JUDGES_GUIDE.md for the full treatment.",
+        "Why precision is around 28%, and why that is expected, not a flaw: fraud is a bit "
+        "over 2% of this dataset. Tuning a classifier to catch over 92% of a rare event "
+        "requires flagging aggressively, and recall/precision trade off against each other at "
+        "that base rate, the same tradeoff airport security makes to catch most weapons at the "
+        "cost of screening many harmless bags. Precision measured on the detect layer in "
+        "isolation is not the system's real world false accusation rate: a detect layer flag "
+        "does not block anything by itself. It still has to clear the independent, rule based "
+        "mandate layer before a transaction is denied, and every final decision is signed and "
+        "independently verifiable. See docs/JUDGES_GUIDE.md for the full treatment.",
     )
     para(
         doc,
-        "A separate red team check: agent7_feedback_loop generated 18 real time evasion variants "
-        "against the already trained model. 17 of 18 still failed to evade detection after the "
-        "balanced class weighting fix (an earlier, more imbalanced version of this dataset let "
-        "16 of 18 through). This is a narrow robustness result on a small sample, not a claim "
-        "about stopping some fixed percentage of attacks in general, but it is a real, "
+        "A separate red team check: agent7_feedback_loop generated 18 real time evasion "
+        "variants against the already trained model. 10 of 18 evaded detection in this run, "
+        "worse than an earlier, narrower version of this dataset (1 of 18 evaded then). The "
+        "likely reason: adding the two large amount attack types (vendor BEC, synthetic "
+        "identity bust out) moved amount from a minor signal to the model's second most "
+        "important feature, and a model that leans harder on amount is easier to nudge with "
+        "the small numeric adjustments this red team check proposes. This is reported "
+        "honestly, a real adversarial robustness cost that came with broader attack coverage, "
+        "not a claim about stopping some fixed percentage of attacks in general, but it is a real, "
         "code executed adversarial test against the actual trained model, not a simulated one.",
     )
 
@@ -319,8 +330,10 @@ def build():
         "detect layer scored it as low risk. In pipeline/src/run_pipeline.py's combine_decision, "
         "either layer objecting is enough to BLOCK; a clean mandate never downgrades a detect "
         "BLOCK, and a clean detect score never upgrades a mandate violation past BLOCK. Real, "
-        "signed evidence for this: 8 real fraud transactions the detector scored as low risk "
-        "were still blocked by the mandate layer alone.",
+        "signed evidence for this: 26 real fraud transactions the detector scored as low risk "
+        "were still blocked by the mandate layer alone, most of it the synthetic identity bust "
+        "out attack, deliberately built to exceed a customer's own derived spending limit while "
+        "otherwise looking exactly like their normal transaction pattern.",
     )
 
     h2(doc, "Cryptographic signing: tamper evident, not a third vote")
@@ -332,7 +345,7 @@ def build():
         "envelope covers transaction_id, fraud_score, detect_decision, mandate_allowed, "
         "violated_mandate_rules, final_decision, and reasons. Signing is not a third check that "
         "can veto anything; it makes the first two layers' decision provable and unforgeable "
-        "after the fact. In this run, 6,869/6,869 signed decisions verify independently against "
+        "after the fact. In this run, 6,912/6,912 signed decisions verify independently against "
         "the authority's public key.",
     )
 
@@ -377,8 +390,9 @@ def build():
         "pipeline/audit/decisions.jsonl, idempotent on the signed record's record_id, and never "
         "rewrites a previously written line, unlike the earlier pipeline_decisions.json, which "
         "was fully overwritten on every pipeline run. This file is committed to git rather than "
-        "ignored: the run behind this submission produced 6,869 real signed decisions, all "
-        "6,869 independently verified again against the committed public key via "
+        "ignored, and durability is not just a claim, it is demonstrated: the trail now holds "
+        "13,781 real signed decisions across two separate, independent pipeline runs, all "
+        "13,781 independently verified again against the committed public key via "
         "AuditTrail.verify_all(), a command any reader of this document can rerun themselves. "
         "The signing public keys (sign/tokens/authority_public_key.pem, "
         "reviewer_public_key.pem) are now committed to git as well, so a signature produced in "
@@ -427,9 +441,10 @@ def build():
 
     para(
         doc,
-        "Test coverage for all three additions: 31 new hermetic test cases across "
-        "tests/test_audit_trail.py (9), tests/test_caller_auth.py (13), and "
-        "tests/test_executor.py (9), bringing the suite from 54 to 85 passing tests "
+        "Test coverage for all three additions, plus the two new attack agents: 36 new test "
+        "cases across tests/test_audit_trail.py (9), tests/test_caller_auth.py (13), "
+        "tests/test_executor.py (9), and tests/test_generate.py's synthetic identity bust out "
+        "additions (5), bringing the suite from 54 to 89 passing tests "
         "(pytest tests/ -v), with the same hermeticity as the original suite: no network calls, "
         "no external state.",
     )
@@ -448,7 +463,7 @@ def build():
         "Not a production deployment. execution-authority-gate.fly.dev serves a static, committed dashboard "
         "snapshot; the detection/mandate/signing pipeline does not run inside the deployed "
         "container on every request.",
-        "Not a claim that 89.1% recall and 6.8% false positive rate are fixed constants. They "
+        "Not a claim that 92.2% recall and 6.3% false positive rate are fixed constants. They "
         "come from a non deterministic data generation process (real OpenAI calls at "
         "temperature=0.9) and will shift slightly on every regeneration, by design, see the "
         "Robustness discussion in README.md.",
@@ -493,7 +508,7 @@ def build():
     para(doc, "From a fresh clone of the public repository:")
     bullets(doc, [
         "pip install -r requirements.txt",
-        "pytest tests/ -v   →   85 hermetic tests pass in seconds (no API key, no network calls); "
+        "pytest tests/ -v   →   89 hermetic tests pass in seconds (no API key, no network calls); "
         "3 additional tests exercising the real OpenAI backed agents are skipped by default "
         "(ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=... pytest tests/test_generate.py -v to run them)",
         "cd web && python server.py, then open http://localhost:8080, the Live Test Harness "
@@ -510,7 +525,7 @@ def build():
         "Execution Authority Gate treats identify, generate, and defend as one closed loop rather than three "
         "independent deliverables: a real, GenAI grounded taxonomy of thirteen payment fraud "
         "vectors, spanning card, wire/ACH, real time push payment, and agentic commerce rails, "
-        "drives realistic, at scale simulation of six of them (three attack types via real "
+        "drives realistic, at scale simulation of eight of them (five attack types via real "
         "GPT-4o-mini calls), which trains a detector that is then attacked by its own generator "
         "to find and report its remaining gaps. An independent, customer history derived "
         "mandate layer catches what the detector alone would miss, and every decision is "

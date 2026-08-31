@@ -76,8 +76,8 @@
     "what_attacker_needs": "A compromised or spoofed vendor email account plus an LLM that drafts a convincing updated bank details request matching the real vendor's tone and invoicing history.",
     "why_hard_to_catch": "Wire and ACH payments have no real time chargeback, so the redirection is only noticed after the funds are gone. GenAI mimics a specific vendor's writing style from leaked or scraped correspondence rather than a generic phishing template.",
     "damage": "Direct, often unrecoverable, large dollar loss on B2B payment rails.",
-    "simulated_by": "not simulated in this lab (known gap). Out of scope for agents targeting consumer/card rails; would need vendor correspondence data this lab doesn't generate",
-    "real_llm_calls": false
+    "simulated_by": "agent9_vendor_bec, real OpenAI calls generating the redirection narrative, represented through this lab's existing consumer style transaction schema rather than a full B2B wire/invoice data model, a real simplification, see identify/attack-taxonomy.md",
+    "real_llm_calls": true
   },
   {
     "id": "app_fraud",
@@ -126,7 +126,7 @@
     "what_attacker_needs": "A fabricated identity used to build months of genuinely unremarkable transaction history and a real credit line, then maxed out and abandoned in one final burst.",
     "why_hard_to_catch": "Every step before the bust out looks identical to genuine account seasoning. There is no anomaly to detect until the single terminal transaction, after months of history have already vouched for the account.",
     "damage": "Full credit line loss, concentrated in a single terminal event after a long dormant period disproportionate to how the account looked day to day.",
-    "simulated_by": "not simulated in this lab (known gap). A per transaction classifier scoring each transaction independently cannot see a pattern spanning months, a real limitation of that design",
+    "simulated_by": "agent8_bustout, local/statistical, reuses a real customer's own generated transaction history so the months of earned trust are genuine, not fabricated, then emits one terminal transaction deliberately above that customer's own derived mandate limit",
     "real_llm_calls": false
   }
 ]
