@@ -120,6 +120,7 @@ pip install -r requirements.txt
 
 ```powershell
 pytest -q
+
 <img width="1037" height="73" alt="image" src="https://github.com/user-attachments/assets/1a9fec15-c726-4ba7-9bbb-15c5945f8fea" />
 
 ```
@@ -134,6 +135,7 @@ Expected result:
 
 ```powershell
 python .\pipeline\src\run_pipeline.py
+
 <img width="1567" height="612" alt="image" src="https://github.com/user-attachments/assets/e96bbeee-572e-4743-a1b4-c16ecbcdaf0e" />
 
 ```
@@ -183,6 +185,7 @@ Run:
 
 ```powershell
 python .\examples\run_examples.py
+
 <img width="980" height="926" alt="image" src="https://github.com/user-attachments/assets/748cf344-b612-4f9f-b1a0-618c15d7ecd5" />
 
 ```
