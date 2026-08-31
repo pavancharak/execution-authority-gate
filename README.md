@@ -1,34 +1,346 @@
-# Execution Authority Gate: Hybrid Fraud Defense
+# Execution Authority Gate
 
 [![Tests](https://github.com/pavancharak/execution-authority-gate/actions/workflows/tests.yml/badge.svg)](https://github.com/pavancharak/execution-authority-gate/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **Live dashboard: [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev)**
 
-A two layer payment fraud defense system combining:
-- **Detection Layer** (RandomForest, pattern recognition)
-- **Mandate Layer** (deterministic authorization rules)
-- **Signing Layer** (Ed25519 cryptographic proof)
-- **Caller Scoping** (callers authenticated with HMAC, permission scoped by decision type)
-- **Execution Layer** (signed decisions ready for execution by a payment processor webhook, fail closed and idempotent)
+Execution Authority Gate makes fraud detection, authorization, and cryptographic proof three separate, independent steps, instead of one model's opinion. A trained detector and a deterministic mandate checker each get an equal, unqualified vote on every transaction, either one objecting is enough to stop it, and a third party neither of them controls signs whatever the combined answer is, ALLOW, FLAG, or BLOCK alike, into a tamper evident record.
 
-## Architecture
+## Table of Contents
+
+1. [What Is Execution Authority Gate?](#1-what-is-execution-authority-gate)
+2. [Core Principle](#2-core-principle)
+3. [Architecture Overview](#3-architecture-overview)
+4. [Decision Flow](#4-decision-flow)
+5. [Code Examples](#5-code-examples)
+6. [Real-World Scenarios](#6-real-world-scenarios)
+7. [Quick Start](#7-quick-start)
+8. [Try It Live](#8-try-it-live)
+9. [Metrics and Validation](#9-metrics-and-validation)
+10. [Production Deployment and Execution Integration](#10-production-deployment-and-execution-integration)
+11. [Testing](#11-testing)
+12. [Structure](#12-structure)
+13. [Deployment](#13-deployment)
+14. [FAQ](#14-faq)
+15. [License](#15-license)
+
+---
+
+## 1. What Is Execution Authority Gate?
+
+**One-liner:** A two layer fraud defense pipeline, an ML detector and a deterministic mandate checker, whose combined decision is cryptographically signed by a party neither layer controls, so the decision is provable and unforgeable after the fact.
+
+**Expanded:** Every transaction is scored by a RandomForest fraud detector *and* checked against that specific customer's own derived spending mandate, independently, in parallel. Neither layer sees or trusts the other's reasoning. If either one objects, the transaction is blocked. Whatever the outcome, an external signer, holding a private key neither the detector nor the mandate checker has access to, signs the full decision record with Ed25519. The signature doesn't decide anything; it makes the decision that was already made impossible to alter or forge afterward.
+
+**Not what this project is:**
+- Not a single model deciding alone. Detection and mandate are independent and either can veto.
+- Not a black box. Every BLOCK cites the specific rule or signal that fired (`web/data/dashboard.json` → `reasons`).
+- Not a payment processor. Nothing here moves real money; the execution layer's shipped webhook is a labeled simulation (see [Section 10](#10-production-deployment-and-execution-integration)).
+- Not "signing as a veto." Signing runs on every decision, ALLOW included, it is proof of what was decided, not a third check that can change the outcome.
+
+**What this project is:**
+- A **Detection Layer** (`detect/`): RandomForest classifier, six features, scores fraud probability.
+- A **Mandate Layer** (`mandate/`): deterministic rules derived from each customer's own transaction history.
+- A **Signing Layer** (`sign/`): Ed25519 signatures over every final decision, with caller identity embedded in the signed envelope.
+- An **Audit Trail** (`pipeline/audit/decisions.jsonl`): append only, committed to git, independently re-verifiable at any time.
+- An **Execution Layer** (`sign/src/decision_executor.py`): signed decisions ready for handoff to a payment processor webhook, fail closed and idempotent.
+
+---
+
+## 2. Core Principle
 
 ```
-Real Fraud Generation (OpenAI temperature=0.9)
-    ↓
-Detection (RandomForest, ~92% recall at a realistic 2 to 3% fraud rate)
-    ↓
-Mandate (Rule based authorization)
-    ↓
-Signing (Ed25519, cryptographic proof; caller identity embedded in the signed envelope)
-    ↓
-Audit Trail (append only, committed to git, independently verifiable again anytime)
-    ↓
-Execution (caller authenticated, signature checked, idempotent handoff to a payment processor webhook)
+DETECTION ≠ AUTHORIZATION ≠ PROOF
+
+Detection asks:      "Does this look like fraud?"        (probabilistic, ML)
+Mandate asks:         "Is this actually authorized?"       (deterministic, rules)
+Signing asks:         "Can I prove what was decided?"       (cryptographic, Ed25519)
+
+Any layer can block. Only the combination is trusted.
+Signing proves the decision; it does not make it.
 ```
 
-## Quick Start
+Why this matters:
+- **Detector accuracy varies.** It's trained on a real, non-deterministic dataset (see [Robustness](#9-metrics-and-validation)) and its precision is intentionally traded for recall (28.2% precision at 92.2% recall — see the [Judges' Guide](docs/JUDGES_GUIDE.md)).
+- **Mandate is explicit and auditable.** Four rules, spending limit, merchant whitelist, time restriction, velocity, all AND'd together, all traceable to `mandate/src/rules.py`.
+- **The combination catches what either layer alone would miss.** A transaction that looks statistically ordinary to the detector (low fraud score) can still violate a mandate rule, and vice versa. See the synthetic identity bust-out example in [Section 6](#6-real-world-scenarios).
+- **The decision is cryptographically signed**, and the signing key is held by neither the detector nor the mandate checker, so neither layer can self-approve its own output.
+
+---
+
+## 3. Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                        INCOMING TRANSACTION                       │
+└───────────────────────────────┬───────────────────────────────────┘
+                                 │
+                 ┌───────────────┴────────────────┐
+                 ▼                                 ▼
+┌───────────────────────────────┐   ┌───────────────────────────────┐
+│        DETECT LAYER            │   │        MANDATE LAYER          │
+│  detect/src/detector.py        │   │  mandate/src/mandate_checker.py│
+│                                 │   │                                │
+│  RandomForest, 6 features:      │   │  Derived from the customer's   │
+│  amount, hour, log seconds       │   │  own known-good history:       │
+│  since prior tx, location        │   │  spending limit, merchant      │
+│  mismatch, pattern similarity,   │   │  whitelist, time window,       │
+│  AI-generated signal              │   │  daily velocity — all AND'd    │
+│                                 │   │                                │
+│  Output: fraud_score (0-1) →      │   │  Output: mandate_allowed        │
+│  BLOCK | FLAG | ALLOW            │   │  (bool) + violated_rules[]      │
+│  Probabilistic, model-dependent   │   │  Deterministic, no ML at all    │
+└───────────────┬─────────────────┘   └────────────────┬───────────────┘
+                 │                                       │
+                 └──────────────────┬────────────────────┘
+                                     ▼
+                    ┌─────────────────────────────────┐
+                    │         COMBINE                  │
+                    │  pipeline/src/run_pipeline.py     │
+                    │  combine_decision()                │
+                    │                                    │
+                    │  detect BLOCK, or any mandate       │
+                    │  rule violated      → BLOCK         │
+                    │  detect FLAG, mandate clean → FLAG  │
+                    │  otherwise           → ALLOW         │
+                    └────────────────┬────────────────────┘
+                                     ▼
+                    ┌─────────────────────────────────┐
+                    │           SIGN                   │
+                    │  sign/src/authority_signer.py     │
+                    │                                    │
+                    │  Ed25519 over transaction_id,       │
+                    │  fraud_score, detect_decision,       │
+                    │  mandate_allowed, violated_rules,     │
+                    │  final_decision, reasons, caller_id   │
+                    │  Neither layer above holds this key   │
+                    └────────────────┬────────────────────┘
+                                     ▼
+                    ┌─────────────────────────────────┐
+                    │        AUDIT TRAIL                │
+                    │  pipeline/audit/decisions.jsonl     │
+                    │  append-only, committed, re-         │
+                    │  verifiable anytime                  │
+                    └────────────────┬────────────────────┘
+                                     ▼
+                    ┌─────────────────────────────────┐
+                    │          EXECUTE                  │
+                    │  sign/src/decision_executor.py     │
+                    │  POST /api/enforce/decisions        │
+                    │                                    │
+                    │  verify signature (fail closed) →    │
+                    │  check caller permission →            │
+                    │  idempotent handoff to a               │
+                    │  payment_processor_webhook             │
+                    │  (shipped webhook is a labeled          │
+                    │  simulation — see Section 10)           │
+                    └─────────────────────────────────┘
+```
+
+---
+
+## 4. Decision Flow
+
+### `combine_decision` — the only rule that matters
+
+```python
+# pipeline/src/run_pipeline.py
+def combine_decision(detect_decision, mandate_result):
+    if detect_decision == "BLOCK" or not mandate_result["mandate_allowed"]:
+        return "BLOCK"
+    if detect_decision == "FLAG":
+        return "FLAG"
+    return "ALLOW"
+```
+
+BLOCK wins over everything. A clean mandate never downgrades a detect BLOCK, and a clean detect score never upgrades a mandate violation past BLOCK.
+
+### Three scenario walkthroughs
+
+**Scenario A — Detect objects, mandate is clean**
+
+```
+Transaction: $340 at an unfamiliar merchant, 3:14am, pattern_similarity low
+  DETECT   → fraud_score 0.84 → BLOCK
+  MANDATE  → within spending limit, but merchant not on whitelist → mandate_allowed=False
+  COMBINE  → BLOCK (both layers objected)
+  SIGN     → signed BLOCK, reasons: ["detect: pattern_similarity", "mandate: merchant_whitelist"]
+```
+
+**Scenario B — Detect is clean, mandate catches it anyway**
+
+```
+Transaction: $410, familiar merchant, normal hour, fraud_score 0.31 (ALLOW range)
+  DETECT   → ALLOW (looks statistically ordinary)
+  MANDATE  → projected month-to-date total exceeds monthly_limit_usd → mandate_allowed=False
+  COMBINE  → BLOCK (mandate overrides a clean detect score)
+  SIGN     → signed BLOCK, reasons: ["mandate: spending_limit"]
+```
+This is the case the [synthetic identity bust-out attack](identify/attack-taxonomy.md) is built to test: transactions engineered to look ordinary to a per-transaction classifier while still exceeding the customer's own real spending pattern. In the committed run, 26 of the 446 total blocks came from the mandate layer alone (see [Section 9](#9-metrics-and-validation)).
+
+**Scenario C — Detect is unsure, mandate is clean**
+
+```
+Transaction: $95, familiar merchant, normal hour, fraud_score 0.62 (FLAG range)
+  DETECT   → FLAG
+  MANDATE  → all four rules pass → mandate_allowed=True
+  COMBINE  → FLAG (detect unsure, nothing else objects)
+  SIGN     → signed FLAG, reasons: ["detect: ai_generated_signal"]
+```
+In the execution layer, a FLAG maps to `step_up_auth`, not an automatic deny — see `ACTION_FOR_DECISION` in `sign/src/decision_executor.py`.
+
+---
+
+## 5. Code Examples
+
+These are real functions from this repository, not a hypothetical API — every import below resolves in this codebase.
+
+### Score a transaction (detect layer)
+
+```python
+# detect/src/detector.py + web/interactive_demo.py's real call pattern
+import detector as det
+from detector import decision_for_score
+
+def decision_for_score(score: float) -> str:
+    if score >= 0.80:
+        return "BLOCK"
+    if score >= 0.50:
+        return "FLAG"
+    return "ALLOW"
+
+fraud_score = float(model.predict_proba([det._row(transaction)])[:, 1][0])
+detect_decision = decision_for_score(fraud_score)
+```
+
+### Check a mandate (mandate layer)
+
+```python
+# mandate/src/mandate_checker.py
+from mandate_checker import check_mandate, derive_mandate_from_history
+
+mandate = derive_mandate_from_history(customer_transaction_history)
+result = check_mandate(
+    transaction,
+    mandate,
+    month_to_date_total=1180.00,
+    tx_count_today=3,
+)
+# {
+#   "mandate_allowed": False,
+#   "violated_rules": ["spending_limit"],
+#   "checks": [
+#     {"rule": "spending_limit", "passed": False,
+#      "reason": "would exceed monthly limit ($1000.00): $1180.00 so far + $95.00 = $1275.00"},
+#     {"rule": "merchant_whitelist", "passed": True, "reason": "..."},
+#     {"rule": "time_restriction", "passed": True, "reason": "..."},
+#     {"rule": "velocity", "passed": True, "reason": "..."}
+#   ]
+# }
+```
+
+### Combine and sign
+
+```python
+# pipeline/src/run_pipeline.py + sign/src/authority_signer.py
+from run_pipeline import combine_decision
+from authority_signer import sign_pipeline_decision
+
+final_decision = combine_decision(detect_decision, result)
+
+signed = sign_pipeline_decision(
+    transaction_id=transaction["transaction_id"],
+    fraud_score=fraud_score,
+    detect_decision=detect_decision,
+    mandate_allowed=result["mandate_allowed"],
+    violated_mandate_rules=result["violated_rules"],
+    final_decision=final_decision,
+    reasons=["mandate: spending_limit"],
+)
+# signed["signature"] is a 128-hex-char Ed25519 signature over the
+# canonical JSON encoding of the fields above.
+```
+
+### Verify a signed decision independently
+
+```python
+# sign/src/signature_verifier.py
+from signature_verifier import verify_record
+
+is_valid = verify_record(signed, signer_name="authority")
+# Reads only sign/tokens/authority_public_key.pem — the committed
+# public key file, exactly what an outside auditor would check with,
+# no access to the private key or this codebase's runtime required.
+```
+
+### Execute a signed decision (fail closed, idempotent)
+
+```python
+# sign/src/decision_executor.py + sign/src/caller_auth.py
+from decision_executor import DecisionExecutor
+from caller_auth import AUTHENTICATOR
+
+caller = AUTHENTICATOR.verify_token(caller_token)  # from POST /api/callers/token
+executor = DecisionExecutor()
+outcome = executor.enforce_decision(
+    signed_decision=signed,
+    payment_processor_webhook=my_webhook,  # (action, signed_decision) -> dict
+    caller=caller,                          # a CallerIdentity, e.g. "payment-processor"
+)
+# {"status": "EXECUTED" | "ALREADY_EXECUTED" | "REJECTED", "record_id": ...}
+# Verifies the signature, checks caller.permissions against final_decision
+# (payment-processor can execute ALLOW/FLAG but not BLOCK), enforces
+# idempotency on record_id, logs the attempt either way to
+# pipeline/audit/executions.jsonl.
+```
+
+---
+
+## 6. Real-World Scenarios
+
+### Scenario 1: Legitimate purchase, both layers agree
+
+```
+$45 at a merchant the customer uses weekly, 2pm, fraud_score 0.06
+DETECT: ALLOW  MANDATE: all four rules pass  → ALLOW, signed, logged.
+```
+
+### Scenario 2: Stolen card, detector catches it, mandate is silent
+
+```
+$620 at an unfamiliar merchant, 3am, fraud_score 0.91
+DETECT: BLOCK (pattern_similarity, hour_of_day)
+MANDATE: within spending limit, but merchant not whitelisted → mandate_allowed=False anyway
+→ BLOCK, two independent reasons cited, both would have blocked it alone.
+```
+
+### Scenario 3: Synthetic identity bust-out, detector misses it, mandate catches it
+
+```
+$540, a merchant the customer has used before, mid-afternoon, fraud_score 0.34 (ALLOW range)
+DETECT: ALLOW — the transaction's per-transaction features look ordinary
+MANDATE: this pushes the customer's month-to-date total past their derived
+         monthly_limit_usd → mandate_allowed=False
+→ BLOCK. This is exactly why the mandate layer exists independent of the
+  detector: a per-transaction classifier has no memory of what the
+  customer has already spent this month.
+```
+
+### Scenario 4: Detector unsure, execution layer steps up instead of denying
+
+```
+$95, familiar merchant, normal hour, fraud_score 0.58 (FLAG range)
+DETECT: FLAG   MANDATE: clean
+→ FLAG, signed. sign/src/decision_executor.py maps FLAG to
+  ACTION_FOR_DECISION["FLAG"] = "step_up_auth", not an automatic deny —
+  the payment processor is expected to ask for additional verification,
+  not reject the transaction outright.
+```
+
+---
+
+## 7. Quick Start
 
 ```bash
 # Setup
@@ -42,7 +354,7 @@ python -m http.server 8000
 # Open http://localhost:8000
 ```
 
-To regenerate the dashboard from a fresh, self generated dataset (copy `.env.example` to `.env` and set a real `OPENAI_API_KEY` first, agents 1, 2, 4, and 9 make real, cheap GPT-4o-mini calls):
+To regenerate the dashboard from a fresh, self-generated dataset (copy `.env.example` to `.env` and set a real `OPENAI_API_KEY` first, agents 1, 2, 4, and 9 make real, cheap GPT-4o-mini calls):
 
 ```bash
 cd generate/src && python run_simulation.py   # agents 1,2,4,9 (real OpenAI) + 5,6,8 (local)
@@ -51,22 +363,9 @@ cd ../../generate/src && python probe_agents.py # agents 3,7 (agent 7 is real Op
 cd ../../pipeline/src && python run_pipeline.py # detect + mandate + sign -> dashboard
 ```
 
-## In Plain Language
+---
 
-Before a transaction is allowed through, two independent checks have to agree. Neither one trusts the other's reasoning:
-
-1. **Does this look like fraud?** A model trained on real transaction patterns scores every transaction for risk.
-2. **Is this actually authorized?** A separate, rule based check compares the transaction against that specific customer's own history: spending limits, merchants, hours, frequency, regardless of what the fraud model thinks.
-
-Either one objecting is enough to block it. Then, whatever the outcome, a third step signs the final decision with a private key nobody else holds, producing a tamper evident record anyone can verify independently. Signing isn't a vote. Every decision gets signed, ALLOW or BLOCK. It's what makes the first two layers' decision provable and unforgeable after the fact, not a third check that can veto anything.
-
-**Real results, from a live, self generated run, not a cherry picked demo:**
-- Catches 92.2% of fraud
-- 6.3% false alarm rate on legitimate activity
-- Every one of 6,912 decisions is signed and independently verifiable, 6,912/6,912 checked out
-- A separate adversarial test asked GPT to disguise already blocked fraud so it would slip past the model; 10 of 18 attempts succeeded. (That's a narrow robustness result on a small sample, not a claim about a general evasion rate, and it is worse than an earlier run of this dataset, see Robustness below for why.)
-
-## Try It Live
+## 8. Try It Live
 
 The dashboard opens on the Live Test tab by default at [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev). You do not need to read any numbers first. Just submit a transaction and watch the real pipeline run.
 
@@ -90,14 +389,17 @@ A good first experiment: submit an amount well under the customer's limit, at a 
 
 There is also an Attack Walkthrough tab. It shows seven real, already signed decisions pulled straight from an actual pipeline run, one for each attack type this project simulates. Both features need `python web/server.py` running (see Quick Start above), not the static `http.server`.
 
-## Metrics
+---
+
+## 9. Metrics and Validation
 
 From the run behind the committed `web/data/dashboard.json`, fully self generated by this repo's own `generate/` layer, including real GPT-4o-mini calls for agents 1, 2, 4, 7, and 9 (27 calls, ~$0.037 total):
+
 - **23,037 transactions at a realistic 2.61% fraud rate** (22,436 legitimate + 601 fraudulent). The legitimate pool is scaled up for free (local generation, no API cost) specifically so the fraud rate can be realistic *without* shrinking the fraud count to a statistically noisy sample. 601 fraud examples means the test split alone has ~180 fraud cases to evaluate on, not a handful.
 - Fraud spread across the 7 attack types that actually produce labeled transactions: fake_identity 112, social_engineering 52, kyc_synthetic 100, pattern_copy 100, form_break 100, synthetic_bustout 100, vendor_bec 37. (Agents 3 and 7, limit probing and feedback loop exploit, probe the trained model directly instead of generating transactions, so they're not part of this breakdown; see `identify/attack-taxonomy.md`.)
 - **6,912 decisions** on the held out test split: 446 BLOCK / 150 FLAG / 6,316 ALLOW
 - **Detection catch:** 92.2% fraud caught, 6.3% false positive rate. The RandomForest uses `class_weight="balanced"` to hold up under this realistic imbalance rather than defaulting to the majority class
-- **Mandate only blocks:** 26. Real fraud the detector scored as low risk that the mandate layer caught anyway, most of it the new synthetic identity bust out attack, deliberately designed to look ordinary to a per transaction classifier while still exceeding that customer's own derived spending limit
+- **Mandate only blocks:** 26. Real fraud the detector scored as low risk that the mandate layer caught anyway, most of it the synthetic identity bust out attack, deliberately designed to look ordinary to a per transaction classifier while still exceeding that customer's own derived spending limit
 - **All decisions signed:** 6,912/6,912 verify independently
 - **Red team (agent 7):** 18 evasion variants tested against the trained model, 10 evaded detection, worse than an earlier run of this dataset (1 of 18 evaded then). See Robustness below for the likely reason
 
@@ -109,15 +411,21 @@ The detect layer's **precision is 28.2%**: of the 589 transactions it flags (423
 - **Precision measures the detect layer alone**, in isolation, on the held out test set. It is *not* the system's real world false accusation rate. A detect layer flag doesn't block anything by itself. It still has to clear the independent, rule based **mandate** layer (spending limits, merchant whitelist, time of day, velocity) before a transaction is denied, and every final decision, ALLOW or BLOCK, is signed and independently verifiable.
 - The confusion matrix behind these numbers: of 6,732 legitimate test transactions, 6,309 passed and 423 were flagged; of 180 fraud transactions, 166 were caught and 14 were missed. (`web/data/dashboard.json` → `detect.metrics.confusion_matrix`, also rendered live on the [dashboard](https://execution-authority-gate.fly.dev)'s Detection tab.)
 
-See [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md) for the full walkthrough, including why a detector with low precision and high recall is standard practice in fraud detection rather than a flaw.
+See [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md) for the full walkthrough, including why a detector with low precision and high recall is standard practice in fraud detection rather than a flaw. Every number above is traced to a `file:line` and a runnable verification command in [`CLAIMS.md`](CLAIMS.md).
 
-## Robustness
+### Robustness
 
 Numbers vary run to run: agents 1, 2, 4, 7, and 9 call the real OpenAI API at temperature=0.9, not deterministic by design. Running `generate/src/run_simulation.py` again (then `detect/src/check_results.py`, `generate/src/probe_agents.py`, and `pipeline/src/run_pipeline.py`) with your own `OPENAI_API_KEY` will produce different fraud examples and slightly different metrics. That's deliberate, it proves the detector holds up across different fraud patterns, not just one fixed dataset.
 
 Adding the synthetic identity bust out and vendor BEC attacks changed more than the attack count: `amount` moved from a minor signal to the model's second most important feature (`top_signals` in `web/data/dashboard.json`, since both new attacks are large, out of pattern amounts), and adversarial evasion resistance dropped from 1 of 18 to 10 of 18 in the same run. A model that leans harder on amount is easier to nudge with the small numeric adjustments GPT proposes in agent 7's evasion test. This is reported plainly, not smoothed over: broadening the attack taxonomy improved recall (89.1% to 92.2%) and gave the mandate layer more to catch on its own (8 to 26 mandate only blocks), but it came with a real adversarial robustness cost, a genuine tradeoff, not a one directional improvement.
 
-## Production Deployment and Execution Integration
+### Submission context
+
+This repository is also the codebase behind a Mastercard hackathon submission ([`Mastercard-Submission-Walkthrough.docx`](Mastercard-Submission-Walkthrough.docx)); the numbers in this section and in [`CLAIMS.md`](CLAIMS.md) are exactly what that walkthrough is based on, no separate or rounder set of figures exists for a pitch.
+
+---
+
+## 10. Production Deployment and Execution Integration
 
 Decisions are ready for execution, not merely advisory: `sign/src/decision_executor.py`
 validates a signed decision's signature and the calling identity's
@@ -143,7 +451,9 @@ carry the requesting caller's identity inside the signed envelope itself
 scoped permissions). See `ARCHITECTURE.md`'s "Gaps closed since the
 audit" section for the complete account of what changed, cited to the code.
 
-## Testing
+---
+
+## 11. Testing
 
 ```bash
 pip install -r requirements.txt
@@ -158,18 +468,22 @@ pytest tests/ -v
 ALLOW_LIVE_OPENAI=1 OPENAI_API_KEY=sk-... pytest tests/test_generate.py -v
 ```
 
-## Structure
+---
+
+## 12. Structure
 
 - **identify/**: Attack taxonomy
 - **generate/**: 7 fraud agents + orchestration (`run_simulation.py`, `probe_agents.py`); agents 1, 2, 4, 7 call the real OpenAI API
 - **detect/**: RandomForest fraud detector
 - **mandate/**: Authorization rule checker
-- **sign/**: Ed25519 signing + verification
-- **pipeline/**: Orchestration of all layers
-- **web/**: Interactive dashboard, plus an Attack Walkthrough (real precomputed decisions) and a Live Test Harness (runs a submitted transaction through the real pipeline on demand, needs `python web/server.py`, not the static `http.server`). See "Try It Live" above.
+- **sign/**: Ed25519 signing + verification + caller auth + decision execution
+- **pipeline/**: Orchestration of all layers, audit trail
+- **web/**: Interactive dashboard, plus an Attack Walkthrough (real precomputed decisions) and a Live Test Harness (runs a submitted transaction through the real pipeline on demand, needs `python web/server.py`, not the static `http.server`). See [Try It Live](#8-try-it-live) above.
 - **tests/**: Comprehensive test suite
 
-## Deployment
+---
+
+## 13. Deployment
 
 Live at [execution-authority-gate.fly.dev](https://execution-authority-gate.fly.dev), deployed via `flyctl deploy` from this repo. The deployed container runs `web/server.py` (a small Flask static server with a `/api/status` health check) and serves the committed `web/data/dashboard.json` as is. The pipeline doesn't run inside the container, so the live numbers stay fixed to whatever was last committed until someone regenerates and recommits that file.
 
@@ -178,10 +492,33 @@ To redeploy after code changes:
 flyctl deploy
 ```
 
-## The Pitch
+---
 
-"Execution Authority Gate: Fraud detection + mandate enforcement + cryptographic signing + external authority. Real OpenAI generation proves robustness. Every decision verifiable, none can be changed."
+## 14. FAQ
 
-## License
+**Q: Is this just a fraud detector with extra steps?**
+No. The detector is one of two independent layers, not the decision maker. The mandate layer runs the same transaction through a completely separate, deterministic rule set, and either layer can block on its own. Section 9 shows this isn't hypothetical: 26 of the run's 446 blocks came from the mandate layer catching fraud the detector scored as low risk.
+
+**Q: Can the mandate layer override the detector, or vice versa?**
+Neither overrides the other. `combine_decision` (Section 4) is a straight OR on blocking: if either layer objects, the result is BLOCK. There's no weighting, no confidence threshold that lets one layer's opinion cancel the other's.
+
+**Q: What does signing actually add, if the decision is already made by then?**
+Proof, not a vote. Ed25519 signing runs on every decision, ALLOW included, and the private key belongs to an external authority identity that neither the detector nor the mandate checker can access. That means the recorded fraud_score, mandate result, and final_decision cannot be altered after the fact without invalidating the signature — anyone holding the committed public key (`sign/tokens/authority_public_key.pem`) can verify that independently, without trusting this codebase's runtime at all.
+
+**Q: Does a signed BLOCK mean the transaction was actually stopped from moving money?**
+No, and this repo doesn't claim otherwise. Signing makes a decision provable, not enforced. `sign/src/decision_executor.py` is the piece that turns a signed decision into a call against a payment processor, and it's real code with fail-closed and idempotency guarantees, but the webhook it calls in this repo is a labeled simulation (`"simulated": true`), because no real payment processor is wired up. See Section 10 and [`CLAIMS.md`](CLAIMS.md#what-this-project-does-not-claim).
+
+**Q: Why is detector precision only ~28%? Isn't 3 out of 4 flags wrong?**
+Yes, in isolation. That's the standard recall/precision tradeoff for a rare-event classifier tuned to catch 92%+ of a ~2.6% fraud rate. What matters is that a detect-layer flag alone never blocks anything — see Section 9's "Why precision is around 28%" and [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md) for the full reasoning.
+
+**Q: Are the 92.2%/6.3% numbers fixed?**
+No, by design. Four of the generation agents make real, non-deterministic OpenAI calls (temperature=0.9), so regenerating the dataset produces slightly different numbers each run. This is intentional — see [Robustness](#9-metrics-and-validation) — it's evidence the detector generalizes across fraud patterns rather than being fit to one fixed sample.
+
+**Q: What are the known limits?**
+Documented plainly, not smoothed over, in [`CLAIMS.md`](CLAIMS.md#what-this-project-does-not-claim) and `ARCHITECTURE.md`'s "Gaps closed since the audit" section: no real payment processor integration, mandate limits are heuristically derived (not real underwriting policy), and the raw transaction fields (amount, merchant, hour) live in an unsigned `ground_truth` sibling field, not inside the signed envelope itself.
+
+---
+
+## 15. License
 
 MIT, see [LICENSE](LICENSE).
