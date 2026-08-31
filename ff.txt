@@ -1,0 +1,1626 @@
+# MASTER IMPLEMENTATION PROMPT — EXECUTION AUTHORITY GATE AI DEFENSE LAB
+
+You are a senior security architect, ML engineer, product designer, and hackathon engineer.
+
+You are working on the existing Execution Authority Gate prototype:
+
+**Live application:** `https://execution-authority-gate.fly.dev/`
+
+Do NOT rebuild the application from scratch.
+
+Your task is to **upgrade the existing prototype into a compelling, technically credible submission for the Mastercard Innovation Challenge 2026 — AI Defense Lab for Payment Security**.
+
+The challenge explicitly evaluates:
+
+1. Diversity of attacks identified
+2. Fidelity of attacks generated/simulated
+3. Detection algorithm efficacy
+4. Novelty
+5. Real-world feasibility in live payments
+
+The submission requires:
+
+* Complete runnable GitHub repository
+* `.docx` solution walkthrough
+* Working web prototype
+
+The existing Execution Authority Gate product already contains the core concepts:
+
+* Execution Authority Gate
+* Attack identification
+* Attack simulation
+* Detection
+* Mandate / authorization
+* Proof / evidence
+* Live Test
+* FAQ
+* Deterministic, policy-driven execution
+* Fail-closed behavior
+* Replay protection
+* Cryptographic evidence / attestations
+
+Preserve these strengths.
+
+---
+
+# 1. CORE PRODUCT POSITIONING
+
+Do NOT position Execution Authority Gate as merely another fraud classifier.
+
+Do NOT replace the existing concept with a generic fraud-detection dashboard.
+
+The central thesis must become:
+
+> **Fraud detection determines risk. Execution authority determines whether the action can actually happen.**
+
+The primary product narrative:
+
+> **Discover the attack. Simulate it. Detect it. Decide whether it is authorized to execute. Prove what happened.**
+
+The final system should visibly demonstrate:
+
+```text
+IDENTIFY
+   ↓
+GENERATE
+   ↓
+DETECT
+   ↓
+AUTHORIZE
+   ↓
+EXECUTE / BLOCK
+   ↓
+PROVE
+```
+
+The key differentiation:
+
+> **A probabilistic AI system may recommend an action. It does not automatically acquire authority to execute that action.**
+
+Execution Authority Gate is the deterministic execution-authority boundary.
+
+---
+
+# 2. IMPORTANT CONSTRAINT
+
+Do not over-engineer.
+
+This is a hackathon submission.
+
+Prioritize:
+
+1. End-to-end functionality
+2. Demonstrable attack diversity
+3. Credible synthetic attack generation
+4. Measurable detection performance
+5. Execution-authority enforcement
+6. Clear evidence
+7. Excellent demo UX
+8. Documentation
+
+Do not spend excessive time creating unnecessary infrastructure.
+
+Reuse existing Execution Authority Gate code, components, APIs, schemas, styling, and execution mechanisms wherever possible.
+
+---
+
+# 3. FIRST TASK — AUDIT THE EXISTING APPLICATION
+
+Before changing code:
+
+Inspect the entire repository.
+
+Identify:
+
+* Existing frontend
+* Existing backend
+* Existing attack library
+* Existing simulation logic
+* Existing detection implementation
+* Existing mandate/authorization implementation
+* Existing proof/evidence implementation
+* Existing policy engine
+* Existing cryptographic signing
+* Existing replay protection
+* Existing tests
+* Existing deployment configuration
+* Existing API contracts
+
+Create an internal gap map:
+
+```text
+EXISTING
+vs
+REQUIRED BY CHALLENGE
+```
+
+Do not duplicate functionality that already exists.
+
+Extend existing architecture.
+
+---
+
+# 4. BUILD AN ATTACK TAXONOMY
+
+The challenge explicitly requires broad and exhaustive identification of emerging GenAI-powered payment fraud.
+
+The current prototype identifies 13 attack types.
+
+Do not merely display the number.
+
+Make the attack library structured, credible, and useful.
+
+Create an attack taxonomy with approximately 20–30 attack scenarios if practical.
+
+Each attack must have structured metadata:
+
+```json
+{
+  "id": "attack-001",
+  "name": "...",
+  "category": "...",
+  "description": "...",
+  "genai_capability": "...",
+  "payment_surface": "...",
+  "attack_preconditions": [],
+  "behavioral_signals": [],
+  "observable_features": [],
+  "generation_parameters": {},
+  "detection_signals": [],
+  "mitigation": "...",
+  "execution_authority_implication": "...",
+  "severity": "...",
+  "novelty": "...",
+  "simulation_supported": true
+}
+```
+
+Use categories such as:
+
+* Synthetic identity
+* Deepfake / impersonation
+* AI-assisted social engineering
+* Payment instruction manipulation
+* Credential abuse
+* Behavioral mimicry
+* Transaction velocity manipulation
+* Account takeover
+* Synthetic merchant behavior
+* Fraud polymorphism
+* Multi-agent fraud
+* Agent-assisted payment fraud
+* Cross-channel manipulation
+* Mule/account orchestration
+* Adaptive fraud behavior
+
+Avoid sensational claims.
+
+The attack library should describe plausible attack mechanisms without providing operational instructions for committing real-world financial crime.
+
+---
+
+# 5. MAKE THE ATTACK LIBRARY JUDGE-FRIENDLY
+
+Add an Attack Intelligence screen.
+
+For every attack show:
+
+### Attack
+
+Name and category.
+
+### Why GenAI changes it
+
+Explain what GenAI enables.
+
+### Payment surface
+
+For example:
+
+* Card
+* Account-to-account
+* Wallet
+* Merchant payment
+* Customer support
+* Payment instruction
+* Identity/KYC
+
+### Observable signals
+
+What a defender could actually observe.
+
+### Simulation
+
+Whether Execution Authority Gate can currently generate this scenario.
+
+### Detection
+
+Which features/models detect it.
+
+### Authority impact
+
+What happens if detection is wrong.
+
+Example:
+
+```text
+Attack:
+AI-assisted payment instruction manipulation
+
+GenAI capability:
+Highly personalized payment instructions
+
+Observable signals:
+• unusual beneficiary
+• new device
+• abnormal amount
+• language/context anomaly
+• behavioral deviation
+
+Detection:
+Behavioral anomaly + transaction classifier
+
+Authority implication:
+High-risk payment requires additional authorization
+
+Current simulation:
+SUPPORTED
+```
+
+This demonstrates depth rather than just breadth.
+
+---
+
+# 6. IMPROVE THE GENERATION LAYER
+
+This is one of the most important gaps.
+
+Do NOT call random transaction generation "high-fidelity simulation."
+
+The generator must produce synthetic payment behavior that resembles realistic transactional patterns.
+
+Create a synthetic transaction model with dimensions such as:
+
+```text
+customer profile
+account age
+merchant relationship
+device history
+location pattern
+payment rail
+transaction amount
+transaction frequency
+time of day
+day of week
+velocity
+historical spending
+beneficiary familiarity
+device novelty
+geographic deviation
+merchant novelty
+authentication state
+previous transaction sequence
+attack type
+attack intensity
+```
+
+Generate realistic distributions.
+
+Where actual proprietary payment data is unavailable:
+
+> Clearly label the data as synthetic.
+
+Never imply that synthetic data is Mastercard production data.
+
+---
+
+# 7. GENERATE SEQUENCES, NOT JUST TRANSACTIONS
+
+This is critical.
+
+The simulator should support transaction sequences.
+
+Example:
+
+```text
+T-30 days
+Normal behavior
+
+T-7 days
+New device introduced
+
+T-2 days
+Credential/profile change
+
+T-1 hour
+Behavioral anomaly
+
+T
+Large payment attempt
+
+T+5 min
+Second payment attempt
+```
+
+Represent the scenario as a temporal sequence.
+
+Each generated scenario should contain:
+
+```json
+{
+  "scenario_id": "...",
+  "attack_id": "...",
+  "customer_profile": {},
+  "transactions": [],
+  "attack_parameters": {},
+  "ground_truth": "fraud",
+  "attack_stage": [],
+  "expected_signals": []
+}
+```
+
+This allows the prototype to demonstrate attack fidelity.
+
+---
+
+# 8. CREATE A SYNTHETIC DATASET
+
+Generate a meaningful dataset.
+
+Target:
+
+* At least 5,000 synthetic transactions if computationally practical
+* Preferably 10,000+
+* Multiple legitimate behavioral profiles
+* Multiple fraud scenarios
+* Multiple attack families
+* Class imbalance representative of fraud detection
+
+Include:
+
+```text
+legitimate transactions
+traditional fraud-like transactions
+GenAI-generated fraud scenarios
+adversarial variations
+edge cases
+```
+
+Maintain train/test separation.
+
+Do NOT leak the exact attack-generation logic into the test set in a way that artificially inflates performance.
+
+---
+
+# 9. BUILD A REAL DETECTION BASELINE
+
+The challenge explicitly evaluates detection efficacy.
+
+Therefore the system must contain an actual measurable detection model.
+
+Use a simple, reliable baseline if necessary:
+
+* Logistic Regression
+* Random Forest
+* Gradient Boosting
+* XGBoost if already available
+* Another lightweight classifier already supported by the stack
+
+Do not use an unnecessarily complex model.
+
+The objective is reproducibility.
+
+Features should include:
+
+```text
+amount anomaly
+merchant novelty
+device novelty
+velocity
+time anomaly
+location anomaly
+customer behavior deviation
+beneficiary novelty
+transaction frequency
+account age
+authentication anomalies
+sequence-level features
+attack-family indicators where appropriate
+```
+
+---
+
+# 10. MEASURE DETECTION PERFORMANCE
+
+Create a proper evaluation pipeline.
+
+Report:
+
+* Precision
+* Recall
+* F1
+* ROC-AUC where meaningful
+* False-positive rate
+* False-negative rate
+* Confusion matrix
+
+Where possible, report:
+
+```text
+Overall
++
+By attack family
+```
+
+Example:
+
+```text
+Overall F1: 0.XX
+
+Synthetic identity: 0.XX
+Behavioral mimicry: 0.XX
+Account takeover: 0.XX
+AI-assisted social engineering: 0.XX
+Agent-assisted fraud: 0.XX
+```
+
+Do NOT fabricate metrics.
+
+If metrics are weak, report them honestly and explain limitations.
+
+---
+
+# 11. CRITICAL DEMO — DETECTOR SUCCESS
+
+Create a canonical scenario:
+
+```text
+GENAI ATTACK
+↓
+SYNTHETIC PAYMENT SEQUENCE
+↓
+FRAUD DETECTOR
+↓
+HIGH RISK
+↓
+EXECUTION AUTHORITY GATE AUTHORITY CHECK
+↓
+BLOCK
+↓
+SIGNED PROOF
+```
+
+Display:
+
+```text
+Fraud Risk
+87%
+
+Detection signals
+✓ New device
+✓ Behavioral anomaly
+✓ Merchant novelty
+✓ Velocity spike
+
+Authority
+DENIED
+
+Execution
+BLOCKED
+```
+
+Then show evidence.
+
+---
+
+# 12. CRITICAL DIFFERENTIATING DEMO — DETECTOR FAILURE
+
+This is one of the most important additions.
+
+Create a scenario where the fraud detector deliberately misses or underestimates a synthetic attack.
+
+Example:
+
+```text
+GENAI ATTACK
+↓
+Synthetic transaction
+↓
+Fraud detector
+↓
+LOW RISK / FALSE NEGATIVE
+↓
+Execution Authority Gate Authority Gate
+↓
+POLICY VIOLATION
+↓
+BLOCK
+```
+
+The UI should explicitly label:
+
+> **Detection layer: FALSE NEGATIVE**
+
+Then:
+
+> **Execution authority layer: BLOCKED**
+
+Then explain:
+
+> The defense does not depend on the detector being perfect. A failed probabilistic detection decision does not automatically grant execution authority.
+
+This is the strongest demonstration of Execution Authority Gate's architectural novelty.
+
+Do not claim that Execution Authority Gate "detects fraud" in this case.
+
+It prevents unauthorized execution based on policy.
+
+---
+
+# 13. DEMONSTRATE THE TWO SECURITY LAYERS
+
+Make the distinction visually explicit.
+
+## Layer 1 — Detection
+
+Question:
+
+> Is this transaction likely fraudulent?
+
+Output:
+
+```text
+Risk score
+Classification
+Signals
+```
+
+Probabilistic.
+
+---
+
+## Layer 2 — Execution Authority
+
+Question:
+
+> Is this action authorized to execute under the applicable policy?
+
+Output:
+
+```text
+ALLOW
+BLOCK
+ESCALATE
+```
+
+Deterministic/policy-driven.
+
+Show:
+
+```text
+DETECTION ≠ AUTHORITY
+```
+
+This phrase should appear prominently.
+
+---
+
+# 14. BUILD THE AUTHORITY POLICY MODEL
+
+The authority layer should evaluate concrete policy conditions.
+
+Example:
+
+```text
+Policy:
+PAYMENT_HIGH_VALUE_V2
+
+Conditions:
+amount > ₹100,000
+AND
+new beneficiary
+→ additional authorization required
+```
+
+Another:
+
+```text
+Policy:
+VELOCITY_CONTROL_V1
+
+Conditions:
+> 3 high-value transactions
+within configured interval
+→ execution denied
+```
+
+Another:
+
+```text
+Policy:
+DEVICE_TRUST_V1
+
+Conditions:
+new device
+AND
+high-value payment
+→ step-up authorization
+```
+
+Keep policy evaluation deterministic.
+
+Do not let an LLM decide whether the transaction is authorized.
+
+LLM/AI can recommend.
+
+Policy engine decides.
+
+---
+
+# 15. ADD THE AUTHORITY DECISION TRACE
+
+For every execution attempt show:
+
+```text
+Intent
+↓
+Risk assessment
+↓
+Policy evaluation
+↓
+Authority decision
+↓
+Execution
+↓
+Evidence
+```
+
+Example:
+
+```text
+INTENT
+Transfer ₹480,000
+
+RISK
+0.72
+
+POLICY
+High-value transfer policy
+
+AUTHORITY
+DENIED
+
+REASON
+Required authorization not satisfied
+
+EXECUTION
+BLOCKED
+```
+
+---
+
+# 16. PRESERVE EXECUTION AUTHORITY GATE CRYPTOGRAPHIC PROOF
+
+Do not remove or simplify the existing proof layer.
+
+Every governed execution should generate an attestation containing, where already supported:
+
+* Decision
+* Policy
+* Policy version
+* Input/reference
+* Authority result
+* Execution result
+* Timestamp or deterministic event reference
+* Integrity hash
+* Signature
+* Verification result
+* Replay status
+
+Display:
+
+```text
+ATTESTATION
+
+Decision: BLOCK
+Policy: PAYMENT_HIGH_VALUE_V2
+Authority: DENIED
+Execution: NOT PERFORMED
+
+Integrity: VALID
+Signature: VALID
+Replay: PROTECTED
+```
+
+Use the existing Execution Authority Gate cryptographic implementation.
+
+Do not invent fake cryptographic proof.
+
+---
+
+# 17. ADD A DECISION REPLAY DEMO IF ALREADY SUPPORTED
+
+The UI should demonstrate that the decision can be independently verified.
+
+Allow the judge to:
+
+1. Run transaction
+2. See decision
+3. View evidence
+4. Verify evidence
+5. Attempt replay if supported
+6. Show replay protection
+
+Expected:
+
+```text
+First execution:
+BLOCKED
+
+Replay attempt:
+REJECTED
+
+Reason:
+Execution artifact already consumed / replay detected
+```
+
+If replay functionality already exists, expose it clearly.
+
+---
+
+# 18. REDESIGN THE HOMEPAGE MESSAGE
+
+Do not remove the existing visual identity unnecessarily.
+
+Change the hero messaging so that a judge understands the concept immediately.
+
+Recommended hero:
+
+> # AI can generate the attack.
+>
+> # AI can recommend the response.
+>
+> # Neither gets to execute without authority.
+
+Subheading:
+
+> **Execution Authority Gate is an execution-authority layer for AI-driven payment defense. It identifies and simulates emerging fraud, detects risk, enforces deterministic authorization policies, and produces verifiable execution evidence.**
+
+Primary CTA:
+
+> **Run Live Defense**
+
+Secondary CTA:
+
+> **Explore Attack Library**
+
+Then show:
+
+```text
+IDENTIFY → GENERATE → DETECT → AUTHORIZE → PROVE
+```
+
+---
+
+# 19. MAKE THE LIVE TEST THE CENTERPIECE
+
+The existing Live Test is valuable.
+
+Improve it rather than replacing it.
+
+The judge should be able to modify:
+
+* Amount
+* Hour
+* Merchant familiarity
+* Device familiarity
+* Transaction velocity
+* Beneficiary familiarity
+* Location deviation
+* Authentication state
+
+Then click:
+
+> **Run Defense**
+
+Display the complete pipeline.
+
+Example:
+
+```text
+INPUT
+₹480,000
+New device
+New beneficiary
+High velocity
+
+        ↓
+
+DETECTION
+Risk: 87%
+HIGH RISK
+
+        ↓
+
+AUTHORITY
+Policy violation
+AUTHORITY DENIED
+
+        ↓
+
+EXECUTION
+BLOCKED
+
+        ↓
+
+PROOF
+VERIFIED
+```
+
+---
+
+# 20. ADD A "WHAT IF DETECTION IS WRONG?" BUTTON
+
+This should be a major UX feature.
+
+Button:
+
+> **Simulate Detector Failure**
+
+When clicked:
+
+```text
+Detection:
+FALSE NEGATIVE
+
+Risk:
+LOW
+
+AI recommendation:
+ALLOW
+
+Execution Authority Gate:
+DENIED
+
+Why:
+Execution policy violated
+```
+
+Then display:
+
+> **Defense-in-depth: detection failure does not automatically become execution authority.**
+
+This is probably the single most valuable product demonstration.
+
+---
+
+# 21. ADD ATTACK COVERAGE METRICS
+
+The dashboard should show:
+
+```text
+Attack types identified
+20+
+
+Attack types simulated
+10+
+
+Synthetic transactions
+10,000+
+
+Attack scenarios
+XXX
+
+Detection F1
+0.XX
+
+False positive rate
+X.XX%
+
+Authority violations blocked
+XXX
+
+Evidence verification
+100%
+```
+
+Use real computed numbers.
+
+Never hard-code fake metrics.
+
+---
+
+# 22. ADD ATTACK DIVERSITY VIEW
+
+Show a visual breakdown:
+
+```text
+Attack Family
+--------------------------
+Synthetic Identity       XX
+Behavioral Mimicry       XX
+Account Takeover         XX
+AI Social Engineering   XX
+Agent-assisted Fraud    XX
+Payment Manipulation    XX
+...
+```
+
+Allow filtering.
+
+---
+
+# 23. ADD SIMULATION FIDELITY EXPLANATION
+
+The judge needs to understand how "fidelity" is being addressed.
+
+Create a small panel:
+
+> **Simulation Fidelity**
+
+Explain that scenarios preserve relationships across:
+
+* Customer behavior
+* Transaction amount
+* Device history
+* Merchant familiarity
+* Velocity
+* Time
+* Location
+* Transaction sequences
+
+Where possible calculate simple statistical similarity between synthetic legitimate data and baseline distributions.
+
+Examples:
+
+```text
+Amount distribution similarity
+Velocity distribution similarity
+Merchant novelty distribution
+Time-of-day distribution
+Behavioral sequence similarity
+```
+
+Do not claim real-world fidelity against Mastercard data.
+
+State:
+
+> Synthetic fidelity is evaluated against the statistical structure of the synthetic baseline, not proprietary Mastercard transaction data.
+
+---
+
+# 24. ADD REAL-WORLD FEASIBILITY
+
+Create a dedicated page/section:
+
+# Production Architecture
+
+Show:
+
+```text
+Existing Payment System
+        ↓
+Fraud / Risk Models
+        ↓
+Execution Authority Gate Authority API
+        ↓
+Policy Evaluation
+        ↓
+ALLOW / BLOCK / ESCALATE
+        ↓
+Payment Execution
+        ↓
+Signed Evidence
+        ↓
+Audit / Compliance
+```
+
+Explain that Execution Authority Gate can operate as an enforcement boundary around existing models.
+
+Important:
+
+> Execution Authority Gate does not need to replace an existing fraud model.
+
+It can consume the model's decision/risk output and independently evaluate execution authority.
+
+---
+
+# 25. SHOW WHY THIS IS DIFFERENT
+
+Create a comparison:
+
+| Traditional fraud system               | Execution Authority Gate architecture                                     |
+| -------------------------------------- | -------------------------------------------------------- |
+| Detects risk                           | Detects risk                                             |
+| Produces recommendation                | Produces recommendation                                  |
+| Recommendation often drives action     | Authority must be independently satisfied                |
+| Model-centric                          | Model + policy + authority                               |
+| Probabilistic                          | Probabilistic detection + deterministic enforcement      |
+| Limited execution evidence             | Cryptographically verifiable evidence                    |
+| Detection failure can become execution | Detection failure does not automatically grant authority |
+
+Headline:
+
+> **Detection is not authorization.**
+
+---
+
+# 26. ADD AN EXPLICIT LIMITATIONS SECTION
+
+Do not hide limitations.
+
+Include:
+
+> **Prototype limitations**
+
+* Uses synthetic payment data
+* Does not use Mastercard proprietary transaction data
+* Attack simulations are research prototypes
+* Detection performance is not a production fraud benchmark
+* Production deployment would require calibration against institution-specific data
+* Real payment integration would require additional controls, latency testing, privacy controls, and operational validation
+
+This improves credibility.
+
+---
+
+# 27. DOCUMENT THE EXPERIMENT
+
+Create an experiment/evaluation page or downloadable report containing:
+
+### Dataset
+
+How synthetic transactions were generated.
+
+### Attack generation
+
+How attack parameters vary.
+
+### Detection
+
+Features and model.
+
+### Evaluation
+
+Train/test methodology.
+
+### Results
+
+Precision, recall, F1, AUC, false-positive rate.
+
+### Robustness
+
+Performance across attack families.
+
+### Authority
+
+Which transactions were allowed, blocked, or escalated.
+
+### Evidence
+
+Verification results.
+
+---
+
+# 28. IMPORTANT SCIENTIFIC INTEGRITY RULE
+
+Never fabricate:
+
+* Detection accuracy
+* Dataset size
+* Attack count
+* Fidelity score
+* Mastercard data usage
+* Production deployment claims
+* Customer data
+* Benchmark results
+
+If something is simulated, label it:
+
+> Synthetic
+
+If something is a prototype, label it:
+
+> Prototype
+
+If something is measured, show how it was measured.
+
+---
+
+# 29. CREATE THREE DEMO SCENARIOS
+
+The final prototype must have at least three polished scenarios.
+
+## Scenario 1 — Detector catches attack
+
+```text
+Attack
+→ Detection HIGH
+→ Authority DENIED
+→ BLOCK
+→ Proof
+```
+
+## Scenario 2 — Detector misses attack
+
+```text
+Attack
+→ Detection LOW
+→ AI recommendation ALLOW
+→ Authority DENIED
+→ BLOCK
+→ Proof
+```
+
+## Scenario 3 — Legitimate transaction
+
+```text
+Normal transaction
+→ Detection LOW
+→ Policy satisfied
+→ Authority GRANTED
+→ ALLOW
+→ Proof
+```
+
+This demonstrates:
+
+**Security without unnecessary false positives.**
+
+---
+
+# 30. DEMONSTRATE THE FALSE-POSITIVE TRADEOFF
+
+The legitimate scenario matters because the challenge explicitly cares about keeping false positives low.
+
+Show:
+
+```text
+Legitimate payment
+Risk: 0.08
+
+Authority:
+GRANTED
+
+Execution:
+ALLOWED
+```
+
+The message:
+
+> **Execution Authority Gate blocks unauthorized actions, not merely unusual actions.**
+
+This is an important distinction.
+
+---
+
+# 31. TESTING
+
+Before submission:
+
+Run:
+
+```bash
+npm test
+npm run build
+npm run typecheck
+```
+
+or the project's existing equivalent commands.
+
+Ensure:
+
+* No broken routes
+* No console errors
+* No fake metrics
+* No dead buttons
+* No placeholder text
+* No missing API endpoints
+* No broken mobile layout
+* No environment secrets exposed
+* Existing Execution Authority Gate tests remain passing
+
+Add tests for:
+
+* Attack generation
+* Schema validation
+* Detection pipeline
+* Policy evaluation
+* Authority denial
+* Authority allow
+* Fail-closed behavior
+* Replay protection
+* Evidence generation
+* Evidence verification
+
+---
+
+# 32. README
+
+Rewrite the README around the Mastercard challenge.
+
+Opening:
+
+> # Execution Authority Gate AI Defense Lab
+>
+> **Discover → Generate → Detect → Authorize → Prove**
+>
+> An adversarial AI payment-defense prototype demonstrating that fraud detection and execution authority are separate security boundaries.
+
+Include:
+
+1. Problem
+2. Architecture
+3. Attack taxonomy
+4. Synthetic generation
+5. Detection model
+6. Authority layer
+7. Cryptographic evidence
+8. Evaluation
+9. Demo scenarios
+10. Limitations
+11. Running locally
+
+Include an architecture diagram.
+
+---
+
+# 33. CREATE THE SOLUTION WALKTHROUGH DOCUMENT
+
+Generate a professional `.docx`.
+
+Recommended structure:
+
+# Execution Authority Gate AI Defense Lab
+
+## Adversarial Payment Security Through Execution Authority
+
+### 1. Executive Summary
+
+### 2. Problem
+
+### 3. Why GenAI Changes Payment Fraud
+
+### 4. Attack Intelligence
+
+### 5. Attack Taxonomy
+
+### 6. Attack Generation
+
+### 7. Synthetic Data Methodology
+
+### 8. Detection Model
+
+### 9. Detection Evaluation
+
+### 10. Execution Authority
+
+### 11. Detector Failure / Defense-in-Depth
+
+### 12. Cryptographic Evidence
+
+### 13. End-to-End Architecture
+
+### 14. Live Payment Feasibility
+
+### 15. Novelty
+
+### 16. Results
+
+### 17. Limitations
+
+### 18. Future Work
+
+### 19. Conclusion
+
+The conclusion should reinforce:
+
+> **The key security boundary is not only whether an AI system recognizes fraud. It is whether the resulting action is authorized to execute.**
+
+---
+
+# 34. CREATE A JUDGING SCORECARD
+
+Add this to the walkthrough:
+
+| Challenge Criterion    | Execution Authority Gate Evidence                             |
+| ---------------------- | -------------------------------------------- |
+| Attack diversity       | Structured attack taxonomy                   |
+| Attack fidelity        | Behavioral/temporal synthetic simulation     |
+| Detection efficacy     | Measured classifier metrics                  |
+| Novelty                | Detection separated from execution authority |
+| Real-world feasibility | API-based enforcement architecture           |
+
+This lets judges map the solution directly to their rubric.
+
+---
+
+# 35. CREATE A 60-SECOND DEMO FLOW
+
+The live demo should be executable in approximately one minute.
+
+### 0–10 sec
+
+Show:
+
+> AI can generate the attack.
+> AI can recommend the response.
+> Neither gets to execute without authority.
+
+### 10–20 sec
+
+Select GenAI payment attack.
+
+### 20–30 sec
+
+Generate synthetic transaction sequence.
+
+### 30–40 sec
+
+Show fraud detection.
+
+### 40–50 sec
+
+Show Execution Authority Gate authority decision.
+
+### 50–60 sec
+
+Show cryptographic proof.
+
+Then demonstrate:
+
+> **What if detection is wrong?**
+
+and show:
+
+```text
+Detector:
+FALSE NEGATIVE
+
+Execution Authority Gate:
+BLOCKED
+
+Reason:
+UNAUTHORIZED EXECUTION
+```
+
+That should be the memorable moment.
+
+---
+
+# 36. VISUAL DESIGN
+
+Keep the current Execution Authority Gate visual identity.
+
+Improve hierarchy rather than redesigning everything.
+
+The UI should feel:
+
+* Security-grade
+* Technical
+* Calm
+* Trustworthy
+* Enterprise
+* Evidence-driven
+
+Avoid:
+
+* Generic AI robot graphics
+* Excessive gradients
+* Stock imagery
+* Marketing fluff
+* "AI magic" animations
+
+Prefer:
+
+* Pipeline diagrams
+* Decision cards
+* Policy traces
+* Transaction timelines
+* Attack graphs
+* Evidence panels
+* Verification states
+
+---
+
+# 37. CORE LANGUAGE TO USE
+
+Use:
+
+> **Detection ≠ Authorization**
+
+> **AI can recommend. Policy decides. Authority controls execution.**
+
+> **A detector can be wrong without the payment being allowed to execute.**
+
+> **Execution Authority Gate turns execution authority into an independently verifiable security boundary.**
+
+> **Discover the attack. Simulate it. Detect it. Authorize it. Prove it.**
+
+Do not overuse the phrase "AI-powered."
+
+---
+
+# 38. CORE LANGUAGE TO AVOID
+
+Avoid claims such as:
+
+> "100% fraud prevention"
+
+> "Impossible to hack"
+
+> "Perfect detection"
+
+> "Production-ready Mastercard fraud engine"
+
+> "Eliminates fraud"
+
+> "Mastercard-grade detection"
+
+unless objectively demonstrated.
+
+Use:
+
+> "Prototype"
+
+> "Synthetic"
+
+> "Demonstrates"
+
+> "Architecture"
+
+> "Measured on synthetic evaluation data"
+
+---
+
+# 39. FINAL ACCEPTANCE CRITERIA
+
+Do not consider the work complete until all of these are true:
+
+### Identify
+
+[ ] At least 20 structured attack scenarios where practical
+
+[ ] Attack taxonomy
+
+[ ] GenAI capability mapped
+
+[ ] Payment surface mapped
+
+[ ] Observable signals mapped
+
+[ ] Detection and authority implications mapped
+
+### Generate
+
+[ ] Synthetic transaction generator
+
+[ ] Behavioral profiles
+
+[ ] Temporal sequences
+
+[ ] Multiple attack parameters
+
+[ ] Realistic distributions
+
+[ ] Ground-truth labels
+
+### Defend
+
+[ ] Real ML classifier
+
+[ ] Measured precision
+
+[ ] Measured recall
+
+[ ] Measured F1
+
+[ ] AUC where meaningful
+
+[ ] False-positive rate
+
+[ ] Per-attack performance where practical
+
+### Execution Authority Gate
+
+[ ] Policy evaluation
+
+[ ] Deterministic authority decision
+
+[ ] Allow/block/escalate
+
+[ ] Fail-closed behavior
+
+[ ] Replay protection
+
+[ ] Cryptographic evidence
+
+[ ] Verification
+
+### Critical demonstration
+
+[ ] Detector succeeds → Execution Authority Gate blocks
+
+[ ] Detector fails → Execution Authority Gate still blocks unauthorized execution
+
+[ ] Legitimate payment → Execution Authority Gate allows
+
+### Product
+
+[ ] Live Test works
+
+[ ] Attack Library works
+
+[ ] Detection dashboard works
+
+[ ] Authority trace works
+
+[ ] Proof works
+
+[ ] Production architecture shown
+
+[ ] Limitations shown
+
+### Submission
+
+[ ] README complete
+
+[ ] GitHub repository runnable
+
+[ ] `.docx` walkthrough generated
+
+[ ] Metrics reproducible
+
+[ ] No fabricated claims
+
+[ ] No broken UI
+
+[ ] No placeholder content
+
+---
+
+# 40. FINAL PRODUCT THESIS
+
+The final product should leave the judge with exactly this mental model:
+
+```text
+                 GENAI
+                   │
+                   ▼
+           ATTACK GENERATION
+                   │
+                   ▼
+           PAYMENT SIMULATION
+                   │
+                   ▼
+            FRAUD DETECTION
+                   │
+             ┌─────┴─────┐
+             │           │
+          DETECT       MISS
+             │           │
+             └─────┬─────┘
+                   ▼
+        EXECUTION AUTHORITY
+                   │
+          ┌────────┼────────┐
+          ▼        ▼        ▼
+        ALLOW    BLOCK    ESCALATE
+                   │
+                   ▼
+            SIGNED PROOF
+```
+
+The key insight:
+
+> **Detection is probabilistic. Execution authority must be governed.**
+
+Execution Authority Gate's role is not to claim that AI will never make a mistake.
+
+Its role is to ensure that **an AI mistake, compromised agent, or valid credential does not automatically become an unauthorized real-world action.**
+
+Build the prototype around that insight while fully satisfying the Mastercard challenge's Identify → Generate → Defend requirements.
+
+Do not rebuild what already works.
+
+**Upgrade the existing Execution Authority Gate prototype into the strongest possible demonstration of adversarial payment defense + deterministic execution authority.**

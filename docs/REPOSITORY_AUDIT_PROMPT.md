@@ -1,4 +1,4 @@
-Parmana Repository-First Architecture Validation
+Execution Authority Gate Repository-First Architecture Validation
 
 
 
@@ -6,7 +6,7 @@ You are a senior security architect, distributed-systems engineer, and code audi
 
 
 
-Your task is to independently validate whether the actual Parmana repository implements the architecture and security claims described below.
+Your task is to independently validate whether the actual Execution Authority Gate repository implements the architecture and security claims described below.
 
 
 
@@ -14,7 +14,7 @@ CRITICAL AUDIT RULE
 
 
 
-Do NOT validate Parmana from documentation, README files, architecture diagrams, comments, marketing copy, package descriptions, or claims made by the project.
+Do NOT validate Execution Authority Gate from documentation, README files, architecture diagrams, comments, marketing copy, package descriptions, or claims made by the project.
 
 
 
@@ -56,7 +56,7 @@ If documentation claims something that the code does not enforce, classify the c
 
 
 
-1\. PARMANA CLAIM TO VALIDATE
+1\. EXECUTION AUTHORITY GATE CLAIM TO VALIDATE
 
 
 
@@ -96,7 +96,7 @@ An AI agent's ability to perform an action must not automatically give it author
 
 
 
-Parmana is intended to be domain agnostic.
+Execution Authority Gate is intended to be domain agnostic.
 
 
 
@@ -132,7 +132,7 @@ The domain changes, but the authorization/enforcement boundary remains the same.
 
 
 
-Determine from code whether Parmana actually provides the following properties.
+Determine from code whether Execution Authority Gate actually provides the following properties.
 
 
 
@@ -282,7 +282,7 @@ Provide exact file paths and relevant functions.
 
 
 
-Determine whether Parmana genuinely fails closed.
+Determine whether Execution Authority Gate genuinely fails closed.
 
 
 
@@ -1102,7 +1102,7 @@ Can execution begin before all authorization checks succeed?
 
 
 
-Determine whether Parmana is genuinely domain agnostic in code.
+Determine whether Execution Authority Gate is genuinely domain agnostic in code.
 
 
 
@@ -1360,7 +1360,7 @@ Create a table:
 
 
 
-Parmana Claim	Code Evidence	Status	Risk
+Execution Authority Gate Claim	Code Evidence	Status	Risk
 
 Agent separated from authority	file/function	VERIFIED/PARTIAL/FAILED	severity
 
@@ -1624,7 +1624,7 @@ End with exactly these sections:
 
 
 
-What Parmana Actually Proves
+What Execution Authority Gate Actually Proves
 
 
 
@@ -1632,7 +1632,7 @@ State only capabilities demonstrated by code.
 
 
 
-What Parmana Claims But Does Not Yet Prove
+What Execution Authority Gate Claims But Does Not Yet Prove
 
 
 
@@ -1732,5 +1732,5 @@ Follow the actual data flow from untrusted request → authorization → verific
 
 
 
-Your job is to find the gap between what Parmana says it is and what the repository actually guarantees.
+Your job is to find the gap between what Execution Authority Gate says it is and what the repository actually guarantees.
 

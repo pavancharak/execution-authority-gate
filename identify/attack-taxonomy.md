@@ -225,7 +225,7 @@ is what actually catches it.
 
 ---
 
-Ported from the original mastercard/parmana lab's `docs/attacks.md`.
+Ported from the original mastercard/execution-authority-gate lab's `docs/attacks.md`.
 Agent implementations live in `generate/src/fraud_agents.py`; the
 detect layer probing scripts for attacks #5 and #7 (limit probing and
 the feedback loop evasion test) are implemented in
