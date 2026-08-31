@@ -121,11 +121,11 @@ function githubLink(path, label) {
  * architecture claim is literally the repo layout, not marketing
  * shorthand invented for the page. */
 const OV_STAGES = [
-  { k: "identify", label: "Identify", desc: "Map GenAI payment fraud attack surfaces" },
-  { k: "generate", label: "Generate", desc: "Simulate attacks with bounded agents" },
-  { k: "detect", label: "Detect", desc: "Score fraud risk with a trained classifier" },
-  { k: "authorize", label: "Authorize", desc: "Independent mandate check, then sign" },
-  { k: "prove", label: "Prove", desc: "Verify signatures, append to audit trail" },
+  { k: "identify", label: "Identify", desc: "Find how AI is used to commit payment fraud" },
+  { k: "generate", label: "Generate", desc: "Build realistic fake attacks to test against" },
+  { k: "detect", label: "Detect", desc: "Score each transaction's fraud risk" },
+  { k: "authorize", label: "Authorize", desc: "Check it against real spending rules, then sign it" },
+  { k: "prove", label: "Prove", desc: "Anyone can verify the signature, anytime" },
 ];
 
 function ovFlow(accentKeys = []) {
@@ -176,7 +176,7 @@ function renderOverviewV2(data) {
           <div class="ov-eyebrow">AI Payment Defense &middot; Execution Authority Gate</div>
           <h1 class="ov-h1">AI can generate the attack.<br>It doesn't get to execute it.</h1>
           ${ovFlow()}
-          <p class="ov-sub" style="margin-top:36px">Execution Authority Gate identifies and simulates emerging GenAI payment fraud, scores risk with a trained detector, and independently enforces whether an AI-driven transaction is actually authorized to execute.</p>
+          <p class="ov-sub" style="margin-top:36px">Most fraud tools give you a risk score and hope someone acts on it. This one goes further: a second, completely separate check has to agree before anything is let through &mdash; and every decision gets signed, so it can be proven later, not just logged.</p>
           <div class="ov-cta-row">
             <button type="button" class="ov-btn ov-btn-primary" data-goto-tab="live-test">Run Live Defense →</button>
             <button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="attacks">Explore Attack Intelligence →</button>
@@ -186,12 +186,12 @@ function renderOverviewV2(data) {
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">The core idea</div>
-          <h2 class="ov-h2">Detection &ne; Authorization</h2>
-          <p class="ov-lede">A fraud model answers: <strong>"Does this look risky?"</strong><br>Execution Authority Gate answers: <strong>"Is this action actually authorized to execute?"</strong></p>
+          <div class="ov-eyebrow">What's actually new here</div>
+          <h2 class="ov-h2">A risk score is not a decision</h2>
+          <p class="ov-lede">A fraud model can only answer one question: <strong>"does this look risky?"</strong><br>It can't tell you whether the transaction actually broke a rule. So this system checks both, separately, before anything is allowed to happen.</p>
           <div class="ov-compare">
             <div class="ov-compare-col muted">
-              <div class="ov-compare-title">Conventional flow</div>
+              <div class="ov-compare-title">How most fraud tools work</div>
               <div class="ov-compare-flow">
                 <div class="ov-compare-node">Transaction</div>
                 <div class="ov-compare-arrow">↓</div>
@@ -201,7 +201,7 @@ function renderOverviewV2(data) {
                 <div class="ov-compare-arrow">↓</div>
                 <div class="ov-compare-node">Execution</div>
               </div>
-              <div class="ov-compare-tag">Model recommendation becomes action</div>
+              <div class="ov-compare-tag">The model's guess is the final answer</div>
             </div>
             <div class="ov-compare-col accent">
               <div class="ov-compare-title">Execution Authority Gate</div>
@@ -210,58 +210,58 @@ function renderOverviewV2(data) {
                 <div class="ov-compare-arrow">↓</div>
                 <div class="ov-compare-node">Fraud model → risk score</div>
                 <div class="ov-compare-arrow">↓</div>
-                <div class="ov-compare-node">Independent mandate policy</div>
+                <div class="ov-compare-node">Separate check against real spending rules</div>
                 <div class="ov-compare-arrow">↓</div>
-                <div class="ov-compare-node">Signed authority decision</div>
+                <div class="ov-compare-node">Signed, tamper-proof decision</div>
                 <div class="ov-compare-arrow">↓</div>
                 <div class="ov-compare-node">Allow / Flag / Block</div>
                 <div class="ov-compare-arrow">↓</div>
-                <div class="ov-compare-node">Auditable proof</div>
+                <div class="ov-compare-node">Proof anyone can check later</div>
               </div>
-              <div class="ov-compare-tag">Recommendation &ne; execution authority</div>
+              <div class="ov-compare-tag">A guess is not the same as permission</div>
             </div>
           </div>
-          <p class="ov-sub" style="margin-top:24px">A detector can be wrong. Execution authority cannot be assumed.</p>
+          <p class="ov-sub" style="margin-top:24px">Models get things wrong sometimes. Nothing should be allowed to happen just because a model guessed it was fine &mdash; and here, nothing is. Either check can say no on its own.</p>
         </div>
       </div>
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">The proof it works</div>
-          <h2 class="ov-h2">What happens when the detector misses?</h2>
-          <p class="ov-sub">This is not a hypothetical. In this run's own data, the detector scored ${mandateOnly.toLocaleString()} real fraud transactions as low enough risk that it alone would have allowed them. The mandate layer blocked every one.</p>
+          <div class="ov-eyebrow">Why this wins</div>
+          <h2 class="ov-h2">What happens when the model gets fooled?</h2>
+          <p class="ov-sub">This isn't a hypothetical. In this real test run, the fraud model rated ${mandateOnly.toLocaleString()} genuine fraud cases as safe enough to allow. Every single one of them was still blocked &mdash; because a separate check caught that it broke a rule about that customer's real spending, something the model was never looking at.</p>
           <div class="ov-demo-flow">
-            <div class="ov-demo-step"><span class="ov-demo-icon">⚠</span><div class="ov-demo-title">GenAI attack</div><div class="ov-demo-sub">Synthetic fraud transaction</div></div>
+            <div class="ov-demo-step"><span class="ov-demo-icon">⚠</span><div class="ov-demo-title">AI-generated attack</div><div class="ov-demo-sub">A fake transaction, built to test the system</div></div>
             <div class="ov-demo-arrow">→</div>
-            <div class="ov-demo-step warn"><span class="ov-demo-icon">✓</span><div class="ov-demo-title">Fraud detector</div><div class="ov-demo-sub">Scores it low risk (false negative)</div></div>
+            <div class="ov-demo-step warn"><span class="ov-demo-icon">✓</span><div class="ov-demo-title">Fraud model</div><div class="ov-demo-sub">Says it looks safe &mdash; wrong</div></div>
             <div class="ov-demo-arrow">→</div>
-            <div class="ov-demo-step block"><span class="ov-demo-icon">✕</span><div class="ov-demo-title">Authority gate</div><div class="ov-demo-sub">Mandate rule objects independently</div></div>
+            <div class="ov-demo-step block"><span class="ov-demo-icon">✕</span><div class="ov-demo-title">Rule check</div><div class="ov-demo-sub">Catches it anyway, on its own</div></div>
             <div class="ov-demo-arrow">→</div>
-            <div class="ov-demo-step block"><span class="ov-demo-icon">✕</span><div class="ov-demo-title">Execution blocked</div><div class="ov-demo-sub">Nothing settles on a BLOCK</div></div>
+            <div class="ov-demo-step block"><span class="ov-demo-icon">✕</span><div class="ov-demo-title">Blocked</div><div class="ov-demo-sub">The transaction never goes through</div></div>
           </div>
           ${
             example
               ? `<div class="ov-example-card">
-                  <div class="ov-example-title">Real example from this run</div>
+                  <div class="ov-example-title">A real example from this run</div>
                   <div class="ov-kv-row"><span>Transaction</span><span>${esc(example.decision.transaction_id)}</span></div>
                   <div class="ov-kv-row"><span>Amount</span><span>${fmtMoney(example.ground_truth.amount)} at ${esc(example.ground_truth.merchant)}</span></div>
-                  <div class="ov-kv-row"><span>Fraud score</span><span>${example.decision.fraud_score.toFixed(2)} (would have been allowed alone)</span></div>
-                  <div class="ov-kv-row"><span>Mandate rule violated</span><span>${esc((example.decision.violated_mandate_rules || []).map((r) => RULE_LABELS[r] || r).join(", "))}</span></div>
+                  <div class="ov-kv-row"><span>Fraud score</span><span>${example.decision.fraud_score.toFixed(2)} (would have been let through on its own)</span></div>
+                  <div class="ov-kv-row"><span>Rule it broke</span><span>${esc((example.decision.violated_mandate_rules || []).map((r) => RULE_LABELS[r] || r).join(", "))}</span></div>
                   <div class="ov-kv-row"><span>Final decision</span><span>${badge(example.decision.final_decision)}</span></div>
                 </div>`
               : ""
           }
           <div class="ov-insight">
-            <p>The detector was fooled. The authority layer was not.<br><strong>This is what separates detection from execution authority.</strong></p>
+            <p>The model got fooled. The rule check didn't.<br><strong>That's the whole reason this exists.</strong></p>
           </div>
         </div>
       </div>
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Attack the defense before attackers do</div>
-          <h2 class="ov-h2">Attack intelligence</h2>
-          <p class="ov-sub">Identify emerging GenAI-powered payment fraud, model realistic attack scenarios, and turn those attacks into a continuous testing ground for the defense.</p>
+          <div class="ov-eyebrow">Test the defense before attackers do</div>
+          <h2 class="ov-h2">Attacks it's tested against</h2>
+          <p class="ov-sub">Before building the defense, this project mapped out how AI is actually being used to commit payment fraud today, then built realistic versions of those attacks to test against.</p>
           <div class="ov-metric-row">
             <div class="ov-metric"><div class="ov-metric-value">${attacks.length}</div><div class="ov-metric-label">GenAI payment fraud types identified</div></div>
             <div class="ov-metric"><div class="ov-metric-value">${simulatedCount}</div><div class="ov-metric-label">Attack types actively simulated, ${gapCount} documented as open gaps</div></div>
@@ -273,9 +273,9 @@ function renderOverviewV2(data) {
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Closed-loop architecture</div>
-          <h2 class="ov-h2">From attack discovery to execution defense</h2>
-          <p class="ov-sub">A common brief for this challenge is Identify &rarr; Generate &rarr; Defend. Execution Authority Gate splits Defend into three independently verifiable steps &mdash; Detect, then Authorize, then Prove &mdash; so a decision is never just a score.</p>
+          <div class="ov-eyebrow">How it all fits together</div>
+          <h2 class="ov-h2">From finding attacks to stopping them</h2>
+          <p class="ov-sub">Defending against fraud isn't one step. Here it's three separate, checkable ones: score the risk, check it against real rules, then sign proof of what was decided. A decision is never just a guess &mdash; and what's learned from new attacks feeds back into finding the next ones.</p>
           ${ovLoop()}
         </div>
       </div>
@@ -288,8 +288,8 @@ function renderOverviewV2(data) {
           <div class="ov-frame">
             <div class="ov-frame-bar"><span class="ov-frame-dot"></span><span class="ov-frame-dot"></span><span class="ov-frame-dot"></span></div>
             <div class="ov-frame-body">
-              <p style="margin:0 0 4px;color:var(--ov-text);font-size:14px;font-weight:600">Live test harness &middot; real trained model, real mandate rules, real Ed25519 signature</p>
-              <p style="margin:0;font-size:13px">Three real, verified starting points, each a real input that reproduces the labeled outcome:</p>
+              <p style="margin:0 0 4px;color:var(--ov-text);font-size:14px;font-weight:600">Real trained model, real rule check, real digital signature &mdash; try it yourself</p>
+              <p style="margin:0;font-size:13px">Three real starting points, each one you can run right now:</p>
               <div class="ov-frame-outcomes">
                 <div class="ov-frame-outcome allow"><span class="tag">ALLOW</span><p>Normal spend, known merchant, ordinary hour</p></div>
                 <div class="ov-frame-outcome flag"><span class="tag">FLAG</span><p>Large amount, late hour, ambiguous signal</p></div>
@@ -303,24 +303,24 @@ function renderOverviewV2(data) {
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Authority outcomes, not fraud labels</div>
-          <h2 class="ov-h2">Three decision states</h2>
-          <p class="ov-sub">These are authority decisions, computed after the mandate and signing layers run, not raw fraud classifications.</p>
+          <div class="ov-eyebrow">The final answer, not just a fraud label</div>
+          <h2 class="ov-h2">Three possible outcomes</h2>
+          <p class="ov-sub">This is the decision after both checks have run and the result has been signed &mdash; not a raw risk score.</p>
           <div class="ov-decision-grid">
             <div class="ov-decision-card allow">
               <div class="ov-decision-head"><span class="ov-decision-icon">✓</span>ALLOW</div>
-              <div class="ov-decision-sub">Authority granted</div>
-              <p>Detect and mandate both agree. Policy conditions satisfied. The signed decision is ready to execute.</p>
+              <div class="ov-decision-sub">Goes through</div>
+              <p>Both checks agree it's fine. Signed and ready to execute.</p>
             </div>
             <div class="ov-decision-card flag">
               <div class="ov-decision-head"><span class="ov-decision-icon">⚠</span>FLAG</div>
-              <div class="ov-decision-sub">Additional review required</div>
-              <p>Risk is ambiguous or policy calls for a human step. Sent to manual review, not silently allowed or blocked.</p>
+              <div class="ov-decision-sub">Needs a human to look</div>
+              <p>Not clearly fine, not clearly bad. Sent for manual review instead of guessing either way.</p>
             </div>
             <div class="ov-decision-card block">
               <div class="ov-decision-head"><span class="ov-decision-icon">✕</span>BLOCK</div>
-              <div class="ov-decision-sub">Authority denied</div>
-              <p>Detect or mandate objected, either is enough alone. Execution does not proceed.</p>
+              <div class="ov-decision-sub">Stopped</div>
+              <p>Either check objected. That's enough on its own to stop it &mdash; nothing proceeds.</p>
             </div>
           </div>
           <div class="ov-cta-row"><button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="proof">See Proof →</button></div>
@@ -329,9 +329,9 @@ function renderOverviewV2(data) {
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Proof &amp; evidence</div>
-          <h2 class="ov-h2">Every governed action leaves evidence.</h2>
-          <p class="ov-sub">A decision is not enough. Every final decision is signed with Ed25519 by an external authority, neither the detector nor the mandate checker holds the private key, and anyone can verify a signature independently against the public key committed to this repo.</p>
+          <div class="ov-eyebrow">Proof, not just a log line</div>
+          <h2 class="ov-h2">Every decision leaves evidence behind.</h2>
+          <p class="ov-sub">A decision by itself isn't proof. Every final decision here is digitally signed by a separate key that neither the risk model nor the rule checker has access to &mdash; so afterward, anyone can check the decision is real and hasn't been altered, without needing to trust us.</p>
           ${
             blockSample
               ? `<div class="ov-proof-card">
@@ -353,12 +353,12 @@ function renderOverviewV2(data) {
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Real-world architecture</div>
-          <h2 class="ov-h2">Built to sit between AI decisions and real-world action.</h2>
+          <div class="ov-eyebrow">Where it sits</div>
+          <h2 class="ov-h2">Between the AI's decision and what actually happens.</h2>
           <div class="ov-vflow">
             <div class="ov-vflow-node">AI agents / ML models</div>
             <div class="ov-vflow-arrow">↓</div>
-            <div class="ov-vflow-node">Risk / intent signal</div>
+            <div class="ov-vflow-node">Risk score / what it wants to do</div>
             <div class="ov-vflow-arrow">↓</div>
             <div class="ov-vflow-node accent">Execution Authority Gate</div>
             <div class="ov-vflow-arrow">↓</div>
@@ -368,34 +368,34 @@ function renderOverviewV2(data) {
               <div class="ov-vflow-node">Block</div>
             </div>
             <div class="ov-vflow-arrow">↓</div>
-            <div class="ov-vflow-node">Caller-scoped execution</div>
+            <div class="ov-vflow-node">Only approved systems can carry it out</div>
             <div class="ov-vflow-arrow">↓</div>
-            <div class="ov-vflow-node accent">Auditable proof</div>
+            <div class="ov-vflow-node accent">Proof anyone can check</div>
           </div>
-          <p class="ov-sub" style="margin:24px auto 0;text-align:center">Execution Authority Gate does not need to replace an institution's existing fraud model. It provides an enforcement boundary around AI-driven decisions and payment execution.</p>
+          <p class="ov-sub" style="margin:24px auto 0;text-align:center">This doesn't replace an existing fraud model. It sits in front of it, so nothing an AI decides gets acted on without a separate check first.</p>
         </div>
       </div>
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Security principles</div>
-          <h2 class="ov-h2">Built on six rules, all of them in code today</h2>
+          <div class="ov-eyebrow">The rules it's built on</div>
+          <h2 class="ov-h2">Six rules, all of them in real code today</h2>
           <div class="ov-principle-grid">
-            <div class="ov-principle-card"><div class="ov-principle-title">Deterministic policy</div><p>The detector recommends. The mandate layer decides, using rules derived from that customer's own history, not the model's confidence.</p></div>
-            <div class="ov-principle-card"><div class="ov-principle-title">Fail closed</div><p>Every authenticated enforcement call requires a valid caller token. A missing or invalid token means the action never runs, not a default allow.</p></div>
-            <div class="ov-principle-card"><div class="ov-principle-title">Replay protection</div><p>Every signed decision is checked against an idempotency log before execution. The same decision cannot be executed twice.</p></div>
-            <div class="ov-principle-card"><div class="ov-principle-title">Cryptographic evidence</div><p>Ed25519 signatures on every decision, verifiable with only the public key, ${verification.verified.toLocaleString()}/${verification.total.toLocaleString()} verified independently in this run.</p></div>
-            <div class="ov-principle-card"><div class="ov-principle-title">Separation of detection &amp; authority</div><p>A high or low fraud score never directly triggers execution. It is one input the mandate layer weighs, and either layer can force a block alone.</p></div>
-            <div class="ov-principle-card"><div class="ov-principle-title">Explainable enforcement</div><p>Every decision carries its reasons: the fraud score, which mandate rules passed or failed, and why the final state came out the way it did.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">The model only recommends</div><p>The final decision comes from rules based on that customer's real history &mdash; not how confident the model feels.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">No proof, no action</div><p>If a system asking to execute something can't prove who it is, nothing happens. No valid token, no action &mdash; never a default yes.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Can't run twice</div><p>The same approved decision is checked against a log before it runs, so it can never accidentally be executed twice.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Signed, checkable proof</div><p>Every decision is digitally signed and verifiable with just a public key &mdash; ${verification.verified.toLocaleString()}/${verification.total.toLocaleString()} checked and confirmed in this run.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Two separate votes</div><p>A risk score never directly makes anything happen. It's one input to a separate check, and either one can block it alone.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Every decision explains itself</div><p>Each one comes with its reasons attached: the risk score, which rules passed or failed, and why.</p></div>
           </div>
         </div>
       </div>
 
       <div class="ov-section">
         <div class="ov-inner">
-          <div class="ov-eyebrow">Positioning</div>
-          <h2 class="ov-h2">Built for adversarial payment defense</h2>
-          <p class="ov-sub">Execution Authority Gate combines attack discovery, synthetic attack generation, detection, execution authority, and verifiable evidence into one closed-loop payment-defense architecture. This is an independent research prototype built for the Mastercard Innovation Challenge, AI Defense Lab 2026; it is not an official Mastercard product and carries no Mastercard endorsement.</p>
+          <div class="ov-eyebrow">What this is</div>
+          <h2 class="ov-h2">Built to defend against AI-driven payment fraud</h2>
+          <p class="ov-sub">This project covers the whole loop: finding new attack types, generating realistic examples of them, scoring risk, deciding independently, and proving the decision afterward. It's an independent research project built for the Mastercard Innovation Challenge, AI Defense Lab 2026 &mdash; not an official Mastercard product, and Mastercard hasn't endorsed it.</p>
           <div class="ov-step-pills">
             <span class="ov-step-pill">Identify</span>
             <span class="ov-step-pill">Generate</span>
@@ -408,11 +408,11 @@ function renderOverviewV2(data) {
 
       <div class="ov-final">
         <div class="ov-inner">
-          <h2>Detection is probabilistic.<br>Execution authority must be governed.</h2>
-          <p class="ov-final-sub">AI can be intelligent without being in charge.</p>
+          <h2>A model can guess.<br>It doesn't get the final say.</h2>
+          <p class="ov-final-sub">AI can be smart without being the one in charge.</p>
           <div class="ov-cta-row">
-            <button type="button" class="ov-btn ov-btn-primary" data-goto-tab="live-test">Run Execution Authority Gate →</button>
-            <button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="mandate">Explore the Architecture →</button>
+            <button type="button" class="ov-btn ov-btn-primary" data-goto-tab="live-test">Try It Yourself →</button>
+            <button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="mandate">See How It Works →</button>
           </div>
         </div>
       </div>
@@ -420,7 +420,7 @@ function renderOverviewV2(data) {
       <div class="ov-footer">
         <div class="ov-inner">
           <div class="ov-footer-brand">EXECUTION AUTHORITY GATE</div>
-          <div class="ov-footer-tag">Provable execution authority</div>
+          <div class="ov-footer-tag">A model can guess. It doesn't get the final say.</div>
           <div class="ov-footer-nav">
             <button type="button" data-goto-tab="overview">Overview</button>
             <button type="button" data-goto-tab="attacks">Attacks</button>
