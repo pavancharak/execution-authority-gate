@@ -461,7 +461,7 @@ function renderAttacks(data) {
           <p><strong>Damage:</strong> ${esc(a.damage)}</p>
           <div class="attack-meta">
             <span class="pill">${esc(a.simulated_by)}</span>
-            ${a.real_llm_calls ? '<span class="pill">real OpenAI calls</span>' : '<span class="pill">local / no LLM</span>'}
+            ${a.real_llm_calls ? '<span class="pill">Built using real AI</span>' : '<span class="pill">Built using fixed rules, no AI</span>'}
           </div>
         </div>
       </div>`;
@@ -474,6 +474,7 @@ function renderAttacks(data) {
   return `
     <div class="section">
       <h1>Attack taxonomy</h1>
+      <p><strong>In plain English:</strong> these are the ways AI is being used today to commit payment fraud. ${simulatedCount} of them are actually built and tested against in this project; the other ${gapCount} are honestly listed as gaps &mdash; real attack types this project doesn't yet defend against.</p>
       <p>${attacks.length} ways AI commits payment fraud. ${simulatedCount} are actively simulated by bounded agents in <code>generate/src/fraud_agents.py</code>; ${gapCount} are honest, documented gaps spanning rails and surfaces the simulated agents don't touch (B2B wire/ACH, real time push payments, agentic commerce, biometric liveness, post transaction disputes, and long horizon account fraud).</p>
     </div>
 
@@ -505,6 +506,7 @@ function renderDetect(data) {
   return `
     <div class="section">
       <h1>Detection layer</h1>
+      <p><strong>In plain English:</strong> this is the AI. It looks at six things about a transaction (amount, time of day, how long since the last one, and so on) and guesses BLOCK / FLAG / ALLOW. It's a guess, not a verdict &mdash; the numbers below show how good that guess is, and it still has to clear the rules layer before anything is final.</p>
       <p>A RandomForest classifier trained on six transaction features, proposing BLOCK / FLAG / ALLOW by fraud score. This layer only proposes. Nothing here is final until the mandate and sign layers run too.</p>
     </div>
 
@@ -545,16 +547,16 @@ function renderDetect(data) {
 
     <div class="grid-2 section">
       <div class="card">
-        <h3>Confusion matrix (test set)</h3>
+        <h3>Test results: how often was the AI right?</h3>
         <div class="confusion-grid">
-          <div class="confusion-cell"><div class="n">${cm.true_negative}</div><div class="label">True negative</div></div>
-          <div class="confusion-cell"><div class="n">${cm.false_positive}</div><div class="label">False positive</div></div>
-          <div class="confusion-cell"><div class="n">${cm.false_negative}</div><div class="label">False negative</div></div>
-          <div class="confusion-cell"><div class="n">${cm.true_positive}</div><div class="label">True positive</div></div>
+          <div class="confusion-cell" title="Technical term: true negative"><div class="n">${cm.true_negative}</div><div class="label">Correctly let through</div></div>
+          <div class="confusion-cell" title="Technical term: false positive"><div class="n">${cm.false_positive}</div><div class="label">Wrongly flagged (false alarm)</div></div>
+          <div class="confusion-cell" title="Technical term: false negative"><div class="n">${cm.false_negative}</div><div class="label">Fraud it missed</div></div>
+          <div class="confusion-cell" title="Technical term: true positive"><div class="n">${cm.true_positive}</div><div class="label">Fraud it caught</div></div>
         </div>
       </div>
       <div class="card">
-        <h3>Top signals (feature importance)</h3>
+        <h3>What the AI pays the most attention to</h3>
         ${barChart(signalRows, { valueFmt: (v) => v.toFixed(3) })}
       </div>
     </div>
@@ -613,6 +615,7 @@ function renderMandate(data) {
   return `
     <div class="section">
       <h1>Mandate layer</h1>
+      <p><strong>In plain English:</strong> this is the rules layer. Every customer gets their own checklist &mdash; spending limit, allowed merchants, allowed hours, how many purchases a day &mdash; built from that customer's own normal behavior. These rules always apply, no matter what the AI thinks.</p>
       <p>Deterministic authorization rules, independent of the fraud score. Each customer's mandate, spending limit, allowed merchants, allowed hours, daily transaction count, is derived from their own known good transaction history, not hand authored.</p>
     </div>
 
