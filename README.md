@@ -135,12 +135,13 @@ Expected result:
 ```powershell
 python .\pipeline\src\run_pipeline.py
 
-<img width="1567" height="612" alt="image" src="https://github.com/user-attachments/assets/e96bbeee-572e-4743-a1b4-c16ecbcdaf0e" />
+
 
 ```
 
 The pipeline executes:
 
+<img width="1567" height="612" alt="image" src="https://github.com/user-attachments/assets/e96bbeee-572e-4743-a1b4-c16ecbcdaf0e" />
 ```text
 Detect → Mandate → Policy → Sign
 ```
@@ -185,11 +186,13 @@ Run:
 ```powershell
 python .\examples\run_examples.py
 
-<img width="980" height="926" alt="image" src="https://github.com/user-attachments/assets/748cf344-b612-4f9f-b1a0-618c15d7ecd5" />
+
 
 ```
 
 The examples demonstrate:
+
+<img width="980" height="926" alt="image" src="https://github.com/user-attachments/assets/748cf344-b612-4f9f-b1a0-618c15d7ecd5" />
 
 ```text
 Example 01
