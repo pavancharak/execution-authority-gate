@@ -36,10 +36,22 @@ DEMO_CUSTOMERS_PATH = WEB_DIR / "data" / "demo_customers.json"
 # idea as detect/src/detector.py's median_neutral_features, so
 # amount, merchant, hour, and ai signal are what's actually driving
 # the score, not noise from fields the judge never touched.
+#
+# These are computed from the committed run's generate/data/good_transactions.json
+# (median seconds_since_prev_tx, location_mismatch_km, pattern_similarity)
+# rather than loaded live, since generate/data/ is intentionally excluded
+# from the deployed container (see .dockerignore). The previous values
+# here (3600.0 / 5.0 / 0.85) were stale relative to the actual trained
+# model and put every single Live Test submission at or above the BLOCK
+# threshold regardless of amount, hour, or ai_generated_signal, i.e. the
+# harness could never return ALLOW. Recompute and update these if the
+# generate layer is rerun and the population shifts meaningfully:
+# `python -c "import json,detector as det; print(det.median_neutral_features(json.load(open('../generate/data/good_transactions.json'))))"`
+# from web/ with detect/src on sys.path.
 NEUTRAL_FEATURES = {
-    "seconds_since_prev_tx": 3600.0,
-    "location_mismatch_km": 5.0,
-    "pattern_similarity": 0.85,
+    "seconds_since_prev_tx": 209031.25,
+    "location_mismatch_km": 3.2,
+    "pattern_similarity": 0.935,
 }
 
 MIN_AMOUNT = 0.01

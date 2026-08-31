@@ -18,6 +18,7 @@ detect layer model to ../../detect/models/, and writes the signed
 decision log to ./decisions/pipeline_decisions.json.
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -38,6 +39,8 @@ import signature_verifier as verify  # noqa: E402
 import llm_client  # noqa: E402
 import decision_log  # noqa: E402
 import dashboard_builder  # noqa: E402
+import audit_trail  # noqa: E402
+import caller_auth  # noqa: E402
 
 DATA_DIR = REPO_ROOT / "generate" / "data"
 
@@ -63,9 +66,34 @@ def combine_decision(detect_decision, mandate_result):
     return "ALLOW"
 
 
-def main():
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="Run the detect -> mandate -> sign pipeline.")
+    parser.add_argument(
+        "--caller-id",
+        default=None,
+        help=(
+            "Identity requesting this pipeline run (see sign/src/caller_auth.py). "
+            "Must be a registered caller (e.g. fraud-analyst, payment-processor, "
+            "audit-system). Optional; omitted runs are signed with no caller_id, "
+            "same as before this flag existed."
+        ),
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    caller_id = args.caller_id
+    if caller_id is not None and caller_id not in caller_auth.AUTHENTICATOR._registry:
+        raise SystemExit(
+            f"Unknown --caller-id {caller_id!r}. Registered callers: "
+            f"{sorted(caller_auth.AUTHENTICATOR._registry)}"
+        )
+
     print("=" * 70)
     print("PIPELINE: Detect -> Mandate -> Sign")
+    if caller_id:
+        print(f"Caller: {caller_id}")
     print("=" * 70)
 
     good = load("good_transactions.json")
@@ -124,6 +152,7 @@ def main():
             mandate_result["violated_rules"],
             final_decision,
             reasons,
+            caller_id=caller_id,
         )
         entries.append(
             {
@@ -145,6 +174,10 @@ def main():
 
     path = decision_log.write_log(entries)
     print(f"      wrote {path}")
+
+    trail = audit_trail.AuditTrail()
+    appended = trail.append_many(entries)
+    print(f"      appended {appended} new decisions to append-only audit trail: {trail.path}")
 
     verified_count = sum(1 for e in entries if verify.verify_record(dict(e["decision"]), "authority"))
     print(f"\nVerification: {verified_count}/{len(entries)} signatures verify independently (public key check only)")

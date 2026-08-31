@@ -6,7 +6,8 @@ A two layer payment fraud defense system combining:
 - **Detection Layer** (RandomForest, pattern recognition)
 - **Mandate Layer** (deterministic authorization rules)
 - **Signing Layer** (Ed25519 cryptographic proof)
-- **Authority Layer** (external enforcement gate)
+- **Caller Scoping** (HMAC-authenticated callers, permission-scoped by decision type)
+- **Execution Layer** (signed decisions execution-ready for a payment processor webhook, fail-closed + idempotent)
 
 ## Architecture
 
@@ -17,11 +18,11 @@ Detection (RandomForest, ~89% recall at a realistic 2% fraud rate)
     ↓
 Mandate (Rule based authorization)
     ↓
-Signing (Ed25519, cryptographic proof)
+Signing (Ed25519, cryptographic proof; caller identity embedded in the signed envelope)
     ↓
-Authority (External enforcement)
+Audit Trail (append-only, git-committed, independently re-verifiable)
     ↓
-Audit Log (Immutable, verifiable)
+Execution (caller-authenticated, signature-checked, idempotent handoff to a payment processor webhook)
 ```
 
 ## Quick Start
@@ -111,6 +112,32 @@ See [`docs/JUDGES_GUIDE.md`](docs/JUDGES_GUIDE.md) for the full walkthrough, inc
 
 Numbers vary run to run: agents 1, 2, 4, and 7 call the real OpenAI API at temperature=0.9, not deterministic by design. Running `generate/src/run_simulation.py` again (then `detect/src/check_results.py`, `generate/src/probe_agents.py`, and `pipeline/src/run_pipeline.py`) with your own `OPENAI_API_KEY` will produce different fraud examples and slightly different metrics. That's deliberate, it proves the detector holds up across different fraud patterns, not just one fixed dataset.
 
+## Production Deployment and Execution Integration
+
+Decisions are execution-ready, not merely advisory: `sign/src/decision_executor.py`
+validates a signed decision's signature and the calling identity's
+permission before dispatching it to a `payment_processor_webhook`
+(ALLOW → settle, FLAG → step-up auth, BLOCK → deny), with idempotency so
+the same decision is never executed twice, exposed over HTTP at
+`POST /api/enforce/decisions` (`web/server.py`, requires a caller token
+from `POST /api/callers/token`, see `sign/src/caller_auth.py`). This repo
+ships no real payment processor integration; the shipped webhook stub
+simulates and labels its own output accordingly. See
+[`docs/PRODUCTION_DEPLOYMENT.md`](docs/PRODUCTION_DEPLOYMENT.md) for the
+full deployment guide (latency budget, scalability, key management,
+regulatory mapping, and a 15-point integration checklist), and
+[`CLAIMS.md`](CLAIMS.md) for every metric in this README traced to a
+file:line and a runnable verification command.
+
+Decisions are also durable and caller-scoped now, closing two of the
+gaps `EAG-AUDIT-GAPS.md` documented: every decision is appended,
+never overwritten, to `pipeline/audit/decisions.jsonl` (git-committed,
+independently re-verifiable via `pipeline/src/audit_trail.py`), and can
+carry the requesting caller's identity inside the signed envelope itself
+(`pipeline/src/run_pipeline.py --caller-id`, `sign/src/caller_auth.py`'s
+scoped permissions). See `ARCHITECTURE.md`'s "Gaps closed since the
+audit" section for the complete, code-cited account of what changed.
+
 ## Testing
 
 ```bash
@@ -118,7 +145,7 @@ pip install -r requirements.txt
 pytest tests/ -v
 ```
 
-54 hermetic tests run in a few seconds, no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), and a scenario proving end to end that the mandate layer catches fraud the detector alone would miss.
+85 hermetic tests run in a few seconds, no API key, no network calls, nothing written outside `tmp_path`. They cover every layer directly (`detect`, `mandate`, `sign`, `generate`'s local agents, `pipeline`), cryptographic properties (key separation, tamper detection, signature uniqueness), the append-only audit trail, caller authentication and permission scoping, the decision executor's fail-closed/idempotency guarantees, and a scenario proving end to end that the mandate layer catches fraud the detector alone would miss.
 
 3 more tests cover agents 1, 2, 4, and 7 (the ones that call the real OpenAI API) and are skipped by default:
 

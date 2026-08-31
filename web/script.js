@@ -1,6 +1,43 @@
 const SERIES = ["--series-1", "--series-2", "--series-3", "--series-4", "--series-5", "--series-6", "--series-7"];
 const STATUS = { BLOCK: "--status-critical", FLAG: "--status-warning", ALLOW: "--status-good" };
 
+// Real, verified inputs (checked against the live trained model and the
+// real mandate for each customer_id in data/demo_customers.json) that
+// reliably reproduce each of the three final decisions. Not illustrative
+// placeholders: every field here was chosen by actually running it
+// through web/interactive_demo.py's evaluate_transaction and confirming
+// the outcome, so a judge who clicks one of these gets a real result
+// that matches the button's label.
+const QUICK_START_EXAMPLES = {
+  normal: {
+    label: "Normal transaction",
+    outcome: "ALLOW",
+    customer_id: "cust_b6bb7366", // Sam Garcia
+    amount: 50.0,
+    merchant: "CloudHost",
+    hour_of_day: 12,
+    ai_generated_signal: 0.1,
+  },
+  flagged: {
+    label: "Flagged transaction",
+    outcome: "FLAG",
+    customer_id: "cust_adadc707", // Jordan Chen
+    amount: 500.0,
+    merchant: "CloudHost",
+    hour_of_day: 22,
+    ai_generated_signal: 0.85,
+  },
+  blocked: {
+    label: "Blocked transaction",
+    outcome: "BLOCK",
+    customer_id: "cust_94b366c3", // Casey Kowalski
+    amount: 900.0,
+    merchant: "crypto.exchange",
+    hour_of_day: 3,
+    ai_generated_signal: 0.9,
+  },
+};
+
 function cssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
@@ -342,6 +379,57 @@ function renderMandate(data) {
   `;
 }
 
+const OUTCOME_ICON = { ALLOW: "✓", FLAG: "⚠", BLOCK: "✕" };
+
+/** A judge-friendly, plain-language summary of why the final decision
+ * came out the way it did, computed entirely from real fields already
+ * present on the signed decision (fraud_score, detect_decision,
+ * mandate_allowed, violated_mandate_rules) plus the mandate rule
+ * labels. No new backend data, just a clearer presentation of what
+ * Step 4 of renderDecisionCard already says in prose. */
+function renderOutcomeBanner(decision, mandateChecks) {
+  const ruleLabels = {
+    spending_limit: "Spending limit",
+    merchant_whitelist: "Merchant whitelist",
+    time_restriction: "Time of day window",
+    velocity: "Daily velocity",
+  };
+  const failedRules = (mandateChecks || []).filter((c) => !c.passed).map((c) => ruleLabels[c.rule] || c.rule);
+  const final = decision.final_decision;
+  const icon = OUTCOME_ICON[final] || "";
+
+  let why;
+  if (final === "BLOCK") {
+    if (!decision.mandate_allowed && decision.detect_decision === "BLOCK") {
+      why = `Both layers objected: the detection model scored this ${decision.fraud_score.toFixed(2)} (high risk), and the mandate layer rejected it on ${failedRules.join(", ")}. Either alone would have been enough to block it.`;
+    } else if (!decision.mandate_allowed) {
+      why = `The mandate layer rejected it (${failedRules.join(", ")}), even though the detection model alone scored this only ${decision.fraud_score.toFixed(2)} (would have allowed it). This is the mandate layer catching something the fraud model missed.`;
+    } else {
+      why = `The detection model scored this ${decision.fraud_score.toFixed(2)} (high risk) and blocked it, even though the mandate layer had no objection.`;
+    }
+  } else if (final === "FLAG") {
+    why = `The detection model is unsure (score ${decision.fraud_score.toFixed(2)}, between the ALLOW and BLOCK thresholds) and the mandate layer has no objection. Flagged for manual review, not auto-blocked.`;
+  } else {
+    why = `The detection model scored this ${decision.fraud_score.toFixed(2)} (low risk) and every mandate rule passed. Both layers agree.`;
+  }
+
+  const action =
+    final === "ALLOW"
+      ? "Ready to execute: this signed decision can be handed to a payment processor to settle."
+      : final === "FLAG"
+      ? "Sent to manual review. A reviewer can allow it or escalate it to a block."
+      : "Transaction denied. Nothing is executed for a BLOCK decision.";
+
+  return `<div class="outcome-banner outcome-${final.toLowerCase()}">
+    <div class="outcome-head">
+      <span class="outcome-icon" aria-hidden="true">${icon}</span>
+      <h2>${esc(final)}</h2>
+    </div>
+    <p class="outcome-why">${why}</p>
+    <p class="outcome-action">${action}</p>
+  </div>`;
+}
+
 /** Shared render for a full pipeline outcome, used by both the Attack
  * Walkthrough (precomputed, real, already signed decisions) and the
  * Live Test Harness (a decision computed live, right now, by this
@@ -369,6 +457,8 @@ function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
     .join("");
 
   return `
+    ${renderOutcomeBanner(decision, mandateChecks)}
+
     <div class="pipeline-steps">
       <div class="card pipeline-step">
         <h3>Step 1 &middot; Detection</h3>
@@ -472,6 +562,17 @@ function renderScenarioDetail(scenario) {
   `;
 }
 
+function customerInfoHtml(customer) {
+  if (!customer) return "";
+  const m = customer.mandate;
+  return `<div class="customer-info" id="customer-info">
+    <div class="customer-info-row"><span>Spending limit</span><strong>${fmtMoney(m.monthly_limit_usd)}/mo</strong></div>
+    <div class="customer-info-row"><span>Known merchants</span><strong>${m.allowed_merchants && m.allowed_merchants.length ? esc(m.allowed_merchants.join(", ")) : "no restriction"}</strong></div>
+    <div class="customer-info-row"><span>Allowed hours</span><strong>${m.allowed_hours[0]}:00&ndash;${m.allowed_hours[1]}:00</strong></div>
+    <div class="customer-info-row"><span>Max transactions/day</span><strong>${m.max_tx_per_day}</strong></div>
+  </div>`;
+}
+
 function renderLiveTest(data, customersData) {
   const customers = (customersData && customersData.customers) || [];
   const merchants = (customersData && customersData.merchants) || [];
@@ -493,30 +594,57 @@ function renderLiveTest(data, customersData) {
 
     <div class="section">
       <div class="card">
+        <h3>Try an example</h3>
+        <p class="form-hint" style="margin:0 0 12px">Click one to auto-fill the form below and run it immediately. Each one is a real, verified input, not a mockup.</p>
+        <div class="quick-start-row">
+          <button type="button" class="quick-start-btn allow" data-example="normal">
+            <span class="qs-outcome">ALLOW</span>
+            <span class="qs-label">Normal transaction</span>
+          </button>
+          <button type="button" class="quick-start-btn flag" data-example="flagged">
+            <span class="qs-outcome">FLAG</span>
+            <span class="qs-label">Flagged transaction</span>
+          </button>
+          <button type="button" class="quick-start-btn block" data-example="blocked">
+            <span class="qs-outcome">BLOCK</span>
+            <span class="qs-label">Blocked transaction</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="card">
         <form id="live-test-form" class="live-form">
           <label>Customer
-            <select name="customer_id" required>${customerOptions}</select>
+            <span class="hint">Each customer's mandate is derived from their own real history</span>
+            <select name="customer_id" id="customer-select" required>${customerOptions}</select>
           </label>
           <label>Amount (USD)
-            <input type="number" name="amount" min="0.01" max="1000000" step="0.01" value="50.00" required>
+            <span class="hint">Try this customer's typical spend first, then an unusual amount</span>
+            <input type="number" name="amount" min="0.01" max="1000000" step="0.01" value="50.00" placeholder="e.g. 100" required>
           </label>
           <label>Merchant
+            <span class="hint">Pick a known merchant, or type a new one to test the whitelist</span>
             <input list="merchant-list" name="merchant" value="${esc(merchants[0] || "")}" required>
             <datalist id="merchant-list">${merchantOptions}</datalist>
           </label>
           <label>Hour of day (0 to 23)
+            <span class="hint">Most simulated fraud happens at odd hours (2&ndash;5am)</span>
             <input type="number" name="hour_of_day" min="0" max="23" value="12" required>
           </label>
           <label>AI generated signal (0 to 1)
+            <span class="hint">0 = looks like real behavior &middot; 1 = looks like a fabricated pattern</span>
             <input type="number" name="ai_generated_signal" min="0" max="1" step="0.01" value="0.1" required>
           </label>
           <button type="submit" class="submit-btn">Run transaction</button>
         </form>
-        <p class="form-hint">Each customer's mandate (spending limit, allowed merchants, allowed hours) was derived from their own real transaction history. Try an unlisted merchant or an odd hour to see the mandate layer object on its own.</p>
+        <div id="customer-info-wrap">${customerInfoHtml(customers[0])}</div>
+        <p class="form-hint">Each customer's mandate (spending limit, allowed merchants, allowed hours) was derived from their own real transaction history. Try an unlisted merchant or an odd hour to see the mandate layer object on its own. Press Escape to reset the form.</p>
       </div>
     </div>
 
-    <div class="section" id="live-test-result"></div>
+    <div class="section" id="live-test-result" aria-live="polite"></div>
   `;
 }
 
@@ -610,10 +738,47 @@ function wireWalkthrough(scenarios) {
   }
 }
 
-function wireLiveTest() {
+function wireLiveTest(customersData) {
   const form = document.getElementById("live-test-form");
   const result = document.getElementById("live-test-result");
   if (!form || !result) return;
+
+  const customers = (customersData && customersData.customers) || [];
+  const customersById = Object.fromEntries(customers.map((c) => [c.customer_id, c]));
+
+  const customerSelect = document.getElementById("customer-select");
+  const infoWrap = document.getElementById("customer-info-wrap");
+  if (customerSelect && infoWrap) {
+    customerSelect.addEventListener("change", () => {
+      infoWrap.innerHTML = customerInfoHtml(customersById[customerSelect.value]);
+    });
+  }
+
+  document.querySelectorAll(".quick-start-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const example = QUICK_START_EXAMPLES[btn.dataset.example];
+      if (!example) return;
+      form.elements["customer_id"].value = example.customer_id;
+      form.elements["amount"].value = example.amount;
+      form.elements["merchant"].value = example.merchant;
+      form.elements["hour_of_day"].value = example.hour_of_day;
+      form.elements["ai_generated_signal"].value = example.ai_generated_signal;
+      if (customerSelect && infoWrap) {
+        infoWrap.innerHTML = customerInfoHtml(customersById[example.customer_id]);
+      }
+      form.requestSubmit();
+    });
+  });
+
+  form.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      form.reset();
+      if (customerSelect && infoWrap) {
+        infoWrap.innerHTML = customerInfoHtml(customersById[customerSelect.value]);
+      }
+      result.innerHTML = "";
+    }
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -782,15 +947,67 @@ async function main() {
     .join("");
 
   wireWalkthrough(scenarios);
-  wireLiveTest();
+  wireLiveTest(customersData);
+
+  function goToTab(tab) {
+    const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+    if (!btn) return;
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.dataset.panel === tab));
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
 
   document.getElementById("tabs").addEventListener("click", (e) => {
     const btn = e.target.closest(".tab-btn");
     if (!btn) return;
-    const tab = btn.dataset.tab;
-    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.dataset.panel === tab));
-    window.scrollTo({ top: 0, behavior: "instant" });
+    goToTab(btn.dataset.tab);
+  });
+
+  wireOnboarding(goToTab);
+}
+
+const ONBOARDING_KEY = "judge_onboarding_dismissed_at";
+const ONBOARDING_HOURS = 24;
+
+function wireOnboarding(goToTab) {
+  const backdrop = document.getElementById("onboarding-backdrop");
+  const closeBtn = document.getElementById("onboarding-close");
+  const gotoBtn = document.getElementById("onboarding-goto-live-test");
+  if (!backdrop || !closeBtn || !gotoBtn) return;
+
+  function dismiss() {
+    backdrop.hidden = true;
+    try {
+      localStorage.setItem(ONBOARDING_KEY, String(Date.now()));
+    } catch (err) {
+      /* localStorage unavailable (private mode, blocked storage): just close without remembering */
+    }
+  }
+
+  let shouldShow = true;
+  try {
+    const dismissedAt = Number(localStorage.getItem(ONBOARDING_KEY));
+    if (dismissedAt && Date.now() - dismissedAt < ONBOARDING_HOURS * 3600 * 1000) {
+      shouldShow = false;
+    }
+  } catch (err) {
+    /* localStorage unavailable: default to showing the modal every visit */
+  }
+
+  if (shouldShow) {
+    backdrop.hidden = false;
+  }
+
+  closeBtn.addEventListener("click", dismiss);
+  gotoBtn.addEventListener("click", () => {
+    dismiss();
+    goToTab("live-test");
+  });
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) dismiss();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !backdrop.hidden) dismiss();
   });
 }
 

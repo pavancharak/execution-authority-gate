@@ -1,7 +1,7 @@
 """
 Entry point: python run_simulation.py
 
-Runs five bounded fraud agents (1, 2, 4, 5, 6) against a pool of
+Runs seven bounded fraud agents (1, 2, 4, 5, 6, 8, 9) against a pool of
 legitimate transaction data. Agents 3 (Limit Prober) and 7 (Feedback Loop
 Exploit) need a trained detector to exist first. See probe_agents.py,
 run after this.
@@ -9,15 +9,15 @@ run after this.
 Produces:
   - ../data/good_transactions.json
   - ../data/fraud_transactions.json
-  - ../data/fake_identities.json, social_engineering_transcripts.json, kyc_bundles.json
+  - ../data/fake_identities.json, social_engineering_transcripts.json, kyc_bundles.json, vendor_bec_scenarios.json
   - ../../sign/tokens/*_auth_token.json     (signed authorization for each agent)
   - ../../sign/tokens/*_execution_log.json  (proof each agent stayed in bounds)
 
-Agents 1, 2, and 4 call the real OpenAI API (see llm_client.py). Set
+Agents 1, 2, 4, and 9 call the real OpenAI API (see llm_client.py). Set
 OPENAI_API_KEY in a repo root .env file before running (copy .env.example).
 
-Targets are chosen so the 5 attack types that actually produce labeled
-fraud transactions (agents 1, 2, 4, 5, 6; agents 3 and 7 probe the
+Targets are chosen so the 7 attack types that actually produce labeled
+fraud transactions (agents 1, 2, 4, 5, 6, 8, 9; agents 3 and 7 probe the
 trained model instead of generating transactions) land close to even at
 ~100 each, and the legitimate pool is scaled up (free, local, no
 OpenAI cost) to bring the overall fraud rate down to a realistic ~2%,
@@ -36,8 +36,11 @@ from fraud_agents import (
     KYCForgerAgent,
     PatternReplicatorAgent,
     InjectionGeneratorAgent,
+    BustOutAgent,
+    VendorBECAgent,
     make_seed_profiles,
     make_stolen_card_histories,
+    make_bustout_targets,
 )
 
 ROOT = Path(__file__).resolve().parent.parent  # generate/

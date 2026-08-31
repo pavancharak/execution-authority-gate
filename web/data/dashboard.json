@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Parmana Authority Gate",
-    "generated_at": "2026-08-28T23:55:33.935319+00:00"
+    "generated_at": "2026-08-31T00:52:00.344024+00:00"
   },
   "attacks": [
     {
@@ -503,10 +503,11 @@
             "detect: ai_generated_signal",
             "mandate: time_restriction"
           ],
-          "record_id": "e9bbaaff-2362-4606-8a37-a98a5923cd0f",
-          "signed_at": 1787961326.0217319,
+          "caller_id": "fraud-analyst",
+          "record_id": "16a493af-7f07-43d3-a093-a618a9cc9cd2",
+          "signed_at": 1788137512.0550134,
           "signer": "authority",
-          "signature": "7d03ee20360f3e5fe608dfa4e74c91b6f7be708392ffc7e9f498da8aff344870da8ed4f7d362acf9bb81ae77cdc84499ff4b6e2395d4e88d91f3dffa434f7b0b"
+          "signature": "b5e7905c7349fd41762974aa2b46fedb77c8e8470ae191b9b1d7f85c6c75957a4cce1a03305e9e4b8723ad51b5e2ec13020ae235f543e4b056a5d5c5d8f4a00d"
         },
         "mandate_checks": [
           {
@@ -556,10 +557,11 @@
             "mandate: merchant_whitelist",
             "mandate: time_restriction"
           ],
-          "record_id": "6530168a-4fd2-41a0-8678-983a5f5bd914",
-          "signed_at": 1787961315.179804,
+          "caller_id": "fraud-analyst",
+          "record_id": "49638918-6736-4bfc-8329-67d7471c9cab",
+          "signed_at": 1788137470.4208443,
           "signer": "authority",
-          "signature": "13bd4a44a7638e011b482d028d317689cdce85fc327bdd9d9a0c89a750baf71fd5b9f08f51f4685705f0a7bff11f700c75168865f337aafb167b07e9bba9f40e"
+          "signature": "6389ecaf6b51edb9c1c0f317fc2db83853a9109da81e52c044a85ca3f06f2e81147b296d6337ffe41145087a55453df61cab5fb0a78baaad2c5ec15b867b320a"
         },
         "mandate_checks": [
           {
@@ -607,10 +609,11 @@
             "detect: ai_generated_signal",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "024cf00c-e633-4e97-bef7-61fce6b20d37",
-          "signed_at": 1787961322.9032047,
+          "caller_id": "fraud-analyst",
+          "record_id": "9044af88-e4d7-4fc9-9208-0772575155a1",
+          "signed_at": 1788137508.3326008,
           "signer": "authority",
-          "signature": "0fd27a68cb74eb728700966d4fc37fa955d55ca4d3a5dc1b001aa3aca61179baf09fc0366618f0050cff0bc9bef2b0ee2e4514206002b73db6bae7ae56479f0c"
+          "signature": "4b1e21c34c6d30e9d48366c99b0b3cb391bf02ef501ed9c9b4b8d33ae1923afd086018e0515a3a0909b87a3b76e31e3b963a2d35fb8ed4f9d1e0388a6048ce00"
         },
         "mandate_checks": [
           {
@@ -658,10 +661,11 @@
             "detect: amount",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "5ab60ba8-a5e2-4625-8f70-705488488fe6",
-          "signed_at": 1787961310.5968304,
+          "caller_id": "fraud-analyst",
+          "record_id": "110151f7-8238-4244-bdf7-5763beaac48d",
+          "signed_at": 1788137457.9579098,
           "signer": "authority",
-          "signature": "7e187b0803868a16b8e538c14e804a5171ba7c3b010d1df3e3153345826625f384b256571229d73e5ece2afff3737c0a40158c2180bbf536494162f52b822f08"
+          "signature": "af0baaeb78221d158cba5b5bc5a50b684e4681bda719813d1f82097d24d22a6b600a6eff84ba13ede91218055e300e853e9a8d34c4fa8db9c0456d4a6a70e808"
         },
         "mandate_checks": [
           {
@@ -708,10 +712,11 @@
             "detect: ai_generated_signal",
             "mandate: time_restriction"
           ],
-          "record_id": "175c3d2c-ea40-4c6a-bf00-256067a4a843",
-          "signed_at": 1787961324.0348809,
+          "caller_id": "fraud-analyst",
+          "record_id": "6f2a03d6-8c7d-48d8-9ab2-e02da9fe954c",
+          "signed_at": 1788137509.683424,
           "signer": "authority",
-          "signature": "e82cc102904458b6332f78745a78d434ada24045877cab19824f1571859339a532043b6217d44f0958ef10de32de1be35cba1a91e4ecb0dc6d816618614e8d0b"
+          "signature": "103a516243f67e1b5441a5fbc537c06f0dd80bffa58078924d215109e515d9d384e7372ac698c2763ca17aa4f9537cead5221b14958de3c8638ac169b0fb9f06"
         },
         "mandate_checks": [
           {
@@ -765,10 +770,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "555327de-37e5-49d4-b8c0-dfe5eb6f6506",
-          "signed_at": 1787961331.7833033,
+          "caller_id": "fraud-analyst",
+          "record_id": "ace0cc9c-c527-4780-a364-b97e78f68eac",
+          "signed_at": 1788137518.2348828,
           "signer": "authority",
-          "signature": "1f9b8e98d3304660853ef1829494c753e64c100de255a8f3111af02d709bc750a30676aca47e6de59618b8b008da2b7456ba736716430f793f94fbb1db554009"
+          "signature": "9f0f1ae3ce7e8d823d4c8dbb738a263efbedefbc70de0b9c296632ffd05b49198ae26a7a0a76679330bafc8033ed71fb0c90a8a4ede50fba6e76cbb0d277df0f"
         },
         "mandate_checks": [
           {
@@ -813,10 +819,11 @@
             "detect: ai_generated_signal",
             "detect: location_mismatch_km"
           ],
-          "record_id": "f5f2fb4d-8c07-4570-bcd6-aff5cb0883e7",
-          "signed_at": 1787961322.2390347,
+          "caller_id": "fraud-analyst",
+          "record_id": "8cf091fd-6841-42e8-9a72-00eddb816806",
+          "signed_at": 1788137507.569344,
           "signer": "authority",
-          "signature": "5123104f2c894732a4fe45895f545fdb675087cf48e27040e71082b137d81fe69c2c324dd87d36b3bc72ec4c6240ba51dbceeb4f95917c93f41467f75e76e502"
+          "signature": "2ad11a0f4feaecc0ccc60c1b59099901fcfc6008689cf329c97bbf50b85981659bfcf0da0c59b69bcc429b9808de5f4bd1e25470707c197fc8ed4ece2b46cd08"
         },
         "mandate_checks": [
           {
@@ -861,10 +868,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "7d76784b-e19b-4ef1-8a69-b3955d013b23",
-          "signed_at": 1787961308.0439663,
+          "caller_id": "fraud-analyst",
+          "record_id": "108f9ea3-700a-41f6-a99f-b1f17675ebb8",
+          "signed_at": 1788137450.5097563,
           "signer": "authority",
-          "signature": "a33013c3f5832de3402cf5f57844155e63fec1257c8eae4a33aae5661cdf7f6ce51d2788dd8db536c5577ceb168ffe90217e7d84c8f4f1fb75f6e26aaf9cfc00"
+          "signature": "f43ae6d585d5a2041ea3bc8406a2084538a614e4ab591c7104336315bd25ad5c8d04561868b03639050a7b422256ee158fca75849efcafe4974f04f8b45c070c"
         },
         "mandate_checks": [
           {
@@ -908,10 +916,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "6045736f-b927-4ac8-98dc-a40c61b5d155",
-          "signed_at": 1787961316.6325243,
+          "caller_id": "fraud-analyst",
+          "record_id": "5aef5985-56c4-464b-80b4-092c4b00195d",
+          "signed_at": 1788137477.5905151,
           "signer": "authority",
-          "signature": "bb89fb1b28c1ae3795ce463773a4981cfeec88053e34f48fecf144530445a97bf2af740723e9887af9cd2c22ceb9ce85bd79da593bccff54e7254797bc35a102"
+          "signature": "61a0403d392cc8eb2d5940c3057afe682ca4b29d447be10ce46259a99b9ed217c2a8838a04285543e24dcce4afcf089828ee66576497202275e3bf3d1fdc0c07"
         },
         "mandate_checks": [
           {
@@ -955,10 +964,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "ba326454-108f-4bc6-929b-5781c99c394d",
-          "signed_at": 1787961323.7451043,
+          "caller_id": "fraud-analyst",
+          "record_id": "6a2823e6-335b-4305-8413-4b22bfd2d6fa",
+          "signed_at": 1788137509.3427904,
           "signer": "authority",
-          "signature": "54419453d834e0ef75a615b9d631e40739d39282c5539c563fc1c8e840b53127618b19729f024f393b81d885e84f0ed8084975ec77d972e89003eb3688dc0509"
+          "signature": "953ee87f702ba1df95d4aa8402b7c8ae04eb397deacd5567dd1a32d3aafbccca0250967ebe2d8778427dcfde546c52a9c339df64357dc885d582defb12dc2b0d"
         },
         "mandate_checks": [
           {
@@ -1002,10 +1012,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "99851e84-5f5e-4b19-8a4f-23438e5453ba",
-          "signed_at": 1787961306.8596272,
+          "caller_id": "fraud-analyst",
+          "record_id": "76da09d4-8dad-4499-b609-92115c819906",
+          "signed_at": 1788137447.4574568,
           "signer": "authority",
-          "signature": "1381b122d88e9cda99782cc917c7912bbe60a62ecbf04368e71de439370af94e746084f201ca0fb0f633fe5ef8614ff33a3e86735bb328367d118493dea1e20f"
+          "signature": "81dc575c678f2ab24ada182b4801383690b9bc4b0dc9a24c6ed660cbe3883f503f2fde3e26fc534ec596db88d3e490fb05aabaaa26b91343ec10f108cbbd1103"
         },
         "mandate_checks": [
           {
@@ -1050,10 +1061,11 @@
             "detect: ai_generated_signal",
             "detect: pattern_similarity"
           ],
-          "record_id": "0dee7634-d5ab-4898-9b04-e952b9b8d141",
-          "signed_at": 1787961321.2333274,
+          "caller_id": "fraud-analyst",
+          "record_id": "cf2756f5-6db7-47b7-935e-e0d87893126b",
+          "signed_at": 1788137503.3390071,
           "signer": "authority",
-          "signature": "71003c85d4704ebe309d4fc6acb1834c2b465a066b299e8084dd0339f05dc921cf1b68213dd2df70e7cb81c3f402b15601694f2a135fd85f9cc45549c393f905"
+          "signature": "34ee7064ceb0aa5287193fb5cfbf6f5c0f78e15f3fd511a4832d5cb88f0d5c800795928e9d9db6bf66d15bda278768bb7a37a44f53874cb7a48c422963f73c03"
         },
         "mandate_checks": [
           {
@@ -1098,10 +1110,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "2e8e37e1-907f-4398-87a9-2ada0998e305",
-          "signed_at": 1787961311.878044,
+          "caller_id": "fraud-analyst",
+          "record_id": "ddf25692-82a9-48eb-bbab-529eaca8ea44",
+          "signed_at": 1788137461.3228343,
           "signer": "authority",
-          "signature": "693d43749c68e0ddd8b8b8ec1a79bffd4853d99c6ce8a9ac8297664f9ad2e62a1932e7846cd7a93191abe2b390dc74fa5e49ea62cbfb387a8b7220c34059d30d"
+          "signature": "af7fbc8c2d5d8fb2cf01c12333ee6c00a8c775b8ee03c4bc6529cc7ba070ad664c4d157e5016b15d7d5a6a44ad04647764e2a9fbf05f600d5a6ed5428869d703"
         },
         "mandate_checks": [
           {
@@ -1146,10 +1159,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "a9b7f15d-b77b-42f3-b3c9-3118701bc492",
-          "signed_at": 1787961306.2525315,
+          "caller_id": "fraud-analyst",
+          "record_id": "8d338022-a570-4f23-b7b1-58de81bc4027",
+          "signed_at": 1788137445.7478147,
           "signer": "authority",
-          "signature": "c3fb5ee4050fbcf98b55f73e71736a7894b261d49c9ceb833fae7551818ca19aad87597b45057063bb99d38196eb70e84870b0fb04142daab5d8c65f14274d0b"
+          "signature": "5952a57c563868545e0ea188269f0af5d5bef736702e747a45fc0cb2adfd5a722674257cd7576203fd588a174ca62d62d0602f826e9d8eb45be7702e1a0c0b0b"
         },
         "mandate_checks": [
           {
@@ -1193,10 +1207,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "b548409c-27c7-48c9-a86b-c4db12ce6b4b",
-          "signed_at": 1787961307.8029652,
+          "caller_id": "fraud-analyst",
+          "record_id": "85dec719-2ebc-4674-868b-aa3642b39351",
+          "signed_at": 1788137449.8872066,
           "signer": "authority",
-          "signature": "bc2f41b4594171295f0e2a4d5202b5f6dd1d859f112d2c6e7e82551fcd4925fc133304b31e3e084b9eb913be971d7f8e5f663eecbbbba0025199e4462cabc606"
+          "signature": "b53687f2cf654d243ea00d2f5019bd654666f14430aa224302058dcfb8f2f9378dd1ae71308a1c1c426b657bfb0b6998aa948b7bcd734df57ee80acd6e1da20b"
         },
         "mandate_checks": [
           {
@@ -1241,10 +1256,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "66f68c78-13f5-444e-8a19-85f680b0bb69",
-          "signed_at": 1787961318.8561492,
+          "caller_id": "fraud-analyst",
+          "record_id": "a9387932-bd35-49a6-ad71-bd98adf3b57c",
+          "signed_at": 1788137489.2832701,
           "signer": "authority",
-          "signature": "5a2ccd9e5ab23238d459e28ba629d0808432148880b42468d854a6cce09ab2e20447eb2088f39776b880a51f99a02bb8cfb6a611b7839b4521795bb1e7c1a60d"
+          "signature": "9caea7bc9f628f2cf7f957b0fa7eee4c916f6d37457fd3326c3670fa490397eaa6c3e10bf5dc630095a0f25b6b20d4f6e327ec92ae336419e316a2152e7ac608"
         },
         "mandate_checks": [
           {
@@ -1289,10 +1305,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "bff07f29-c9c4-496d-91d3-19b2ba23b170",
-          "signed_at": 1787961318.389864,
+          "caller_id": "fraud-analyst",
+          "record_id": "2b3384d6-9c0c-480e-bdb1-b7ae4e7d8bd9",
+          "signed_at": 1788137485.7809775,
           "signer": "authority",
-          "signature": "553fdf676a153da7601311f2c9e65d70dace7764c074d2f30de6ba620c50ef8ad24806c50238c34f691225df206b666e4b35eb188cebd0541cef5ab8c20f7e0e"
+          "signature": "1acd7d8561f0d9288cbd926d18bfcc190fb3345d80b1e93c92f03599e3d18e3f8b5270ba92073ff170c75538b030cf3475dbeaab2ffd35e91af93bed11c46c0e"
         },
         "mandate_checks": [
           {
@@ -1336,10 +1353,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "d0e57229-9d04-4487-af70-1d5c7df9d7a2",
-          "signed_at": 1787961307.2455208,
+          "caller_id": "fraud-analyst",
+          "record_id": "741e6070-19c8-4630-a60d-0185b1e019e5",
+          "signed_at": 1788137448.469469,
           "signer": "authority",
-          "signature": "8483c57bad6801841d3d6eeb9ff05e676d93ae6aa676393cea311aeb16768de95ed1d0c7456887ace2cd6f49065ffe419829d70bc404008cc66c7a9dd0f4bd0e"
+          "signature": "788fba68258bd4ec5ec49d003d8438641982853559ab0641b558881919167eac45f5b06b4608ea7bad93a87555d259ed90c8b1e371820ccbd7df08b732878c09"
         },
         "mandate_checks": [
           {
@@ -1383,10 +1401,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "18b1ad87-5447-428b-a108-18c102f5866c",
-          "signed_at": 1787961312.6866665,
+          "caller_id": "fraud-analyst",
+          "record_id": "f4c60e39-2b28-4feb-82b5-1c762548e165",
+          "signed_at": 1788137463.3284533,
           "signer": "authority",
-          "signature": "0b8b388833b84f8c65d4f09cfa0a105ccd1bf24f8830b2d73966620efcd32930116d47b1985fc75b8c9dd6dfa6c6e50dad5795a5c81fff79de6bd3663ee3bb06"
+          "signature": "f377cea7071bf038172435df25a87146c1b791183bcc66e143851315539732e36b754fe7a01f3bdf3fa0c3dd0f71b3a48b6b1c1bde4400e579b622fb1855e50c"
         },
         "mandate_checks": [
           {
@@ -1430,10 +1449,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "0e237bef-b863-42c9-9d2d-be0b8282e7db",
-          "signed_at": 1787961307.9401433,
+          "caller_id": "fraud-analyst",
+          "record_id": "c23d37d8-94d9-44a3-9b80-1ceb648110f9",
+          "signed_at": 1788137450.2443376,
           "signer": "authority",
-          "signature": "53537d33d87ca893dab00abae643bb3eae0321e2cf7b8e2b92007d47d8715964c6b3f68fd49cab56d1d507241efc4e1cad8dabc2312de76ba3cb9433900a7c02"
+          "signature": "8028b8e15cc7fa15904a74bcd273b6abd1b6098af2387e443485b832e84b9e7d2a03de555f3a389f03b14dc9b0b944a9cdbb53d66f00ed92d5d0c0784aaa8c01"
         },
         "mandate_checks": [
           {
@@ -1478,10 +1498,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "4ebb9c4f-1d3a-4a06-ab06-a1d1b3febbaf",
-          "signed_at": 1787961322.7213867,
+          "caller_id": "fraud-analyst",
+          "record_id": "243c5030-b00b-47fa-9cce-1869807ef942",
+          "signed_at": 1788137508.1342669,
           "signer": "authority",
-          "signature": "785aa4d60f21c8aba79fd80fe26833704aa68b3ab54c07431d19950f162c595f7b1b5f82c2eecb3e5a45366d693576c1fc45d0d775477335736203c17455b604"
+          "signature": "208ddd9ede45bb3aa4bcf4dc01a82f7c0eb250ff0c901d26e2ddc6adf92e8fd751c88b10c513eee4b01aafd517e91bbbe11d8cf90ab3afcdc85535d023d8f408"
         },
         "mandate_checks": [
           {
@@ -1526,10 +1547,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "e226cd95-db5a-4ac2-951a-237a0f3af485",
-          "signed_at": 1787961318.5770366,
+          "caller_id": "fraud-analyst",
+          "record_id": "2cbcd20f-2ae5-4f49-b6af-c1c3527fddd8",
+          "signed_at": 1788137486.5303383,
           "signer": "authority",
-          "signature": "b343ea65c39fa76ade78baaaea2085cb3896f963668cac76e8641640117017a99de9fb81c1f6daf3005f40f0ce91c03a321a79c45632b029c103f2b33474fb01"
+          "signature": "abc2b7b7c9b86fa0833ee7dd3dfda214475b56f0c4b394dfbecc2ea5b5058a284f18379ffdc2442a64b089f6346f41cf96fbc9af2c48fb364b496e24779d4a08"
         },
         "mandate_checks": [
           {
@@ -1573,10 +1595,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "bac3a00d-5b09-4edc-b92d-9c95fad36a0b",
-          "signed_at": 1787961306.894468,
+          "caller_id": "fraud-analyst",
+          "record_id": "27e9555e-4866-4d50-8bb1-9eac2bc96cc3",
+          "signed_at": 1788137447.5511234,
           "signer": "authority",
-          "signature": "cbfbac1a9e4b8cc7b3a39b828b8f73d2ae67d71424c4e82de19a05ab7019c614ddf4b6e6a997b80f0e9e48c6433b28d202262e1d9c3610a9e2ebc734942a8e08"
+          "signature": "604b21fa22e4e2db896c86d591fab4d8edf32b2f71d356fdf839a915196fb000b5a4b764f6c4b1925d01ee17a90d6039de5848fdcb747b006e4177f482f30300"
         },
         "mandate_checks": [
           {
@@ -1620,10 +1643,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "c5820410-50bb-468b-80ec-bc617193ee41",
-          "signed_at": 1787961332.0472467,
+          "caller_id": "fraud-analyst",
+          "record_id": "d510b8cd-457a-4734-84cb-7d52a35a99da",
+          "signed_at": 1788137518.400283,
           "signer": "authority",
-          "signature": "6e467071acba68a110b28c60b15b82c10a0ce709b6a7f2d2ab48809357a2a0388f89e9d8048074fe5ed0ab87d247d62499a8163bf0828428c0164d8f4f49af0a"
+          "signature": "54aab1799eb13753eeecad969fc321528f878542fdec78aa36ce88308a0b566e1bcf379c734af5e37852cceb8c3a8e750e63a827e487453ed40a5c1cb7b3eb04"
         },
         "mandate_checks": [
           {
@@ -1667,10 +1691,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "af692939-d0d1-43ed-b69a-0c87f0347142",
-          "signed_at": 1787961323.1942322,
+          "caller_id": "fraud-analyst",
+          "record_id": "e609f7ec-7d8d-4103-b913-0ebc49c3dc77",
+          "signed_at": 1788137508.6762266,
           "signer": "authority",
-          "signature": "b107148011ddeedfab7d7026cd433445cfbe41c59ba56abe38e7b74d132920dd7c72354fb17c011dd3ef6641d930235686db204dc9bb5a907224e4c4a6168908"
+          "signature": "592f3b3ef6a6ccdafbe2a0bb97820410659e655350a703b16115a68a26d8f7bf6f6fee3ad71b12717a086e68e63c2707ae6fcd1c724263c69337dc9f2c969a02"
         },
         "mandate_checks": [
           {
@@ -1714,10 +1739,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "8d3a5897-68a0-46f1-bfd6-8c6458ea2985",
-          "signed_at": 1787961308.9317338,
+          "caller_id": "fraud-analyst",
+          "record_id": "6aa7925f-f6bb-4d25-8b48-07f9147ee0e4",
+          "signed_at": 1788137452.9276998,
           "signer": "authority",
-          "signature": "4385a183393bab248d6398cf4efafec5497ddf9d6e3dca378887afb9ddd390f4ee8fb34a609dc097ebf552bb1165d75283bd045a1290b172b9185871610ce803"
+          "signature": "21f8c92be74fddcd87c2f499d50f0bb50f608a17ef12d03b87c5ba7957037a2273a1a1925727981ec78807a3187ee09fd9be54905d45a03f063443415e000a0c"
         },
         "mandate_checks": [
           {
@@ -1761,10 +1787,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "4af2adb6-8ef6-4982-adee-2e68a7fb9c17",
-          "signed_at": 1787961312.150059,
+          "caller_id": "fraud-analyst",
+          "record_id": "e241a991-fa8a-4bbf-a18a-691fc42cddf8",
+          "signed_at": 1788137461.9746876,
           "signer": "authority",
-          "signature": "bf659788e6b25fd8fecc34f050c1b0cd9b9786578f776f9168f3f91893a6fdc456a40368f5a00bd3468a19297e9b2fbcb111e8586296aab56f5bfcc396b61507"
+          "signature": "5d5909362e236094d266e59905d4c1faf329c5c12a361fb71fbaa90ae9f412c1f260752ad8db2128d7ccdd944a7a8773c24e054ea084d87e4618b9b40b3acb0b"
         },
         "mandate_checks": [
           {
@@ -1809,10 +1836,11 @@
             "detect: ai_generated_signal",
             "detect: pattern_similarity"
           ],
-          "record_id": "3aa3a37e-aa3c-461d-a2fb-5eec42079228",
-          "signed_at": 1787961325.3425093,
+          "caller_id": "fraud-analyst",
+          "record_id": "663d8d87-7d80-436a-b0c3-45936ed59846",
+          "signed_at": 1788137511.1529467,
           "signer": "authority",
-          "signature": "58b614b952c4ad5771818147170c2dcbc6cab3d660ba0824f6425837437defb246b6e8cefe80ab1b4353437aad2136740baa97afde9a263812645b409c026908"
+          "signature": "e9ec8ed799c57b2fc46c6bd16ea45a2db4630cf203d2250d908a507c0e1d376c658f77e820fd64b97ec9146cefd0dedeaafad898a7c258fa1b988b1953182809"
         },
         "mandate_checks": [
           {
@@ -1857,10 +1885,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "32a08339-46db-40ab-a727-23582826ab89",
-          "signed_at": 1787961325.1704748,
+          "caller_id": "fraud-analyst",
+          "record_id": "8bf87e49-8d71-4f78-857f-8dd7d6c5b71a",
+          "signed_at": 1788137511.0221999,
           "signer": "authority",
-          "signature": "8a7eabe672eff0bf6d06d5b13162ef8fcd5b0a702c38eef5dc5047fb068ae475292818234d85bb90576a4b5b1b6d85d0e5368bbac274a82943425eb72b5a1907"
+          "signature": "0747bde535077b02ef6d66933d49f1c245c6167675ee027c9f099715dcda2e39b3b7ffef22f3ae0da708c3b8e0578bc80ed39ea7d76c41809175a6af496f740d"
         },
         "mandate_checks": [
           {
@@ -1904,10 +1933,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "e987d5cb-e852-496e-802f-9e38c1241946",
-          "signed_at": 1787961323.7508492,
+          "caller_id": "fraud-analyst",
+          "record_id": "0867a000-eea7-46c8-a379-9d783797b2b1",
+          "signed_at": 1788137509.3461192,
           "signer": "authority",
-          "signature": "ca01865aef9a5c8d28b130a24bc6a3c0bd094fdae06d123f0aa934b9799c61de36a2c1b3ea2bf4afdc7a95f24149c8b82491c52c6de607c11630645b6a0d2e0a"
+          "signature": "27d1e19d2d5a98f64baf892ad1aefd9a8c1158b9f7285c57986d95651ac52185618f30c91ac7a6aaba64bbdb3ea57adceb99aa24b89d1aceb23aba725a7e0707"
         },
         "mandate_checks": [
           {
@@ -1951,10 +1981,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "9e543822-b72e-42bb-a744-2be53164209d",
-          "signed_at": 1787961307.0073898,
+          "caller_id": "fraud-analyst",
+          "record_id": "92d35dae-f46e-438f-bdb5-0e9d8a68a648",
+          "signed_at": 1788137447.7720933,
           "signer": "authority",
-          "signature": "bc4ae9a1709deee411dfc0d0a7246d71f6742da5ac02d044923f7d886297b91aec3a45d39d9a9d8a183852fc0092b85a4989762ff01d0a6d68e44a56549f9e07"
+          "signature": "5d9aaeab726a9b0fcc4e3ded485dd874eaad8596827cc194fc0bba9db7f084445fe0cedbc4142588c1b47d9de27b03a6a20b73556f9a69b0c95645f2f9721c05"
         },
         "mandate_checks": [
           {
@@ -1999,10 +2030,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "905d40e6-67b4-4c2f-89a5-4ec98b92c69f",
-          "signed_at": 1787961323.5777397,
+          "caller_id": "fraud-analyst",
+          "record_id": "deb1d906-7680-42af-89b4-f0837cc0fb9a",
+          "signed_at": 1788137509.1181993,
           "signer": "authority",
-          "signature": "eed0acd84c5543978da5265e0b715c7bd894123a2c59d5bcfe8ab258e9b2ed447c0e1886b9135da5bb6d2871203704a97cbc6caef9722a6e095445002e7a1d0c"
+          "signature": "1c0998f879ecf1ac284e08095013cd8aa198847ae5e069c3806115b042186efa0f6236599fe67636cd1e2f25487fb8e50d87186f9b15f4d95d3840925c116b0c"
         },
         "mandate_checks": [
           {
@@ -2047,10 +2079,11 @@
             "detect: ai_generated_signal",
             "detect: location_mismatch_km"
           ],
-          "record_id": "e22b18b6-b8f1-4ac7-a52a-8d5437eebbcd",
-          "signed_at": 1787961323.8255808,
+          "caller_id": "fraud-analyst",
+          "record_id": "6c375dbc-983d-400c-9399-cd79ad7c2e04",
+          "signed_at": 1788137509.4276097,
           "signer": "authority",
-          "signature": "68232e3a8944a1ac38f0e940e9d27f34d63f3739551196bf347eb6dc14d9f7ded35619351bc550fa50d5b93ee143cdb26697117ab358f83c39a73971a8637709"
+          "signature": "cf53a4e620e8c870345871cf55f1cae2684dd3e2826bb53596ce88b015c771091a1feddb9729934302882e98f4d4ccc768b59f16dcf048ec7a20cb54d8a48501"
         },
         "mandate_checks": [
           {
@@ -2095,10 +2128,11 @@
             "detect: location_mismatch_km",
             "detect: pattern_similarity"
           ],
-          "record_id": "d7d99cb1-a433-4f5e-b9c5-0cbc4753122c",
-          "signed_at": 1787961317.602813,
+          "caller_id": "fraud-analyst",
+          "record_id": "e9e1720f-5038-4ac4-9494-14a691381e6d",
+          "signed_at": 1788137482.5809536,
           "signer": "authority",
-          "signature": "34292db2cc3324246b473c5cabf9ecb3388b9c3d3f2dd073efee5755c5cc4ccabb5c4b9032d9a0cf67063cc0a41743b380d3815abc18be6d60e0441f4da70703"
+          "signature": "8884fc62f967ec56b5c4df713d8ca6b2c3652bc4afce6ae1d8c392aa6bbe7fe215d066496a434d133dcf2fb25a7bfaa726a7ab4fc5597fc6412fcc6a62625f0a"
         },
         "mandate_checks": [
           {
@@ -2143,10 +2177,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "1ba20e61-1adb-40af-9e98-2f4650198428",
-          "signed_at": 1787961306.599907,
+          "caller_id": "fraud-analyst",
+          "record_id": "ece7ba72-3395-4e13-a997-7cdb0cb42dfa",
+          "signed_at": 1788137446.8495734,
           "signer": "authority",
-          "signature": "2cd847036e1294f87a69362d5bffae6fb37a58a6e93ea3326536557e03601eb366d08e6a92432dfaaa0c0c6c1d796c7ea8d24be8cfe006b4f0d7dd7fb9386b02"
+          "signature": "3d76354e24684cbc38593075a44f47341d5841d1deec8294992aeb539746b627f07a6dc7d521cf5795f093b975573f949984baa975c63c142ce95f2b1fff9b0b"
         },
         "mandate_checks": [
           {
@@ -2190,10 +2225,11 @@
           "reasons": [
             "detect: no single dominant signal"
           ],
-          "record_id": "7e63945c-642e-4110-9a16-758be7ce8933",
-          "signed_at": 1787961312.0840228,
+          "caller_id": "fraud-analyst",
+          "record_id": "ee95b333-5d91-4b00-bddb-4d89e84478fc",
+          "signed_at": 1788137461.8160994,
           "signer": "authority",
-          "signature": "edaf9eb7a79ab4debe9cb938740c1e7206660afdf03965eb6fa91f472f36031a4ac64c0e1c2f1ae0f5ebf85e09ef90683ef1eb8dfc1143a6cfa291a50add2504"
+          "signature": "ba081856fa6e688a91b01a2496b8b7aff669b4b69c8bd96bc50aa5bf8d0055b644a63145c35da0aa92c461357020b1aa212580e1657f7615883d268c66a9120e"
         },
         "mandate_checks": [
           {
@@ -2238,10 +2274,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "5b5e495b-aacf-417f-aa86-4eea9453056b",
-          "signed_at": 1787961306.518314,
+          "caller_id": "fraud-analyst",
+          "record_id": "1d8fdf5b-6818-4972-ae69-4c66b22984b2",
+          "signed_at": 1788137446.6484985,
           "signer": "authority",
-          "signature": "5c1884d9020f163f2ca49bb23dd613b2c663753ed289add8f779249d3ba17a3f224b716c22955c863a53f557024272033b8d2c6ee00d88010661d7740858b202"
+          "signature": "045a693299269cfd1775a68e8946528ca423eea446a93f5e20cfad2503640210ab72d1bee0bbec7049f3104c56ea8230ea304d76b7c8682b4ab5a20660a2e708"
         },
         "mandate_checks": [
           {
@@ -2289,10 +2326,11 @@
             "detect: ai_generated_signal",
             "mandate: merchant_whitelist"
           ],
-          "record_id": "024cf00c-e633-4e97-bef7-61fce6b20d37",
-          "signed_at": 1787961322.9032047,
+          "caller_id": "fraud-analyst",
+          "record_id": "9044af88-e4d7-4fc9-9208-0772575155a1",
+          "signed_at": 1788137508.3326008,
           "signer": "authority",
-          "signature": "0fd27a68cb74eb728700966d4fc37fa955d55ca4d3a5dc1b001aa3aca61179baf09fc0366618f0050cff0bc9bef2b0ee2e4514206002b73db6bae7ae56479f0c"
+          "signature": "4b1e21c34c6d30e9d48366c99b0b3cb391bf02ef501ed9c9b4b8d33ae1923afd086018e0515a3a0909b87a3b76e31e3b963a2d35fb8ed4f9d1e0388a6048ce00"
         },
         "mandate_checks": [
           {
@@ -2336,10 +2374,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "2d2e9787-5ad9-4e72-a354-03958e8dfffc",
-          "signed_at": 1787961309.2312887,
+          "caller_id": "fraud-analyst",
+          "record_id": "fbd5b609-2186-4930-bff0-e809577c6d14",
+          "signed_at": 1788137453.6000507,
           "signer": "authority",
-          "signature": "bb5aa1b895ff6d0af44861f175318ed1884373adb84968fe9d1704c44433c07ff10fd4872aaeceeab6b0c8702cbb05c01afda511ea1feaa6f41d24ac73cecd0f"
+          "signature": "8cf0856a1607178b361d4a23493195804e43c31bf5adf953564ac9cb6eb0299ea019831b15866e033dfa38c365c80c13e4169d94dc4a86c322ec6b7a14982001"
         },
         "mandate_checks": [
           {
@@ -2383,10 +2422,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "4ac6b79b-ce83-4e23-821a-fc2eac99314b",
-          "signed_at": 1787961314.2361355,
+          "caller_id": "fraud-analyst",
+          "record_id": "bb4cd11b-cd41-405d-a75d-f6b7191e8bbd",
+          "signed_at": 1788137467.940909,
           "signer": "authority",
-          "signature": "804366e628a8c55d702a433f859e260a4145af683eba60bd0042588b587a477b485cd1d1d1a2538b2b44da1519f1f52e0a0aacdcfe124692e535096c56ff6e02"
+          "signature": "8c819e8f84d531344bb1f5efa6965a85536c30abde2bda6a9aebec1c4b86b9c19cacfda12c5fe1e2e19f82b5386c8b6e2b6bcaecee7271ffb1e37e2828f2140d"
         },
         "mandate_checks": [
           {
@@ -2431,10 +2471,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "801ce14d-012b-4c69-9dd7-965d351c94dd",
-          "signed_at": 1787961318.4197922,
+          "caller_id": "fraud-analyst",
+          "record_id": "b4e81e02-4fef-494f-9dd3-e12812d058af",
+          "signed_at": 1788137485.9164393,
           "signer": "authority",
-          "signature": "01f29150ed1830a7fb1276f80d2f9f8ef9db7f6873b79cf2adca5f09b403f2a2ce5634188557a4d5f4bfb6c24f034bccdb09e15b0beff44345c2a1753d49b00c"
+          "signature": "3de45711bdb9c607c543e9e71bedecb8e9c4d1da888d3c9de37e3213b46cdc27c137f93e2d9effbb79e53dffa31c7b503ac1a4f43a2661d7686d117c05a54209"
         },
         "mandate_checks": [
           {
@@ -2479,10 +2520,11 @@
             "detect: ai_generated_signal",
             "detect: amount"
           ],
-          "record_id": "a4aec030-23a1-490f-915e-a433cedc3c9e",
-          "signed_at": 1787961309.634285,
+          "caller_id": "fraud-analyst",
+          "record_id": "7bc2f748-009d-40a9-9083-15d70d88b98d",
+          "signed_at": 1788137455.017188,
           "signer": "authority",
-          "signature": "fb271a336a57d7dbe76fa643d6160d3a3dbd33853cb62bebcb3439146944e20146411872868708f3409a31c3087d17e9b4146c6ae15a9a00bc2ac2f4d988520a"
+          "signature": "c0c9a6ea86990121c271875dd2c4cdec206f6583c8e77f33a93fb4f4e2fb9cab8b1924aa1dee96af9fa2fef19e537a412c143edf61db2bb5c1dac5a525d26e0e"
         },
         "mandate_checks": [
           {
@@ -2526,10 +2568,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "22ac00d5-f8a0-47a8-bb8e-8d5e8fc47987",
-          "signed_at": 1787961322.399918,
+          "caller_id": "fraud-analyst",
+          "record_id": "b5c2db8e-9881-4a3e-8d71-3118c9cc5373",
+          "signed_at": 1788137507.751582,
           "signer": "authority",
-          "signature": "c752e59b052255397d94f2f9c72bbb9e86538c8a07f436d6dd4dd72661618fba34e14121bb77a7644852be764545ba0a6a140cdd1761642bddfc6c12c0bb4106"
+          "signature": "9d05a4433c8d3f737085215157ed7be8e4301d24d5653c5306777e9ee0dc076aacee970fffb4e825bc4b3046884a0c19699c2371ee24e30907365ca309d78a06"
         },
         "mandate_checks": [
           {
@@ -2573,10 +2616,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "ded25c99-5c14-4c7e-aaaa-69bc275af630",
-          "signed_at": 1787961308.7581775,
+          "caller_id": "fraud-analyst",
+          "record_id": "ae47cc78-fc08-4176-b62c-d8691a97ce09",
+          "signed_at": 1788137452.484021,
           "signer": "authority",
-          "signature": "4c1f7b67db1b89305c34f5072c06ab1960dd82968224b91200ce4defb5a2ffd038c64fe74a4c55f15942a025f9fe4acc3139498e771040bd4544dd01960a9e0f"
+          "signature": "24fdd231f84440f2580522f324462c9d2cfb895bec75acb10bedc9a432f441fab430807d066f4e9712ec1e86baefe9bd96be73853eb5235a6a226b695e387f0b"
         },
         "mandate_checks": [
           {
@@ -2620,10 +2664,11 @@
           "reasons": [
             "detect: ai_generated_signal"
           ],
-          "record_id": "2f534f84-7be2-45f9-840a-9d96f0823fb8",
-          "signed_at": 1787961323.384351,
+          "caller_id": "fraud-analyst",
+          "record_id": "49bc0ccb-2bc3-47e2-8735-e80d33a1a73a",
+          "signed_at": 1788137508.8578146,
           "signer": "authority",
-          "signature": "d551942776a88a8a1c2197bcce2d60147dd98d7d2b3c77b76b3c40ac6dd05047f231ed68534d1aebeab1d425de74b70424f6750957060c058e6409a7351fd509"
+          "signature": "775c632fd2b53dd7338b16b8dca1dfb3c5bf07d3ceb05846c5d4afc222b022f6ed0aa80998c7283e55b4b242023a05b4ae4ef46e54791a028f80a12e811c6f0e"
         },
         "mandate_checks": [
           {

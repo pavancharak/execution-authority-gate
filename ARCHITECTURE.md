@@ -53,7 +53,22 @@ Transaction
 [DASHBOARD] dashboard_builder.build(...) -> web/data/dashboard.json
 ```
 
-There is no enforcement or execution step after signing. Nothing in this repo moves money, calls a payment processor, or notifies a downstream system. This is a decision only authorization layer. See EAG-AUDIT-GAPS.md, section 3, for the full, code cited account.
+There is no enforcement or execution step after signing that talks to a
+*real* payment processor: this repo has no such integration, and does
+not move real money. What does exist now is an execution-ready handoff:
+`sign/src/decision_executor.py`'s `DecisionExecutor.enforce_decision`
+takes a signed decision and a `payment_processor_webhook` callable,
+verifies the signature (fail closed on tampering), checks the calling
+identity's permission for that decision type (see Gap: Caller Scoping
+below), enforces idempotency (a `record_id` is never executed twice),
+and logs every attempt, allowed or rejected, to an append-only execution
+log. `web/server.py`'s `POST /api/enforce/decisions` exposes this over
+HTTP for a real downstream integration to call. The shipped webhook
+(`noop_webhook`) simulates and labels its own output `"simulated": true`,
+so the honest claim is "execution-ready for external enforcement," not
+"enforced." See `docs/PRODUCTION_DEPLOYMENT.md` for what a real
+integration needs. See EAG-AUDIT-GAPS.md, section 3, for the audit that
+found no such layer existed before this was built.
 
 ## Why Dual Layers
 
@@ -93,6 +108,47 @@ Running `signature_verifier.verify_record` on this record against the authority'
 
 **What this does not prove:** the transaction's raw amount, merchant, and hour live in a separate, unsigned `ground_truth` sibling field written by the pipeline, not inside this signed envelope, so they are not protected by this signature. Nor does a valid signature mean the decision was ever enforced anywhere. See EAG-AUDIT-GAPS.md for the full, empirically confirmed account of what is and isn't tamper evident.
 
-## Known limits
+## Gaps closed since the audit
 
-This document previously claimed an `[ENFORCE] authority_gateway.enforce(signed_decision)` step and "enforced externally" as a guarantee. Neither exists anywhere in the code: a repo wide grep for `authority_gateway` and `.enforce(` found zero matches outside this file's own earlier draft. Corrected above. For the complete gap analysis (decision durability, key durability, execution integration, caller authentication), see EAG-AUDIT-GAPS.md.
+`EAG-AUDIT-GAPS.md` documented five gaps against the code as it stood at
+commit `63cd740`. Four of them now have real implementations, each
+additive and covered by its own tests:
+
+- **Decision durability** (audit section 1): `pipeline/src/audit_trail.py`'s
+  `AuditTrail` appends one JSONL line per decision to
+  `pipeline/audit/decisions.jsonl`, idempotent on `record_id`, never
+  rewritten. Unlike the old `pipeline/decisions/pipeline_decisions.json`
+  (still written, for backward compatibility, but no longer the primary
+  record), this file is not git-ignored and is committed. `AuditTrail.verify_all()`
+  walks the whole trail and re-verifies every signature.
+- **Key durability** (audit section 1): `sign/tokens/authority_public_key.pem`
+  and `sign/tokens/reviewer_public_key.pem` are now committed to git
+  (see `.gitignore`'s explicit exceptions). A signature produced in one
+  environment can now be verified from a fresh checkout of this repo.
+  Private keys remain git-ignored and regenerated per environment, that
+  part is intentional (see `docs/PRODUCTION_DEPLOYMENT.md`'s Key
+  Management section for what a real HSM/KMS-backed deployment needs
+  instead).
+- **Execution integration** (audit section 3): see the Decision Flow
+  section above. `sign/src/decision_executor.py` and
+  `POST /api/enforce/decisions`.
+- **Caller scoping** (audit section 4): `sign/src/caller_auth.py` adds
+  HMAC-signed caller tokens with scoped permissions
+  (`payment-processor`: ALLOW/FLAG only; `fraud-analyst`: all three;
+  `audit-system`: read-only). `pipeline/src/run_pipeline.py --caller-id`
+  threads a caller identity into `sign_pipeline_decision`, where it is
+  embedded **inside** the signed envelope (`caller_id` field), so it's
+  just as tamper evident as `final_decision`. `web/server.py`'s
+  `require_auth` decorator gates the new `/api/enforce/decisions` and
+  requires a valid `Authorization: Bearer <token>`.
+
+**Not closed, and not claimed to be:** signal verification (audit
+section 2, transaction amount/merchant/hour still live in the unsigned
+`ground_truth` sibling field, not inside the signed envelope) and a real
+payment processor integration (the executor's webhook contract exists;
+no real processor is wired up, by design, this repo does not claim to
+move money). See `CLAIMS.md` for the full evidence-backed claim list and
+`docs/PRODUCTION_DEPLOYMENT.md` for what production deployment would
+still require.
+
+This document previously claimed an `[ENFORCE] authority_gateway.enforce(signed_decision)` step and "enforced externally" as a guarantee, before any enforcement code existed. That was corrected in an earlier revision of this file (see git history); the "Gaps closed" list above is the accurate, current account.

@@ -1,0 +1,2 @@
+{"action": "settle", "caller_id": "payment-processor", "final_decision": "ALLOW", "logged_at": 1788137854.7353196, "record_id": "36bc1658-3478-4c7d-bf84-47e24de715f8", "status": "EXECUTED", "transaction_id": "tx_8c54522143", "webhook_response": {"action": "settle", "simulated": true, "transaction_id": "tx_8c54522143"}}
+{"caller_id": "payment-processor", "final_decision": "BLOCK", "logged_at": 1788137854.7362278, "reason": "caller_not_permitted", "record_id": "d7fb59b7-66de-4fbf-8422-28d22ca5de23", "status": "REJECTED", "transaction_id": "tx_4a6ccf07e3"}

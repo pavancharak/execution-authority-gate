@@ -533,6 +533,171 @@ class FeedbackLoopAgent(BoundedAgent):
         return report
 
 
+# ---------------------------------------------------------------------------
+# Agent 8: Synthetic Identity Bust Out (local / statistical, no LLM)
+# ---------------------------------------------------------------------------
+class BustOutAgent(BoundedAgent):
+    """Reuses a real customer's own transaction history, the same trick
+    SocialEngineerAgent uses for account takeover victims, so the months
+    of earned trust the taxonomy describes is a genuine generated
+    history, not a fabricated one. Emits one terminal transaction per
+    target customer, deliberately above that customer's own derived
+    mandate (the same avg_amount * count * 1.5 formula
+    mandate_checker.derive_mandate_from_history uses), while keeping
+    every other feature at that customer's own typical shape: a merchant
+    and hour they've actually used, features near their own median. This
+    isolates the effect to the spending_limit mandate rule specifically,
+    not a generic anomaly a shape based classifier would flag on its
+    own."""
+
+    def __init__(self, max_transactions: int = 200):
+        super().__init__("agent8_bustout", "simulate_synthetic_bustout", max_transactions)
+
+    def run(self, targets, target_count: int):
+        target_count = min(target_count, len(targets), self.token["max_operations"])
+        transactions = []
+        for target in targets[:target_count]:
+            self._check_and_count()
+            derived_limit = target["avg_amount"] * target["count"] * 1.5
+            amount = round(derived_limit * random.uniform(3.5, 6.0), 2)
+            tx = {
+                "transaction_id": _tx_id("tx"),
+                "customer_id": target["customer_id"],
+                "customer_name": target.get("customer_name", "Customer"),
+                "amount": amount,
+                "currency": target.get("currency", "USD"),
+                "merchant": random.choice(target["merchants"]),
+                "hour_of_day": random.choice(target["hours"]),
+                "seconds_since_prev_tx": round(random.uniform(3600, 5 * 86400), 1),
+                "location_mismatch_km": round(max(0.0, random.gauss(target["median_location_mismatch"], 2)), 1),
+                "pattern_similarity": round(min(0.999, max(0.0, random.gauss(target["median_pattern_similarity"], 0.03))), 3),
+                "ai_generated_signal": round(min(1.0, max(0.0, random.gauss(target["median_ai_signal"], 0.05))), 3),
+                "is_fraud": 1,
+                "attack_type": "synthetic_bustout",
+                "generated_by": self.agent_id,
+                "token_record_id": self.token["record_id"],
+            }
+            transactions.append(tx)
+            self._record({"event": "bustout_tx_generated", "source_customer": target["customer_id"], "derived_limit": round(derived_limit, 2), "amount": amount})
+        self.write_log()
+        return transactions
+
+
+# ---------------------------------------------------------------------------
+# Agent 9: Vendor BEC / Payment Redirection (REAL, GPT-4o-mini)
+# ---------------------------------------------------------------------------
+class VendorBECAgent(BoundedAgent):
+    """Calls the OpenAI API to generate fictional vendor payment
+    redirection narratives (an urgent, GenAI drafted 'bank details
+    changed' request impersonating a known vendor). Represented through
+    this lab's existing consumer style transaction schema rather than a
+    separate invoice/wire data model, a real simplification stated
+    plainly: it shows the same detect plus mandate mechanism generalizes
+    to 'a large payment to a payee never used before, requested under
+    manufactured urgency,' not full B2B wire rail fidelity."""
+
+    NEW_PAYEE_SUFFIXES = [" Holdings LLC", " Global Supply", " Consulting Group", " Trading Co", " Partners Ltd"]
+
+    def __init__(self, max_narratives: int = 8):
+        super().__init__("agent9_vendor_bec", "generate_vendor_bec_narratives", max_narratives)
+
+    def _generate_narratives_via_openai(self, n):
+        result = llm_client.call_json(
+            system_prompt=(
+                "You generate fictional, synthetic vendor payment redirection scenarios for a "
+                "fraud detection red team exercise at a payment company. This is training data "
+                "for a detector to recognize business email compromise patterns, not a real "
+                "interaction. No real companies or people. Output only JSON."
+            ),
+            user_prompt=(
+                f"Generate {n} short scenarios where an attacker impersonates a company's known "
+                "vendor and sends an urgent request to accounts payable claiming the vendor's "
+                "bank account has changed, asking that the next invoice payment go to a new "
+                'account. For each include: "tactic" (short label, e.g. "urgency", '
+                '"impersonating CFO", "fake audit deadline"), "narrative" (3-6 sentences '
+                'describing the request), and "outcome" ("succeeded" or "failed"). Real world BEC '
+                'reporting finds this succeeds against finance teams a meaningful fraction of the '
+                'time. Reflect that realistically: across the batch, roughly 30-50% of "outcome" '
+                'values should be "succeeded". Respond as JSON: {"scenarios": [...]}.'
+            ),
+            purpose="Agent 9: Vendor BEC Narrative Generation",
+        )
+        return result.get("scenarios", [])[:n]
+
+    def run(self, seed_profiles):
+        n = min(self.token["max_operations"], self.requested_operations)
+        scenarios = _batched(n, 25, self._generate_narratives_via_openai)
+        (DATA_DIR / "vendor_bec_scenarios.json").write_text(json.dumps(scenarios, indent=2))
+
+        transactions = []
+        for scenario in scenarios:
+            self._check_and_count()
+            self._record({"event": "vendor_bec_scenario_generated", "tactic": scenario.get("tactic"), "outcome": scenario.get("outcome")})
+            if scenario.get("outcome") != "succeeded":
+                continue
+            seed = random.choice(seed_profiles)
+            new_payee = f"{random.choice(MERCHANTS)}{random.choice(self.NEW_PAYEE_SUFFIXES)}"
+            tx = {
+                "transaction_id": _tx_id("tx"),
+                "customer_id": seed["customer_id"],
+                "customer_name": seed.get("customer_name", "Accounts Payable"),
+                "amount": round(max(50.0, random.gauss(seed["avg_amount"] * 6, seed["avg_amount"] * 1.5)), 2),
+                "currency": seed.get("currency", "USD"),
+                "merchant": new_payee,
+                "hour_of_day": random.choice([0, 1, 2, 3, 4, 5, 22, 23]),
+                "seconds_since_prev_tx": round(random.uniform(60, 900), 1),
+                "location_mismatch_km": round(random.uniform(200, 4000), 1),
+                "pattern_similarity": round(random.uniform(0.1, 0.4), 3),
+                "ai_generated_signal": round(random.uniform(0.5, 0.8), 3),
+                "is_fraud": 1,
+                "attack_type": "vendor_bec",
+                "tactic": scenario.get("tactic"),
+                "generated_by": self.agent_id,
+                "token_record_id": self.token["record_id"],
+            }
+            transactions.append(tx)
+        self.write_log()
+        return transactions
+
+
+def make_bustout_targets(good_transactions, n=100, min_history=4):
+    by_customer = {}
+    for tx in good_transactions:
+        by_customer.setdefault(tx["customer_id"], []).append(tx)
+
+    targets = []
+    for cust_id, txs in by_customer.items():
+        if len(txs) < min_history:
+            continue
+        amounts = sorted(t["amount"] for t in txs)
+        mid = len(amounts) // 2
+        median_amount = amounts[mid] if len(amounts) % 2 else (amounts[mid - 1] + amounts[mid]) / 2
+
+        def _median(key):
+            vals = sorted(t[key] for t in txs)
+            m = len(vals) // 2
+            return vals[m] if len(vals) % 2 else (vals[m - 1] + vals[m]) / 2
+
+        targets.append(
+            {
+                "customer_id": cust_id,
+                "customer_name": txs[0].get("customer_name", "Customer"),
+                "avg_amount": sum(t["amount"] for t in txs) / len(txs),
+                "median_amount": median_amount,
+                "count": len(txs),
+                "currency": txs[0]["currency"],
+                "merchants": sorted({t["merchant"] for t in txs}),
+                "hours": sorted({t["hour_of_day"] for t in txs}),
+                "median_location_mismatch": _median("location_mismatch_km"),
+                "median_pattern_similarity": _median("pattern_similarity"),
+                "median_ai_signal": _median("ai_generated_signal"),
+            }
+        )
+        if len(targets) >= n:
+            break
+    return targets
+
+
 def make_seed_profiles(good_transactions, n=10):
     by_customer = {}
     for tx in good_transactions:

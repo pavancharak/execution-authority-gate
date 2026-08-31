@@ -156,11 +156,20 @@ def sign_pipeline_decision(
     violated_mandate_rules: list,
     final_decision: str,
     reasons: list,
+    caller_id: str = None,
 ) -> dict:
     """AUTHORITY signs the pipeline's combined decision: detect layer
     score/decision AND mandate layer result, folded into one final
     decision. Neither the detector nor the mandate checker can make a
-    decision final on their own; only this signature does."""
+    decision final on their own; only this signature does.
+
+    caller_id identifies which system or person requested this decision
+    be evaluated (see sign/src/caller_auth.py). It is optional and
+    defaults to None for backward compatibility with callers that don't
+    pass one; when present it is embedded INSIDE the signed envelope
+    (not a sibling field), so it is just as tamper evident as
+    final_decision itself, an attacker cannot silently reattribute a
+    decision to a different caller after signing."""
     return AUTHORITY.sign_record(
         {
             "record_type": "pipeline_decision",
@@ -171,5 +180,6 @@ def sign_pipeline_decision(
             "violated_mandate_rules": violated_mandate_rules,
             "final_decision": final_decision,
             "reasons": reasons,
+            "caller_id": caller_id,
         }
     )
