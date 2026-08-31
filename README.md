@@ -256,6 +256,9 @@ This provides an independently verifiable record of what decision was produced a
 
 The most important demonstration is a case where the detector **does not detect the problem**, but the policy layer still prevents the transaction from executing.
 
+<img width="1055" height="926" alt="image" src="https://github.com/user-attachments/assets/82afae9a-9eb4-4575-a839-18932d5ccbf8" />
+
+
 ## Example 1 — Legitimate Purchase
 
 ```text
