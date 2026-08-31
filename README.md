@@ -19,6 +19,48 @@ The detector produces a probabilistic recommendation. The policy engine evaluate
 
 ---
 
+## In Plain English
+
+Every payment goes through three simple steps:
+
+1. **The AI takes a guess.** It looks at a transaction and says how risky it seems — like a smoke detector, it's good at noticing something *might* be wrong, but it's a guess, not a verdict.
+2. **The rules make the call.** A separate checklist — spending limits, allowed merchants, allowed hours, whether the customer is verified — decides whether the payment is actually allowed. This checklist always wins, even if the AI disagrees.
+3. **The decision is stamped and provable.** Whatever gets decided is signed with a digital signature, so anyone can later check what was decided and that nobody quietly changed it afterward.
+
+**Why have two steps instead of just trusting the AI?** Because an AI can be fooled or simply wrong, but a rule like "don't let this account spend more than $20,000 a month" is never a matter of opinion. The rules layer catches problems the AI misses, and the AI catches patterns no fixed rule could ever list.
+
+**A real example:**
+
+```
+This month so far:     $18,000 spent
+This new payment:       $4,200
+                       --------
+New total:             $22,200   (limit is $20,000)
+
+AI's opinion:    "Looks like a normal purchase" (low risk)
+Rule check:      Spending limit rule — FAILS
+Final answer:    BLOCKED
+```
+
+The AI saw nothing wrong with a single $4,200 purchase. But zoomed out, this account would blow past its monthly limit — a pattern that can look like someone trying to drain an account right before it's abandoned. The rules layer catches it anyway, because the spending limit isn't optional.
+
+**A quick glossary**, technical term → what it means:
+
+| You'll see this term | It means |
+|---|---|
+| Detector signal / fraud score | The AI's risk guess (0 = looks safe, 1 = looks very risky) |
+| Mandate / mandate result | The customer's own rulebook: spending limit, allowed merchants, allowed hours |
+| Policy decision | The final APPROVE/REJECT call, after the rules are applied |
+| Matched rule ID | Which specific rule caused that final call |
+| Cryptographic signature | A tamper-proof stamp proving the decision wasn't altered after the fact |
+| KYC (know your customer) | Whether the customer's identity has been verified |
+| Deterministic | Same inputs always produce the same answer — no guessing |
+| Probabilistic | An estimate or confidence level, not a certainty |
+
+The rest of this document goes into the full technical architecture — read on if you want the details.
+
+---
+
 ## The Problem
 
 Modern fraud and AI systems increasingly rely on machine-learning detectors.

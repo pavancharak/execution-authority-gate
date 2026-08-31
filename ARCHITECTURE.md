@@ -1,5 +1,29 @@
 # Architecture: Detect, Mandate, Policy, Sign
 
+## In Plain English
+
+Skip to the technical sections below for exact file names and guarantees. In short, every transaction passes through three checks before anything is decided:
+
+1. **Does the AI think this is risky?** An AI model looks at the transaction and gives a risk score. Result: Safe, Unsure, or Risky.
+2. **Does it break any of this customer's rules?** A separate, non-negotiable checklist (spending limit, allowed merchants, allowed hours, how many transactions today) is checked against that specific customer's own history. Result: Follows all rules, or breaks at least one.
+3. **What's the final call?** The two results above are combined by a simple, published rulebook (a policy document) to produce one answer: APPROVE, hold for REVIEW, or REJECT. That answer is then digitally signed so it can't be silently changed afterward.
+
+```
+PAYMENT ARRIVES
+      │
+      ├─ AI CHECKS: risk score (0 to 1)
+      │
+      ├─ RULES CHECK: does it break this customer's checklist?
+      │
+      ├─ FINAL CALL: combine both using the published rulebook
+      │
+      └─ SIGNED: stamped so the decision can be proven later
+```
+
+The important part: the rules checklist can override the AI. If the AI says "looks fine" but the customer would go over their spending limit, the answer is still REJECT. The AI's opinion never has the final word by itself.
+
+---
+
 ## Layer 1: Generate
 
 Four of the seven fraud agents (fake identity, social engineering, KYC forgery, and the feedback loop evasion agent) make real OpenAI API calls (temperature=0.9, GPT-4o-mini) to produce genuine, non deterministic fraud variation. The remaining three (pattern replication, form fuzzing, limit probing) are local and statistical by design, since their realism comes from matching a real distribution or a real threshold search, not generative text. See identify/attack-taxonomy.md and generate/src/fraud_agents.py.

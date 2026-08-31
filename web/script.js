@@ -12,7 +12,7 @@ const QUICK_START_EXAMPLES = {
   normal: {
     label: "Normal transaction",
     outcome: "ALLOW",
-    customer_id: "cust_b6bb7366", // Sam Garcia
+    customer_id: "cust_cbca48b5", // Jordan Chen
     amount: 50.0,
     merchant: "CloudHost",
     hour_of_day: 12,
@@ -21,7 +21,7 @@ const QUICK_START_EXAMPLES = {
   flagged: {
     label: "Flagged transaction",
     outcome: "FLAG",
-    customer_id: "cust_adadc707", // Jordan Chen
+    customer_id: "cust_cbca48b5", // Jordan Chen
     amount: 500.0,
     merchant: "CloudHost",
     hour_of_day: 22,
@@ -30,9 +30,9 @@ const QUICK_START_EXAMPLES = {
   blocked: {
     label: "Blocked transaction",
     outcome: "BLOCK",
-    customer_id: "cust_94b366c3", // Casey Kowalski
+    customer_id: "cust_de9945f9", // Casey Kowalski
     amount: 900.0,
-    merchant: "crypto.exchange",
+    merchant: "StreamFlix",
     hour_of_day: 3,
     ai_generated_signal: 0.9,
   },
@@ -245,7 +245,7 @@ function renderOverviewV2(data) {
                   <div class="ov-example-title">A real example from this run</div>
                   <div class="ov-kv-row"><span>Transaction</span><span>${esc(example.decision.transaction_id)}</span></div>
                   <div class="ov-kv-row"><span>Amount</span><span>${fmtMoney(example.ground_truth.amount)} at ${esc(example.ground_truth.merchant)}</span></div>
-                  <div class="ov-kv-row"><span>Fraud score</span><span>${example.decision.fraud_score.toFixed(2)} (would have been let through on its own)</span></div>
+                  <div class="ov-kv-row"><span>AI's risk level</span><span>${fmtPct(example.decision.fraud_score)} (would have been let through on its own)</span></div>
                   <div class="ov-kv-row"><span>Rule it broke</span><span>${esc((example.decision.violated_mandate_rules || []).map((r) => RULE_LABELS[r] || r).join(", "))}</span></div>
                   <div class="ov-kv-row"><span>Final decision</span><span>${badge(example.decision.final_decision)}</span></div>
                 </div>`
@@ -335,11 +335,11 @@ function renderOverviewV2(data) {
           ${
             blockSample
               ? `<div class="ov-proof-card">
-                  <div class="ov-proof-head">Execution Attestation</div>
+                  <div class="ov-proof-head">Proof This Decision Is Real</div>
                   <div class="ov-proof-body">
                     <div class="ov-proof-row"><span>Transaction</span><span>${esc(blockSample.decision.transaction_id)}</span></div>
                     <div class="ov-proof-row"><span>Decision</span><span class="${blockSample.decision.final_decision === "BLOCK" ? "no" : "ok"}">${esc(blockSample.decision.final_decision)}</span></div>
-                    <div class="ov-proof-row"><span>Fraud score</span><span>${blockSample.decision.fraud_score.toFixed(4)}</span></div>
+                    <div class="ov-proof-row"><span>Risk level</span><span>${fmtPct(blockSample.decision.fraud_score)}</span></div>
                     <div class="ov-proof-row"><span>Signed by</span><span>${esc(blockSample.decision.signer)}</span></div>
                     <div class="ov-proof-row"><span>Signature</span><span>${esc(blockSample.decision.signature.slice(0, 28))}&hellip;</span></div>
                     <div class="ov-proof-row"><span>Signatures verified independently</span><span class="${verification.all_verified ? "ok" : "no"}">${verification.verified.toLocaleString()} / ${verification.total.toLocaleString()}</span></div>
@@ -723,36 +723,36 @@ function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
 
     <div class="pipeline-steps">
       <div class="card pipeline-step">
-        <h3>Step 1 &middot; Detection</h3>
+        <h3>Step 1 &middot; AI Risk Check</h3>
         <div class="stat-row">
-          ${statTile("Fraud score", decision.fraud_score.toFixed(4))}
-          ${statTile("Detect layer proposes", badge(decision.detect_decision))}
+          ${statTile("Risk level", fmtPct(decision.fraud_score), "", `Raw model score: ${decision.fraud_score.toFixed(4)}`)}
+          ${statTile("AI's recommendation", badge(decision.detect_decision))}
         </div>
         <p>${(decision.reasons || []).filter((r) => r.startsWith("detect:")).map((r) => esc(r.replace("detect: ", ""))).join(", ") || "no single dominant signal"}</p>
       </div>
 
       <div class="card pipeline-step">
-        <h3>Step 2 &middot; Mandate</h3>
+        <h3>Step 2 &middot; Safety Rules Check</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Rule</th><th>Result</th><th>Reason</th></tr></thead>
+            <thead><tr><th>Rule</th><th>Followed?</th><th>Why</th></tr></thead>
             <tbody>${mandateRows}</tbody>
           </table>
         </div>
       </div>
 
       <div class="card pipeline-step">
-        <h3>Step 3 &middot; Signing</h3>
+        <h3>Step 3 &middot; Proof It's Real</h3>
         <div class="sig-line">
           <span class="dot ${verified ? "good" : "critical"}"></span>
-          <strong>${verified ? "Signature verifies" : "Signature does NOT verify"}</strong>
+          <strong>${verified ? "Verified: this decision is genuine and unaltered" : "NOT verified — this decision may have been tampered with"}</strong>
         </div>
-        <div class="kv-block"><span class="kv-key">Ed25519 signature</span><span class="kv-value mono">${esc(decision.signature.slice(0, 32))}&hellip;</span></div>
+        <div class="kv-block"><span class="kv-key">Digital signature (Ed25519)</span><span class="kv-value mono">${esc(decision.signature.slice(0, 32))}&hellip;</span></div>
         <div class="kv-block"><span class="kv-key">Signed by</span><span class="kv-value">${esc(decision.signer)}</span></div>
       </div>
 
       <div class="card pipeline-step">
-        <h3>Step 4 &middot; Authority (final decision)</h3>
+        <h3>Step 4 &middot; Final Decision</h3>
         <div class="sig-line" style="margin-bottom:12px">${badge(decision.final_decision)}</div>
         <p>${
           decision.final_decision === "BLOCK"
@@ -891,15 +891,15 @@ function renderLiveTest(data, customersData) {
             <input list="merchant-list" name="merchant" value="${esc(merchants[0] || "")}" required>
             <datalist id="merchant-list">${merchantOptions}</datalist>
           </label>
-          <label>Hour of day (0 to 23)
+          <label>What time is it? (hour, 0&ndash;23)
             <span class="hint">Most simulated fraud happens at odd hours (2&ndash;5am)</span>
             <input type="number" name="hour_of_day" min="0" max="23" value="12" required>
           </label>
-          <label>AI generated signal (0 to 1)
-            <span class="hint">0 = looks like real behavior &middot; 1 = looks like a fabricated pattern</span>
+          <label>How suspicious does the pattern look? (0 to 1)
+            <span class="hint">0 = looks like normal human behavior &middot; 1 = looks like a fabricated, AI-generated pattern</span>
             <input type="number" name="ai_generated_signal" min="0" max="1" step="0.01" value="0.1" required>
           </label>
-          <button type="submit" class="submit-btn">Run transaction</button>
+          <button type="submit" class="submit-btn">Check this payment</button>
         </form>
         <div id="customer-info-wrap">${customerInfoHtml(customers[0])}</div>
         <p class="form-hint">Each customer's mandate (spending limit, allowed merchants, allowed hours) was derived from their own real transaction history. Try an unlisted merchant or an odd hour to see the mandate layer object on its own. Press Escape to reset the form.</p>
@@ -920,7 +920,7 @@ function renderProof(data) {
       const d = e.decision;
       return `<tr>
         <td class="mono">${esc(d.transaction_id)}</td>
-        <td>${d.fraud_score}</td>
+        <td>${fmtPct(d.fraud_score)}</td>
         <td>${badge(d.final_decision)}</td>
         <td class="mono">${esc(d.signature.slice(0, 24))}&hellip;</td>
       </tr>`;
@@ -959,7 +959,7 @@ function renderProof(data) {
         <h3>Sample signed decisions</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Transaction</th><th>Fraud score</th><th>Decision</th><th>Signature</th></tr></thead>
+            <thead><tr><th>Transaction</th><th>Risk level</th><th>Decision</th><th>Signature</th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>
@@ -1073,8 +1073,8 @@ function wireLiveTest(customersData) {
           { label: "Customer", value: `${tx.customer_name} (${tx.customer_id})` },
           { label: "Amount", value: fmtMoney(tx.amount) },
           { label: "Merchant", value: tx.merchant },
-          { label: "Hour of day", value: tx.hour_of_day },
-          { label: "AI generated signal", value: tx.ai_generated_signal },
+          { label: "Time", value: `${tx.hour_of_day}:00` },
+          { label: "Suspicion level", value: tx.ai_generated_signal },
         ],
         payload.decision,
         payload.mandate_checks,
@@ -1084,7 +1084,7 @@ function wireLiveTest(customersData) {
       result.innerHTML = `<div class="error-inline">Couldn't run the live pipeline: ${esc(err.message)}.<br>The Live Test Harness needs the Flask server (<code>python web/server.py</code>). It isn't available under <code>python -m http.server</code>.</div>`;
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = "Run transaction";
+      submitBtn.textContent = "Check this payment";
     }
   });
 }

@@ -11,6 +11,19 @@ its `meta.generated_at`); rerunning `pipeline/src/run_pipeline.py`
 regenerates them and they will move slightly (see README.md's Robustness
 section for why that's by design).
 
+## In Plain English
+
+A few of the numbers below, translated:
+
+- "92.22% recall" → **Our system caught 92.2% of fraud attempts in testing.**
+- "6.28% false positive rate" → **Out of every 100 normal, legitimate payments, about 6 got wrongly flagged for a second look.**
+- "28.18% precision" → **Of everything the system flagged as suspicious, about 1 in 4 turned out to actually be fraud** — the rest were false alarms caught before they became a real problem.
+- "Deterministic decision transparency" → **Every decision comes with an explanation of exactly why it was made.**
+- "Mandate enforcement" → **The customer's own safety rules always apply — there are no silent exceptions.**
+- "Signed and tamper-evident" → **Every decision is stamped with a proof that nobody can fake or quietly edit after the fact.**
+
+Every claim below still links to the exact file and command that proves it — nothing here is asserted without evidence.
+
 ---
 
 CLAIM: 92.22% fraud catch rate (recall)
