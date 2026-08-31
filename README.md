@@ -120,6 +120,8 @@ pip install -r requirements.txt
 
 ```powershell
 pytest -q
+<img width="1037" height="73" alt="image" src="https://github.com/user-attachments/assets/1a9fec15-c726-4ba7-9bbb-15c5945f8fea" />
+
 ```
 
 Expected result:
@@ -132,6 +134,8 @@ Expected result:
 
 ```powershell
 python .\pipeline\src\run_pipeline.py
+<img width="1567" height="612" alt="image" src="https://github.com/user-attachments/assets/e96bbeee-572e-4743-a1b4-c16ecbcdaf0e" />
+
 ```
 
 The pipeline executes:
@@ -179,6 +183,8 @@ Run:
 
 ```powershell
 python .\examples\run_examples.py
+<img width="980" height="926" alt="image" src="https://github.com/user-attachments/assets/748cf344-b612-4f9f-b1a0-618c15d7ecd5" />
+
 ```
 
 The examples demonstrate:
@@ -251,9 +257,6 @@ The examples provide focused scenarios; the full pipeline provides the large-sca
 
 
 # How It Works
-
-<img width="1507" height="641" alt="image" src="https://github.com/user-attachments/assets/7acd2bda-7d02-48c0-a467-34bbc6e50b6b" />
-
 
 ## 1. Detector Generates a Signal
 
@@ -403,8 +406,6 @@ This provides an independently verifiable record of what decision was produced a
 # The Critical Proof
 
 The most important demonstration is a case where the detector **does not detect the problem**, but the policy layer still prevents the transaction from executing.
-
-<img width="1055" height="926" alt="image" src="https://github.com/user-attachments/assets/82afae9a-9eb4-4575-a839-18932d5ccbf8" />
 
 
 ## Example 1 — Legitimate Purchase
