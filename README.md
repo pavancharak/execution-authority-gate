@@ -124,7 +124,8 @@ pytest -q
 
 Expected result:
 
-<img width="1037" height="73" alt="image" src="https://github.com/user-attachments/assets/1a9fec15-c726-4ba7-9bbb-15c5945f8fea" />
+<img width="1091" height="86" alt="image" src="https://github.com/user-attachments/assets/25a64470-c883-42f9-94a6-00bce50df092" />
+
 
 ```text
 136 passed, 4 skipped
@@ -141,7 +142,8 @@ python .\pipeline\src\run_pipeline.py
 
 The pipeline executes:
 
-<img width="1567" height="612" alt="image" src="https://github.com/user-attachments/assets/e96bbeee-572e-4743-a1b4-c16ecbcdaf0e" />
+<img width="1580" height="601" alt="image" src="https://github.com/user-attachments/assets/22b442e3-3ef1-4b53-8db6-e660b345af2c" />
+
 ```text
 Detect → Mandate → Policy → Sign
 ```
