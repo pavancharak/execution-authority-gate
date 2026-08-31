@@ -104,6 +104,151 @@ The detector does **not** directly authorize execution.
 Its output becomes an input to the policy layer.
 
 ---
+## Quick Start — Run the Examples
+
+The repository includes three concrete authorization scenarios demonstrating the separation between AI detection and execution authority.
+
+### 1. Install dependencies
+
+From the repository root:
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 2. Run the full test suite
+
+```powershell
+pytest -q
+```
+
+Expected result:
+
+```text
+136 passed, 4 skipped
+```
+
+### 3. Run the end-to-end pipeline
+
+```powershell
+python .\pipeline\src\run_pipeline.py
+```
+
+The pipeline executes:
+
+```text
+Detect → Mandate → Policy → Sign
+```
+
+A successful run produces signed decisions and independently verifies the signatures.
+
+Example output:
+
+```text
+6,912 signed pipeline decisions
+
+BLOCK: 446
+FLAG:  150
+ALLOW: 6,316
+
+Verification: 6912/6912 signatures verify independently
+```
+
+Generated artifacts include:
+
+```text
+pipeline/decisions/pipeline_decisions.json
+pipeline/audit/decisions.jsonl
+web/data/dashboard.json
+```
+
+### 4. Run the authorization examples
+
+The `examples/` directory contains three focused scenarios:
+
+```text
+examples/
+├── 01-legitimate-purchase.json
+├── 02-high-risk-new-account.json
+├── 03-detector-miss-mandate-catches.json
+├── README.md
+└── run_examples.py
+```
+
+Run:
+
+```powershell
+python .\examples\run_examples.py
+```
+
+The examples demonstrate:
+
+```text
+Example 01
+Detector: ALLOW
+Mandate:  PASS
+Policy:   APPROVE
+```
+
+```text
+Example 02
+Detector: FLAG
+Mandate:  VIOLATED
+Policy:   REJECT
+```
+
+Most importantly:
+
+```text
+Example 03
+Detector: ALLOW
+Mandate:  VIOLATED
+Policy:   REJECT
+```
+
+Example 03 demonstrates the core Execution Authority Gate property:
+
+> **A detector recommendation does not have execution authority.**
+
+Even when the AI detector produces `ALLOW`, a deterministic mandate violation causes the policy layer to produce `REJECT`.
+
+### 5. Run the web dashboard
+
+After running the pipeline:
+
+```powershell
+cd web
+python -m http.server
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+The dashboard reads the generated:
+
+```text
+web/data/dashboard.json
+```
+
+### Repository validation
+
+A healthy repository should pass:
+
+```powershell
+pytest -q
+```
+
+and the end-to-end pipeline should complete with:
+
+```text
+Verification: 6912/6912 signatures verify independently
+```
+
+The examples provide focused scenarios; the full pipeline provides the large-scale end-to-end execution and signing demonstration.
+
 
 # How It Works
 
