@@ -96,68 +96,14 @@ function badge(decision) {
   return `<span class="badge ${cls}">${esc(decision)}</span>`;
 }
 
-/** The one diagram that actually shows the mechanism: a transaction
- * forks into two independent checks (a statistical model and a rule
- * check against the customer's own history), either of which can
- * force a BLOCK on its own, before anything is signed, logged, or
- * handed off for execution. This is the whole architectural
- * differentiator in one picture, not a decorative flowchart. Styled
- * entirely through CSS classes (diag-*) defined in style.css against
- * this site's existing theme tokens, so it stays legible in light and
- * dark mode with no inline colors. */
-function renderArchDiagram() {
-  return `
-  <svg class="arch-diagram" viewBox="0 0 1000 300" role="img" aria-label="Architecture: a transaction forks into an independent detect layer and mandate layer, either of which can force a block; the combined decision is then signed, logged to an append only audit trail, and handed off for execution.">
-    <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M0,0 L10,5 L0,10 z" class="diag-arrowhead"></path>
-      </marker>
-    </defs>
-
-    <text x="500" y="24" class="diag-caption" text-anchor="middle">One transaction. Two checks that do not trust each other. Neither alone can allow it.</text>
-
-    <path d="M70,150 H120 Q140,150 140,130 V90 Q140,70 160,70 H160" class="diag-arrow" marker-end="url(#arrow)"></path>
-    <path d="M70,150 H120 Q140,150 140,170 V210 Q140,230 160,230 H160" class="diag-arrow" marker-end="url(#arrow)"></path>
-    <path d="M330,70 H390 Q410,70 410,90 V130 Q410,150 420,150" class="diag-arrow" marker-end="url(#arrow)"></path>
-    <path d="M330,230 H390 Q410,230 410,210 V170 Q410,150 420,150" class="diag-arrow" marker-end="url(#arrow)"></path>
-    <path d="M580,150 H630" class="diag-arrow" marker-end="url(#arrow)"></path>
-    <path d="M770,150 H830" class="diag-arrow" marker-end="url(#arrow)"></path>
-    <path d="M700,180 V220" class="diag-arrow diag-arrow-branch" marker-end="url(#arrow)"></path>
-
-    <rect x="10" y="125" width="60" height="50" rx="8" class="diag-box"></rect>
-    <text x="40" y="155" class="diag-title" text-anchor="middle">Tx</text>
-
-    <rect x="160" y="40" width="170" height="60" rx="8" class="diag-box"></rect>
-    <text x="245" y="65" class="diag-title" text-anchor="middle">Detect</text>
-    <text x="245" y="84" class="diag-sub" text-anchor="middle">RandomForest fraud score</text>
-
-    <rect x="160" y="200" width="170" height="60" rx="8" class="diag-box diag-box-accent"></rect>
-    <text x="245" y="225" class="diag-title" text-anchor="middle">Mandate</text>
-    <text x="245" y="244" class="diag-sub" text-anchor="middle">customer's own history</text>
-
-    <rect x="420" y="120" width="160" height="60" rx="8" class="diag-box"></rect>
-    <text x="500" y="145" class="diag-title" text-anchor="middle">Combine</text>
-    <text x="500" y="164" class="diag-sub" text-anchor="middle">either objects, BLOCK</text>
-
-    <rect x="630" y="120" width="140" height="60" rx="8" class="diag-box diag-box-accent"></rect>
-    <text x="700" y="145" class="diag-title" text-anchor="middle">Sign</text>
-    <text x="700" y="164" class="diag-sub" text-anchor="middle">Ed25519</text>
-
-    <rect x="630" y="220" width="140" height="50" rx="8" class="diag-box diag-box-accent"></rect>
-    <text x="700" y="241" class="diag-title" text-anchor="middle">Audit</text>
-    <text x="700" y="259" class="diag-sub" text-anchor="middle">append only</text>
-
-    <rect x="830" y="120" width="160" height="60" rx="8" class="diag-box"></rect>
-    <text x="910" y="145" class="diag-title" text-anchor="middle">Execute</text>
-    <text x="910" y="164" class="diag-sub" text-anchor="middle">caller scoped</text>
-  </svg>`;
-}
+const RULE_LABELS = {
+  spending_limit: "Spending limit",
+  merchant_whitelist: "Merchant whitelist",
+  time_restriction: "Time of day window",
+  velocity: "Daily velocity",
+};
 
 const GITHUB_REPO = "https://github.com/pavancharak/execution-authority-gate";
-
-function goToTabLink(tab, label) {
-  return `<button type="button" class="link-btn" data-goto-tab="${esc(tab)}">${esc(label)}</button>`;
-}
 
 /** Opens the real source on GitHub in a new tab, distinct from the
  * data-goto-tab links elsewhere on this page: this one leaves the app
@@ -168,189 +114,327 @@ function githubLink(path, label) {
   return `<a class="link-btn github-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
 }
 
-function criteriaCard(number, title, description, tab, linkLabel, githubPath, githubLabel) {
-  return `<div class="card criteria-card">
-    <div class="criteria-number">${number}</div>
-    <h3 class="criteria-title">${esc(title)}</h3>
-    <p class="criteria-desc">${description}</p>
-    <div class="criteria-links">
-      ${goToTabLink(tab, linkLabel)}
-      ${githubLink(githubPath, githubLabel)}
-    </div>
-  </div>`;
+/** Identify -> Generate -> Detect -> Authorize -> Prove: the same five
+ * stage names as this repo's own top-level folders (identify/,
+ * generate/, detect/, mandate/+sign/, pipeline/audit), reused as the
+ * hero flow and the closed-loop diagram so the landing page's
+ * architecture claim is literally the repo layout, not marketing
+ * shorthand invented for the page. */
+const OV_STAGES = [
+  { k: "identify", label: "Identify", desc: "Map GenAI payment fraud attack surfaces" },
+  { k: "generate", label: "Generate", desc: "Simulate attacks with bounded agents" },
+  { k: "detect", label: "Detect", desc: "Score fraud risk with a trained classifier" },
+  { k: "authorize", label: "Authorize", desc: "Independent mandate check, then sign" },
+  { k: "prove", label: "Prove", desc: "Verify signatures, append to audit trail" },
+];
+
+function ovFlow(accentKeys = []) {
+  const steps = OV_STAGES.map(
+    (s, i) => `<div class="ov-flow-step">
+      <div class="ov-flow-node" style="${accentKeys.includes(s.k) ? "border-color:var(--ov-accent);color:var(--ov-accent)" : ""}">${i + 1}</div>
+      <div class="ov-flow-label">${esc(s.label)}</div>
+      <div class="ov-flow-desc">${esc(s.desc)}</div>
+    </div>`
+  ).join("");
+  return `<div class="ov-flow">${steps}</div>`;
 }
 
-function renderOverview(data) {
+function ovLoop() {
+  const nodes = OV_STAGES.map(
+    (s, i) => `<div class="ov-loop-node${i >= 3 ? " accent" : ""}">${esc(s.label)}</div>${i < OV_STAGES.length - 1 ? '<div class="ov-loop-arrow">→</div>' : ""}`
+  ).join("");
+  return `<div class="ov-loop">${nodes}</div><p class="ov-loop-back">↩ New attack patterns feed back into Identify. The loop never stops.</p>`;
+}
+
+function renderOverviewV2(data) {
   const sim = data.simulation;
   const detect = data.detect.metrics;
+  const mandate = data.mandate;
   const pipeline = data.pipeline;
   const verification = data.verification;
-  const api = data.api_activity.summary;
   const attacks = data.attacks || [];
 
   const totalTx = sim.good_transaction_count + sim.fraud_transaction_count;
   const fraudRate = sim.fraud_transaction_count / totalTx;
   const simulatedCount = attacks.filter((a) => a.real_llm_calls || !/known gap/i.test(a.simulated_by)).length;
+  const gapCount = attacks.length - simulatedCount;
+  const mandateOnly = mandate.block_attribution.mandate_only;
+  const example = (mandate.sample_mandate_only_blocks || [])[0];
+  const blockSample = pipeline.sample_decisions.find((e) => e.decision.final_decision === "BLOCK") || pipeline.sample_decisions[0];
 
-  const decisionRows = ["BLOCK", "FLAG", "ALLOW"].map((d) => ({
-    name: d,
-    value: pipeline.decision_counts[d] || 0,
-    max: pipeline.total,
-    colorVar: STATUS[d],
-  }));
+  const attackChips = attacks
+    .map((a) => {
+      const gap = /known gap/i.test(a.simulated_by) && !a.real_llm_calls;
+      return `<button type="button" class="ov-attack-chip" data-goto-tab="attacks">${esc(a.name)}${gap ? '<span class="gap-tag">Documented gap</span>' : ""}</button>`;
+    })
+    .join("");
 
   return `
-    <div class="hero">
-      <div class="hero-eyebrow">Mastercard Innovation Challenge, AI Defense Lab 2026</div>
-      <h1 class="hero-headline">Execution Authority Gate</h1>
-      <p class="hero-sub">A payment fraud defense system with cryptographic accountability. Every transaction is detected, checked against an authorization mandate, signed, and logged, before it counts as a decision.</p>
-      <button type="button" class="btn-primary hero-cta" data-goto-tab="live-test">Explore the system</button>
-    </div>
-
-    <div class="section landing-section arch-section">
-      <div class="arch-diagram-wrap">${renderArchDiagram()}</div>
-      <div class="arch-callouts">
-        <div class="arch-callout">
-          <div class="arch-callout-label">What is different</div>
-          <p>Two independent layers, not one model wearing two hats. A statistical fraud score and a rule check against the customer's own real history both have to agree before a transaction is allowed. Either one can force a block alone.</p>
-        </div>
-        <div class="arch-callout">
-          <div class="arch-callout-label">Why it is different</div>
-          <p>A model can be confidently wrong. In this run, the mandate layer caught ${data.mandate.block_attribution.mandate_only} real fraud transactions the detector alone scored as low risk, evidence the second layer earns its place rather than duplicating the first.</p>
-        </div>
-        <div class="arch-callout">
-          <div class="arch-callout-label">What it enables</div>
-          <p>When an AI agent initiates a payment, a model's confidence is not authorization. Every decision here is signed, scoped to the caller who may act on it, and logged to an append only trail, so an agent can propose a transaction but never grant itself permission to execute it.</p>
+    <div class="ov">
+      <div class="ov-section ov-hero">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">AI Payment Defense &middot; Execution Authority Gate</div>
+          <h1 class="ov-h1">AI can generate the attack.<br>It doesn't get to execute it.</h1>
+          ${ovFlow()}
+          <p class="ov-sub" style="margin-top:36px">Execution Authority Gate identifies and simulates emerging GenAI payment fraud, scores risk with a trained detector, and independently enforces whether an AI-driven transaction is actually authorized to execute.</p>
+          <div class="ov-cta-row">
+            <button type="button" class="ov-btn ov-btn-primary" data-goto-tab="live-test">Run Live Defense →</button>
+            <button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="attacks">Explore Attack Intelligence →</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="section landing-section">
-      <div class="section-eyebrow">The challenge</div>
-      <h2>What you are evaluating</h2>
-      <p>This is a fraud defense system built for Mastercard's AI Defense Lab. It identifies AI generated payment fraud, runs real time detection, enforces authorization rules independent of that detection, cryptographically signs every decision, and keeps a durable, append only audit trail. Everything here is live: every number below comes from this repository's own committed run, not a mockup.</p>
-      <ul class="landing-list">
-        <li>${attacks.length} documented attack types, ${simulatedCount} actively simulated</li>
-        <li>${totalTx.toLocaleString()} transactions at a realistic ${fmtPct(fraudRate)} fraud rate</li>
-        <li>${fmtPct(detect.fraud_caught_rate)} fraud caught by the trained detector</li>
-        <li>An independent mandate layer, derived from each customer's own history</li>
-        <li>${pipeline.total.toLocaleString()} decisions signed with Ed25519, ${verification.verified}/${verification.total} verified independently</li>
-      </ul>
-    </div>
-
-    <div class="section landing-section">
-      <div class="section-eyebrow">How this is evaluated</div>
-      <h2>Five criteria, five places to check them</h2>
-      <div class="criteria-grid">
-        ${criteriaCard(
-          "01",
-          "Diversity of attacks identified",
-          `${attacks.length} documented GenAI payment fraud attack types, spanning card, wire, real time, and agentic commerce rails.`,
-          "attacks",
-          "See the attack taxonomy",
-          "identify/attack-taxonomy.md",
-          "View source"
-        )}
-        ${criteriaCard(
-          "02",
-          "Fidelity of attacks in simulation",
-          `Real OpenAI API calls generate the fraud examples, at a realistic ${fmtPct(fraudRate)} base rate, not a hand authored sample.`,
-          "live-test",
-          "Try a live example",
-          "generate/src/fraud_agents.py",
-          "View source"
-        )}
-        ${criteriaCard(
-          "03",
-          "Detection algorithm efficacy",
-          `${fmtPct(detect.fraud_caught_rate)} catch rate, ${fmtPct(detect.false_positive_rate)} false positive rate, full confusion matrix and reasoning for both.`,
-          "detect",
-          "View detection metrics",
-          "detect/src/detector.py",
-          "View source"
-        )}
-        ${criteriaCard(
-          "04",
-          "Novelty of the overall solution",
-          "Detection and authorization are independent layers, neither can force an allow alone, and every decision is signed, caller scoped, and execution ready.",
-          "mandate",
-          "See the mandate layer",
-          "ARCHITECTURE.md",
-          "View source"
-        )}
-        ${criteriaCard(
-          "05",
-          "Real world feasibility",
-          "A latency budget under 200ms, a path to 100M transactions a day, and a compliance mapping to PCI DSS, RBI, and GDPR.",
-          "proof",
-          "See the proof and docs",
-          "docs/PRODUCTION_DEPLOYMENT.md",
-          "View source"
-        )}
-      </div>
-    </div>
-
-    <div class="section landing-section">
-      <div class="section-eyebrow">Quick start</div>
-      <h2>Two minutes, start to finish</h2>
-      <div class="quick-steps">
-        <div class="quick-step"><span class="quick-step-n">1</span><span>Open the <strong>Live Test</strong> tab.</span></div>
-        <div class="quick-step"><span class="quick-step-n">2</span><span>Click the <strong>Normal transaction</strong> example button.</span></div>
-        <div class="quick-step"><span class="quick-step-n">3</span><span>Read the decision, detect, then mandate, then sign, then the final outcome.</span></div>
-        <div class="quick-step"><span class="quick-step-n">4</span><span>Click <strong>Flagged</strong>, then <strong>Blocked</strong>, and compare what changed.</span></div>
-        <div class="quick-step"><span class="quick-step-n">5</span><span>Try your own amount, merchant, hour, and AI signal.</span></div>
-      </div>
-      <p class="quick-links">Then explore: ${goToTabLink("attacks", "Attacks")} &middot; ${goToTabLink("detect", "Detection")} &middot; ${goToTabLink("proof", "Proof")} &middot; ${goToTabLink("faq", "FAQ")} &middot; ${githubLink(null, "View source on GitHub")}</p>
-    </div>
-
-    <div class="section landing-section">
-      <div class="section-eyebrow">Credibility</div>
-      <h2>Real data, real crypto, honest numbers</h2>
-      <div class="trust-grid">
-        <div class="trust-item">
-          <div class="trust-title">Real data</div>
-          <p>${totalTx.toLocaleString()} live transactions (${sim.fraud_transaction_count.toLocaleString()} fraud) at a realistic ${fmtPct(fraudRate)} base rate, not a curated demo set.</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-title">Real AI models</div>
-          <p>${
-            api.total_calls > 0
-              ? `${api.total_calls} real OpenAI GPT-4o-mini calls, ${fmtCost(api.total_cost_usd)} total cost, generating four of the seven simulated attack types.`
-              : "OpenAI GPT-4o-mini calls generate four of the seven simulated attack types. Run the generate layer with an API key to populate this run's activity."
-          }</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-title">Real cryptography</div>
-          <p>Ed25519 signatures on every decision. ${verification.verified.toLocaleString()} of ${verification.total.toLocaleString()} verify independently against a public key committed to git.</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-title">Honest metrics</div>
-          <p>${fmtPct(detect.fraud_caught_rate)} catch rate with a ${fmtPct(detect.false_positive_rate)} false positive rate, and the Detection tab explains why that tradeoff is expected, not hidden.</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-title">Regulatory mapping</div>
-          <p>PCI DSS, RBI (India), and GDPR considerations documented in the production deployment guide, not asserted without support.</p>
-        </div>
-        <div class="trust-item">
-          <div class="trust-title">Complete documentation</div>
-          <p>CLAIMS.md traces every metric to a file and a runnable command. The production guide includes a fifteen point integration checklist.</p>
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">The core idea</div>
+          <h2 class="ov-h2">Detection &ne; Authorization</h2>
+          <p class="ov-lede">A fraud model answers: <strong>"Does this look risky?"</strong><br>Execution Authority Gate answers: <strong>"Is this action actually authorized to execute?"</strong></p>
+          <div class="ov-compare">
+            <div class="ov-compare-col muted">
+              <div class="ov-compare-title">Conventional flow</div>
+              <div class="ov-compare-flow">
+                <div class="ov-compare-node">Transaction</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Fraud model</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Allow / Block</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Execution</div>
+              </div>
+              <div class="ov-compare-tag">Model recommendation becomes action</div>
+            </div>
+            <div class="ov-compare-col accent">
+              <div class="ov-compare-title">Execution Authority Gate</div>
+              <div class="ov-compare-flow">
+                <div class="ov-compare-node">Transaction</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Fraud model → risk score</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Independent mandate policy</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Signed authority decision</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Allow / Flag / Block</div>
+                <div class="ov-compare-arrow">↓</div>
+                <div class="ov-compare-node">Auditable proof</div>
+              </div>
+              <div class="ov-compare-tag">Recommendation &ne; execution authority</div>
+            </div>
+          </div>
+          <p class="ov-sub" style="margin-top:24px">A detector can be wrong. Execution authority cannot be assumed.</p>
         </div>
       </div>
-    </div>
 
-    <div class="section landing-section">
-      <div class="card">
-        <h3>Final decisions, this run</h3>
-        ${barChart(decisionRows)}
-        ${legend(decisionRows.map((r) => ({ label: r.name, colorVar: r.colorVar })))}
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">The proof it works</div>
+          <h2 class="ov-h2">What happens when the detector misses?</h2>
+          <p class="ov-sub">This is not a hypothetical. In this run's own data, the detector scored ${mandateOnly.toLocaleString()} real fraud transactions as low enough risk that it alone would have allowed them. The mandate layer blocked every one.</p>
+          <div class="ov-demo-flow">
+            <div class="ov-demo-step"><span class="ov-demo-icon">⚠</span><div class="ov-demo-title">GenAI attack</div><div class="ov-demo-sub">Synthetic fraud transaction</div></div>
+            <div class="ov-demo-arrow">→</div>
+            <div class="ov-demo-step warn"><span class="ov-demo-icon">✓</span><div class="ov-demo-title">Fraud detector</div><div class="ov-demo-sub">Scores it low risk (false negative)</div></div>
+            <div class="ov-demo-arrow">→</div>
+            <div class="ov-demo-step block"><span class="ov-demo-icon">✕</span><div class="ov-demo-title">Authority gate</div><div class="ov-demo-sub">Mandate rule objects independently</div></div>
+            <div class="ov-demo-arrow">→</div>
+            <div class="ov-demo-step block"><span class="ov-demo-icon">✕</span><div class="ov-demo-title">Execution blocked</div><div class="ov-demo-sub">Nothing settles on a BLOCK</div></div>
+          </div>
+          ${
+            example
+              ? `<div class="ov-example-card">
+                  <div class="ov-example-title">Real example from this run</div>
+                  <div class="ov-kv-row"><span>Transaction</span><span>${esc(example.decision.transaction_id)}</span></div>
+                  <div class="ov-kv-row"><span>Amount</span><span>${fmtMoney(example.ground_truth.amount)} at ${esc(example.ground_truth.merchant)}</span></div>
+                  <div class="ov-kv-row"><span>Fraud score</span><span>${example.decision.fraud_score.toFixed(2)} (would have been allowed alone)</span></div>
+                  <div class="ov-kv-row"><span>Mandate rule violated</span><span>${esc((example.decision.violated_mandate_rules || []).map((r) => RULE_LABELS[r] || r).join(", "))}</span></div>
+                  <div class="ov-kv-row"><span>Final decision</span><span>${badge(example.decision.final_decision)}</span></div>
+                </div>`
+              : ""
+          }
+          <div class="ov-insight">
+            <p>The detector was fooled. The authority layer was not.<br><strong>This is what separates detection from execution authority.</strong></p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="footer-cta">
-      <h2>Ready to evaluate</h2>
-      <button type="button" class="btn-primary" data-goto-tab="live-test">Start with Live Test</button>
-      <p class="footer-links">Or jump to: ${goToTabLink("attacks", "Attacks")} &middot; ${goToTabLink("detect", "Detection")} &middot; ${goToTabLink("proof", "Proof")} &middot; ${goToTabLink("faq", "FAQ")} &middot; ${githubLink(null, "GitHub repo")}</p>
-      <p class="footer-note">Built for the Mastercard Innovation Challenge, AI Defense Lab 2026.</p>
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Attack the defense before attackers do</div>
+          <h2 class="ov-h2">Attack intelligence</h2>
+          <p class="ov-sub">Identify emerging GenAI-powered payment fraud, model realistic attack scenarios, and turn those attacks into a continuous testing ground for the defense.</p>
+          <div class="ov-metric-row">
+            <div class="ov-metric"><div class="ov-metric-value">${attacks.length}</div><div class="ov-metric-label">GenAI payment fraud types identified</div></div>
+            <div class="ov-metric"><div class="ov-metric-value">${simulatedCount}</div><div class="ov-metric-label">Attack types actively simulated, ${gapCount} documented as open gaps</div></div>
+            <div class="ov-metric"><div class="ov-metric-value">${fmtPct(fraudRate)}</div><div class="ov-metric-label">Fraud rate across ${totalTx.toLocaleString()} generated transactions</div></div>
+          </div>
+          <div class="ov-attack-grid">${attackChips}</div>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Closed-loop architecture</div>
+          <h2 class="ov-h2">From attack discovery to execution defense</h2>
+          <p class="ov-sub">A common brief for this challenge is Identify &rarr; Generate &rarr; Defend. Execution Authority Gate splits Defend into three independently verifiable steps &mdash; Detect, then Authorize, then Prove &mdash; so a decision is never just a score.</p>
+          ${ovLoop()}
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">See it run</div>
+          <h2 class="ov-h2">Don't take our word for it. Run the defense.</h2>
+          <p class="ov-sub">Change one transaction variable. Watch detection respond. Then see whether the mandate layer grants execution authority.</p>
+          <div class="ov-frame">
+            <div class="ov-frame-bar"><span class="ov-frame-dot"></span><span class="ov-frame-dot"></span><span class="ov-frame-dot"></span></div>
+            <div class="ov-frame-body">
+              <p style="margin:0 0 4px;color:var(--ov-text);font-size:14px;font-weight:600">Live test harness &middot; real trained model, real mandate rules, real Ed25519 signature</p>
+              <p style="margin:0;font-size:13px">Three real, verified starting points, each a real input that reproduces the labeled outcome:</p>
+              <div class="ov-frame-outcomes">
+                <div class="ov-frame-outcome allow"><span class="tag">ALLOW</span><p>Normal spend, known merchant, ordinary hour</p></div>
+                <div class="ov-frame-outcome flag"><span class="tag">FLAG</span><p>Large amount, late hour, ambiguous signal</p></div>
+                <div class="ov-frame-outcome block"><span class="tag">BLOCK</span><p>Unfamiliar merchant, odd hour, high AI signal</p></div>
+              </div>
+              <div class="ov-cta-row"><button type="button" class="ov-btn ov-btn-primary" data-goto-tab="live-test">Run Live Test →</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Authority outcomes, not fraud labels</div>
+          <h2 class="ov-h2">Three decision states</h2>
+          <p class="ov-sub">These are authority decisions, computed after the mandate and signing layers run, not raw fraud classifications.</p>
+          <div class="ov-decision-grid">
+            <div class="ov-decision-card allow">
+              <div class="ov-decision-head"><span class="ov-decision-icon">✓</span>ALLOW</div>
+              <div class="ov-decision-sub">Authority granted</div>
+              <p>Detect and mandate both agree. Policy conditions satisfied. The signed decision is ready to execute.</p>
+            </div>
+            <div class="ov-decision-card flag">
+              <div class="ov-decision-head"><span class="ov-decision-icon">⚠</span>FLAG</div>
+              <div class="ov-decision-sub">Additional review required</div>
+              <p>Risk is ambiguous or policy calls for a human step. Sent to manual review, not silently allowed or blocked.</p>
+            </div>
+            <div class="ov-decision-card block">
+              <div class="ov-decision-head"><span class="ov-decision-icon">✕</span>BLOCK</div>
+              <div class="ov-decision-sub">Authority denied</div>
+              <p>Detect or mandate objected, either is enough alone. Execution does not proceed.</p>
+            </div>
+          </div>
+          <div class="ov-cta-row"><button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="proof">See Proof →</button></div>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Proof &amp; evidence</div>
+          <h2 class="ov-h2">Every governed action leaves evidence.</h2>
+          <p class="ov-sub">A decision is not enough. Every final decision is signed with Ed25519 by an external authority, neither the detector nor the mandate checker holds the private key, and anyone can verify a signature independently against the public key committed to this repo.</p>
+          ${
+            blockSample
+              ? `<div class="ov-proof-card">
+                  <div class="ov-proof-head">Execution Attestation</div>
+                  <div class="ov-proof-body">
+                    <div class="ov-proof-row"><span>Transaction</span><span>${esc(blockSample.decision.transaction_id)}</span></div>
+                    <div class="ov-proof-row"><span>Decision</span><span class="${blockSample.decision.final_decision === "BLOCK" ? "no" : "ok"}">${esc(blockSample.decision.final_decision)}</span></div>
+                    <div class="ov-proof-row"><span>Fraud score</span><span>${blockSample.decision.fraud_score.toFixed(4)}</span></div>
+                    <div class="ov-proof-row"><span>Signed by</span><span>${esc(blockSample.decision.signer)}</span></div>
+                    <div class="ov-proof-row"><span>Signature</span><span>${esc(blockSample.decision.signature.slice(0, 28))}&hellip;</span></div>
+                    <div class="ov-proof-row"><span>Signatures verified independently</span><span class="${verification.all_verified ? "ok" : "no"}">${verification.verified.toLocaleString()} / ${verification.total.toLocaleString()}</span></div>
+                  </div>
+                </div>`
+              : ""
+          }
+          <div class="ov-cta-row"><button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="proof">Inspect Proof →</button></div>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Real-world architecture</div>
+          <h2 class="ov-h2">Built to sit between AI decisions and real-world action.</h2>
+          <div class="ov-vflow">
+            <div class="ov-vflow-node">AI agents / ML models</div>
+            <div class="ov-vflow-arrow">↓</div>
+            <div class="ov-vflow-node">Risk / intent signal</div>
+            <div class="ov-vflow-arrow">↓</div>
+            <div class="ov-vflow-node accent">Execution Authority Gate</div>
+            <div class="ov-vflow-arrow">↓</div>
+            <div class="ov-vflow-branch">
+              <div class="ov-vflow-node">Allow</div>
+              <div class="ov-vflow-node">Flag</div>
+              <div class="ov-vflow-node">Block</div>
+            </div>
+            <div class="ov-vflow-arrow">↓</div>
+            <div class="ov-vflow-node">Caller-scoped execution</div>
+            <div class="ov-vflow-arrow">↓</div>
+            <div class="ov-vflow-node accent">Auditable proof</div>
+          </div>
+          <p class="ov-sub" style="margin:24px auto 0;text-align:center">Execution Authority Gate does not need to replace an institution's existing fraud model. It provides an enforcement boundary around AI-driven decisions and payment execution.</p>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Security principles</div>
+          <h2 class="ov-h2">Built on six rules, all of them in code today</h2>
+          <div class="ov-principle-grid">
+            <div class="ov-principle-card"><div class="ov-principle-title">Deterministic policy</div><p>The detector recommends. The mandate layer decides, using rules derived from that customer's own history, not the model's confidence.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Fail closed</div><p>Every authenticated enforcement call requires a valid caller token. A missing or invalid token means the action never runs, not a default allow.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Replay protection</div><p>Every signed decision is checked against an idempotency log before execution. The same decision cannot be executed twice.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Cryptographic evidence</div><p>Ed25519 signatures on every decision, verifiable with only the public key, ${verification.verified.toLocaleString()}/${verification.total.toLocaleString()} verified independently in this run.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Separation of detection &amp; authority</div><p>A high or low fraud score never directly triggers execution. It is one input the mandate layer weighs, and either layer can force a block alone.</p></div>
+            <div class="ov-principle-card"><div class="ov-principle-title">Explainable enforcement</div><p>Every decision carries its reasons: the fraud score, which mandate rules passed or failed, and why the final state came out the way it did.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-section">
+        <div class="ov-inner">
+          <div class="ov-eyebrow">Positioning</div>
+          <h2 class="ov-h2">Built for adversarial payment defense</h2>
+          <p class="ov-sub">Execution Authority Gate combines attack discovery, synthetic attack generation, detection, execution authority, and verifiable evidence into one closed-loop payment-defense architecture. This is an independent research prototype built for the Mastercard Innovation Challenge, AI Defense Lab 2026; it is not an official Mastercard product and carries no Mastercard endorsement.</p>
+          <div class="ov-step-pills">
+            <span class="ov-step-pill">Identify</span>
+            <span class="ov-step-pill">Generate</span>
+            <span class="ov-step-pill">Detect</span>
+            <span class="ov-step-pill accent">Authorize</span>
+            <span class="ov-step-pill accent">Prove</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-final">
+        <div class="ov-inner">
+          <h2>Detection is probabilistic.<br>Execution authority must be governed.</h2>
+          <p class="ov-final-sub">AI can be intelligent without being in charge.</p>
+          <div class="ov-cta-row">
+            <button type="button" class="ov-btn ov-btn-primary" data-goto-tab="live-test">Run Execution Authority Gate →</button>
+            <button type="button" class="ov-btn ov-btn-secondary" data-goto-tab="mandate">Explore the Architecture →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-footer">
+        <div class="ov-inner">
+          <div class="ov-footer-brand">EXECUTION AUTHORITY GATE</div>
+          <div class="ov-footer-tag">Provable execution authority</div>
+          <div class="ov-footer-nav">
+            <button type="button" data-goto-tab="overview">Overview</button>
+            <button type="button" data-goto-tab="attacks">Attacks</button>
+            <button type="button" data-goto-tab="walkthrough">Attack Walkthrough</button>
+            <button type="button" data-goto-tab="detect">Detection</button>
+            <button type="button" data-goto-tab="mandate">Mandate</button>
+            <button type="button" data-goto-tab="live-test">Live Test</button>
+            <button type="button" data-goto-tab="proof">Proof</button>
+            <button type="button" data-goto-tab="faq">FAQ</button>
+            ${githubLink(null, "View source on GitHub")}
+          </div>
+          <p class="ov-footer-note">Synthetic data &middot; research prototype &middot; not a production payment authorization service. Built for the Mastercard Innovation Challenge, AI Defense Lab 2026.</p>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -506,14 +590,8 @@ function renderMandate(data) {
   const maxAttr = Math.max(...attrRows.map((r) => r.value), 1);
   attrRows.forEach((r) => (r.max = maxAttr));
 
-  const ruleLabels = {
-    spending_limit: "Spending limit",
-    merchant_whitelist: "Merchant whitelist",
-    time_restriction: "Time of day window",
-    velocity: "Daily velocity",
-  };
   const ruleRows = Object.entries(md.rule_violation_counts).map(([rule, count]) => ({
-    name: ruleLabels[rule] || rule,
+    name: RULE_LABELS[rule] || rule,
     value: count,
     colorVar: "--series-1",
   }));
@@ -521,7 +599,7 @@ function renderMandate(data) {
   const sampleRows = md.sample_mandate_only_blocks
     .map((e) => {
       const d = e.decision;
-      const violated = d.violated_mandate_rules.map((r) => ruleLabels[r] || r).join(", ");
+      const violated = d.violated_mandate_rules.map((r) => RULE_LABELS[r] || r).join(", ");
       return `<tr>
         <td class="mono">${esc(d.transaction_id)}</td>
         <td>${fmtMoney(e.ground_truth.amount)}</td>
@@ -585,13 +663,7 @@ const OUTCOME_ICON = { ALLOW: "✓", FLAG: "⚠", BLOCK: "✕" };
  * presentation of what Step 4 of renderDecisionCard already says in
  * prose. */
 function renderOutcomeBanner(decision, mandateChecks) {
-  const ruleLabels = {
-    spending_limit: "Spending limit",
-    merchant_whitelist: "Merchant whitelist",
-    time_restriction: "Time of day window",
-    velocity: "Daily velocity",
-  };
-  const failedRules = (mandateChecks || []).filter((c) => !c.passed).map((c) => ruleLabels[c.rule] || c.rule);
+  const failedRules = (mandateChecks || []).filter((c) => !c.passed).map((c) => RULE_LABELS[c.rule] || c.rule);
   const final = decision.final_decision;
   const icon = OUTCOME_ICON[final] || "";
 
@@ -632,13 +704,6 @@ function renderOutcomeBanner(decision, mandateChecks) {
  * Live Test Harness (a decision computed live, right now, by this
  * request). txSummaryRows: [{label, value}]. */
 function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
-  const ruleLabels = {
-    spending_limit: "Spending limit",
-    merchant_whitelist: "Merchant whitelist",
-    time_restriction: "Time of day window",
-    velocity: "Daily velocity",
-  };
-
   const txRows = txSummaryRows
     .map((r) => `<div class="kv-row"><span class="kv-key">${esc(r.label)}</span><span class="kv-value">${esc(r.value)}</span></div>`)
     .join("");
@@ -646,7 +711,7 @@ function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
   const mandateRows = mandateChecks
     .map(
       (c) => `<tr>
-        <td>${ruleLabels[c.rule] || c.rule}</td>
+        <td>${RULE_LABELS[c.rule] || c.rule}</td>
         <td>${c.passed ? '<span class="dot good"></span> pass' : '<span class="dot critical"></span> fail'}</td>
         <td>${esc(c.reason)}</td>
       </tr>`
@@ -692,7 +757,7 @@ function renderDecisionCard(txSummaryRows, decision, mandateChecks, verified) {
         <p>${
           decision.final_decision === "BLOCK"
             ? (!decision.mandate_allowed
-                ? `Mandate layer rejected it (${decision.violated_mandate_rules.map((r) => ruleLabels[r] || r).join(", ")}), blocked regardless of the detect score.`
+                ? `Mandate layer rejected it (${decision.violated_mandate_rules.map((r) => RULE_LABELS[r] || r).join(", ")}), blocked regardless of the detect score.`
                 : `Detect layer scored it high risk (${decision.fraud_score.toFixed(2)}), blocked even though the mandate layer had no objection.`)
             : decision.final_decision === "FLAG"
             ? `Detect layer is unsure (${decision.fraud_score.toFixed(2)}) and the mandate layer has no objection, flagged for review, not auto blocked.`
@@ -1039,7 +1104,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Could an AI agent fake or skip this check?",
-    a: "Not the signature. Nothing calling this pipeline, agent or otherwise, has access to the private signing key, so it cannot produce a valid signed ALLOW on its own. It could still choose not to call the pipeline at all, which is why this belongs at the point where a transaction actually executes, not as an optional step an agent can decide to skip. Wiring it into that execution point is not done in this repo yet, see the enforcement question below.",
+    a: "Not the signature. Nothing calling this pipeline, agent or otherwise, has access to the private signing key, so it cannot produce a valid signed ALLOW on its own. The enforcement API also checks a caller token before acting on any decision and fails closed if that token is missing or wrong, so an agent cannot execute a decision it was never issued permission for. What it can still do is choose not to call the pipeline at all; putting this check at the actual execution point, not as an optional step an agent can decide to skip, is a system-integration decision outside this repo's scope.",
   },
   {
     q: "Does this replace a human reviewer?",
@@ -1067,15 +1132,15 @@ const FAQ_ITEMS = [
   },
   {
     q: "Does this system actually stop a transaction from going through?",
-    a: "No, and this project is upfront about that. It produces a signed decision, ALLOW, FLAG, or BLOCK. It does not call a payment processor or move money. Wiring a signed decision to real enforcement is a separate integration this repo does not include yet.",
+    a: "It produces a signed decision, ALLOW, FLAG, or BLOCK, then the enforcement API (sign/src/decision_executor.py) independently checks the caller's permission and the decision's signature before acting on it, blocking a BLOCK regardless of who asks. What it enforces against today is a no-op webhook, not a live payment processor, so no real money moves yet. Wiring that webhook to an actual payment rail is the remaining integration.",
   },
   {
     q: "Are signed decisions stored permanently?",
-    a: "Not yet, in a durable way. Right now decisions are written to a single local file that gets overwritten on the next pipeline run. Turning that into an append only or externally stored log is a known gap, not a finished feature.",
+    a: "Enforcement decisions are: pipeline/audit/decisions.jsonl is an append only log, keyed on each decision's record_id, so a decision is written once and a replayed batch cannot duplicate an entry. The older pipeline_decisions.json snapshot is still written for backward compatibility, and that one does get overwritten on each pipeline run, it is not the durability guarantee.",
   },
   {
     q: "Who is allowed to trigger a decision or call the API?",
-    a: "There is currently no caller authentication on the pipeline or its API. Every decision is signed by the same authority identity regardless of who asked for it. This is a working prototype, not a production access control system.",
+    a: "The enforcement endpoint (POST /api/enforce/decisions) requires a signed caller token issued to a registered caller (payment-processor, fraud-analyst, audit-system in sign/src/caller_auth.py) and fails closed: a missing or invalid token gets a 401, not a default allow. A caller without permission for a decision's outcome, e.g. payment-processor attempting a BLOCK, gets that one decision rejected without affecting the rest of its batch. The read-only dashboard and demo routes (what this public page itself calls) are intentionally left open, since gating them wouldn't protect anything they don't already let the caller fully control.",
   },
   {
     q: "Why does the mandate layer use a customer's own history instead of one fixed rule for everyone?",
@@ -1105,7 +1170,7 @@ function renderFAQ(data) {
 }
 
 const RENDERERS = {
-  overview: renderOverview,
+  overview: renderOverviewV2,
   attacks: renderAttacks,
   detect: renderDetect,
   mandate: renderMandate,
