@@ -120,12 +120,11 @@ pip install -r requirements.txt
 
 ```powershell
 pytest -q
-
-<img width="1037" height="73" alt="image" src="https://github.com/user-attachments/assets/1a9fec15-c726-4ba7-9bbb-15c5945f8fea" />
-
 ```
 
 Expected result:
+
+<img width="1037" height="73" alt="image" src="https://github.com/user-attachments/assets/1a9fec15-c726-4ba7-9bbb-15c5945f8fea" />
 
 ```text
 136 passed, 4 skipped
